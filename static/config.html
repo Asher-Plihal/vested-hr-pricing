@@ -182,12 +182,6 @@
         </table>
       </div>
 
-      <div id="suta-gap-notice" class="note-box visible" style="margin:16px 28px;display:block;">
-        <strong>Backend gap:</strong> SUTA rates are stored in a separate <code>suta_rates</code> table.
-        The current <code>GET /config</code> and <code>PUT /config</code> endpoints do not include them.
-        A dedicated <code>GET /suta-rates</code> and <code>PUT /suta-rates</code> endpoint is required
-        before this tab can load or save data. See build_progress.json for details.
-      </div>
     </div>
 
     <div style="display:flex;justify-content:flex-end;margin-top:20px;">
@@ -466,8 +460,17 @@ document.getElementById('save-admin').addEventListener('click', () => {
 });
 
 document.getElementById('save-suta').addEventListener('click', async () => {
-  // Backend gap: no PUT /suta-rates endpoint exists yet
-  showToast('SUTA save not yet available — backend endpoint required', 'error');
+  const rows = collectSutaRows();
+  if (rows.length === 0) {
+    showToast('No SUTA rows to save', 'info');
+    return;
+  }
+  try {
+    await apiPut('/suta-rates', rows);
+    showToast('SUTA rates saved');
+  } catch (err) {
+    showToast('Save failed: ' + err.message, 'error');
+  }
 });
 
 /* ── Load on page open ──────────────────────────────────────────────────── */
@@ -485,12 +488,14 @@ async function loadConfig() {
 }
 
 async function loadSutaRates() {
-  // Backend gap: GET /suta-rates does not exist yet.
-  // When the endpoint is added, replace this block with:
-  //   const rates = await apiGet('/suta-rates');
-  //   sutaRates = rates;
-  //   populateSutaTable(rates);
-  populateSutaTable([]);
+  try {
+    const rates = await apiGet('/suta-rates');
+    sutaRates = rates;
+    populateSutaTable(rates);
+  } catch (err) {
+    showToast('Failed to load SUTA rates: ' + err.message, 'error');
+    populateSutaTable([]);
+  }
 }
 
 loadConfig();

@@ -41,51 +41,43 @@ def run_calculate(body: CalculateRequest, db: Session = Depends(get_db)):
     except (json.JSONDecodeError, TypeError):
         pay_periods_map = {"weekly": 52, "biweekly": 26, "semimonthly": 24, "monthly": 12}
 
-    client = body.client
     wc_line_dicts = [l.model_dump() for l in body.wc_lines]
     suta_line_dicts = [l.model_dump() for l in body.suta_lines]
-    ancillary = body.ancillary or {}
 
-    proposed_mod = client.proposed_mod if client.proposed_mod is not None else 1.0
+    proposed_mod = body.proposed_mod
     wc_result = calculate_wc(wc_line_dicts, proposed_mod, config)
 
     fica_result = calculate_fica(wc_line_dicts, config)
 
-    w2s_generated = client.w2s_generated or 0.0
-    futa_result = calculate_futa(wc_line_dicts, w2s_generated, config)
+    futa_result = calculate_futa(wc_line_dicts, body.w2s_generated, config)
 
     suta_result = calculate_suta(suta_line_dicts)
 
     total_gws = sum(l.get("annual_gw", 0.0) for l in wc_line_dicts)
     total_wses = futa_result["total_wses"]
-    method = client.admin_method or 1
-    rate = client.admin_rate or 0.0
-    pay_frequency = client.payroll_frequency or "biweekly"
 
     admin_result = calculate_admin(
         total_gws=total_gws,
         total_wses=total_wses,
-        method=method,
-        rate=rate,
-        pay_frequency=pay_frequency,
-        wc_policy_adj=config["wc_policy_adjustment"],
+        method=body.admin_method,
+        rate=body.admin_rate,
+        pay_frequency=body.payroll_frequency,
+        wc_policy_adj=body.wc_policy_adj,
         pay_periods_map=pay_periods_map,
     )
 
-    implementation_fee = client.implementation_fee or 0.0
-    epli_fee = client.epli_fee or 0.0
-    tlm_fee = ancillary.get("tlm_fee", 0.0)
-    wire_ach_fee = ancillary.get("wire_ach_fee", 0.0)
+    implementation_fee = body.implementation_fee
+    epli_fee = body.epli_fee
+    tlm_fee = body.tlm_fee
+    wire_ach_fee = body.wire_ach_fee
     total_ancillary = implementation_fee + epli_fee + tlm_fee + wire_ach_fee
     total_with_ancillary = admin_result["total_admin_fee"] + total_ancillary
 
-    internal_pct = client.internal_commission_pct or 0.0
-    external_pct = client.external_commission_pct or 0.0
     commission_result = calculate_commission(
         total_admin_fee=admin_result["total_admin_fee"],
         total_with_ancillary=total_with_ancillary,
-        internal_pct=internal_pct,
-        external_pct=external_pct,
+        internal_pct=body.internal_commission_pct,
+        external_pct=body.external_commission_pct,
     )
 
     ancillary_full = {
@@ -93,8 +85,8 @@ def run_calculate(body: CalculateRequest, db: Session = Depends(get_db)):
         "epli_fee": epli_fee,
         "tlm_fee": tlm_fee,
         "wire_ach_fee": wire_ach_fee,
-        "broker_wc_commission_pct": client.broker_wc_commission_pct or 0.0,
-        "external_commission_pct": external_pct,
+        "broker_wc_commission_pct": body.broker_wc_commission_pct,
+        "external_commission_pct": body.external_commission_pct,
     }
 
     summary = calculate_summary(

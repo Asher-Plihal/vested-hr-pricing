@@ -1,35 +1,12 @@
 {
-  "agent": "base",
-  "status": "complete",
-  "built": [
-    "server.py",
-    "database.py",
-    "models.py",
-    "schemas.py",
-    "seed.py",
-    "requirements.txt",
-    ".gitignore",
-    "build_progress.json",
-    "routers/__init__.py",
-    "routers/clients.py",
-    "routers/config.py",
-    "routers/calculate.py",
-    "calc/__init__.py",
-    "calc/wse.py",
-    "calc/workers_comp.py",
-    "calc/fica.py",
-    "calc/futa.py",
-    "calc/suta.py",
-    "calc/admin_fee.py",
-    "calc/commission.py",
-    "calc/summary.py",
-    "static/",
-    "data/",
-    "static/style.css",
-    "static/app.js",
-    "static/client.html",
-    "static/favicon.png"
-  ],
+  "completed": {
+    "base": "complete",
+    "client_page": "complete",
+    "config_page": "complete",
+    "suta_rates_api": "complete",
+    "dashboard": "complete",
+    "smoke_test": "all_pass"
+  },
   "api_routes": [
     "GET /clients",
     "POST /clients",
@@ -37,30 +14,22 @@
     "PUT /clients/{id}",
     "GET /config",
     "PUT /config",
-    "POST /calculate"
+    "GET /suta-rates",
+    "PUT /suta-rates",
+    "POST /calculate",
+    "GET /static/dashboard.html",
+    "GET /static/client.html",
+    "GET /static/config.html"
   ],
-  "db_models": [
-    "SystemConfig",
-    "Client",
-    "WCLine",
-    "SutaLine",
-    "SutaRate",
-    "WCLoss"
+  "known_gaps": [
+    "WC Rates table (~25K rows) lookup not implemented — manual_rate on WCLine is set at intake time. A future agent should import the WC Rates table and do the VLOOKUP at calculation time.",
+    "SUTA rate placeholders: most values were seeded from common state data and are flagged PLACEHOLDER. States that are client-reporting (CA, NY, NJ, PA, RI) have vhr_min_rate=None. All rows need verification with VHR staff.",
+    "wc_policy_adjustment (Sunz charge) seeded at 0.0. The 1.55% value from pricing_math.md is noted but unused in example clients.",
+    "WC losses questionnaire fields (aircraft, hazmat, etc.) not stored in DB — reserved for a WCQuestionnaire model when the frontend needs them.",
+    "Clients and Quotes sidebar links on dashboard.html are placeholder (#) — no dedicated clients list page exists yet.",
+    "Reports sidebar link on dashboard.html is placeholder.",
+    "Search bar in topnav is not wired to a search API.",
+    "User menu (avatar/name) is static — no auth system implemented."
   ],
-  "server_start_verified": true,
-  "completed": {
-    "client_page": "complete",
-    "config_page": "complete"
-  },
-  "notes": [
-    "Python 3.14 is installed; all required packages (fastapi, uvicorn, sqlalchemy, pydantic) were already present in the system Python — no venv created.",
-    "manual_rate on WCLine is stored at intake time. Full WC Rates table (~25K rows) lookup is not yet implemented — a future agent should import the WC Rates table and do the VLOOKUP at calculation time.",
-    "All 51 SUTA rows seeded. Most values are placeholders sourced from common state data. States that are client-reporting (CA, NY, NJ, PA, RI) have vhr_min_rate=None. MO has a note about its ambiguous status per pricing_math.md. All rows flagged with PLACEHOLDER comments need verification with VHR staff.",
-    "wc_policy_adjustment (Sunz charge) is seeded at 0.0 per current practice. The 1.55% value from pricing_math.md is noted but unused in both example clients.",
-    "FUTA uses Approach B only per the spec. Approach A (burden-rate display) can be added later if VHR decides they want it.",
-    "WC losses questionnaire fields (aircraft, hazmat, etc.) are not stored in the DB — the outline describes them as compliance questionnaire items. They can be added as a separate WCQuestionnaire model when the frontend needs them.",
-    "The static/ directory is empty — frontend agents will add HTML files there.",
-    "Seed is idempotent — running seed.py twice will not duplicate rows.",
-    "SUTA tab on config page is built but non-functional: GET /config and PUT /config do not expose suta_rates. The SutaRate model exists in models.py but has no router. A future agent must add GET /suta-rates and PUT /suta-rates endpoints (returning list[SutaRateOut] and accepting list[SutaRateUpdate]) before the SUTA tab can load or save data. The config.html SUTA tab already has the full table UI and collectSutaRows() wired — only the API calls need to be swapped in."
-  ]
+  "run_instructions": "cd C:\\workspaces\\vested-hr-pricing && python seed.py && uvicorn server:app --reload --port 8000"
 }

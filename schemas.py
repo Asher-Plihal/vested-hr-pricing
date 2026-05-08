@@ -264,10 +264,45 @@ class ClientOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
+# ── SutaRate ──────────────────────────────────────────────────────────────────
+
+class SutaRateOut(BaseModel):
+    id: int
+    state: str
+    threshold: Optional[float]
+    vhr_min_rate: Optional[float]
+    client_reporting: bool
+    our_cost: Optional[float]
+    model_config = {"from_attributes": True}
+
+
+class SutaRateUpdate(BaseModel):
+    state: str
+    threshold: Optional[float] = None
+    vhr_min_rate: Optional[float] = None
+    client_reporting: Optional[bool] = None
+    our_cost: Optional[float] = None
+
+
 # ── Calculate ─────────────────────────────────────────────────────────────────
 
 class CalculateRequest(BaseModel):
-    client: ClientUpdate
+    # Flat fields (used by smoke test and client page)
+    ftes: float = 0.0
+    ptes: float = 0.0
+    w2s_generated: float = 0.0
     wc_lines: list[WCLineIn] = []
     suta_lines: list[SutaLineIn] = []
-    ancillary: Optional[dict[str, Any]] = None
+    proposed_mod: float = 1.0
+    wc_carve_out: bool = False
+    admin_method: int = 1
+    admin_rate: float = 0.0
+    payroll_frequency: str = "biweekly"
+    wc_policy_adj: float = 0.0
+    internal_commission_pct: float = 0.0
+    external_commission_pct: float = 0.0
+    broker_wc_commission_pct: float = 0.0
+    implementation_fee: float = 0.0
+    epli_fee: float = 0.0
+    tlm_fee: float = 0.0
+    wire_ach_fee: float = 0.0
