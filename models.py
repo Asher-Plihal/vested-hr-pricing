@@ -177,6 +177,7 @@ class SutaRate(Base):
     vhr_min_rate = Column(Float)
     client_reporting = Column(Boolean, default=False)
     our_cost = Column(Float)
+    date_updated = Column(String, nullable=True)
 
 
 class WCLoss(Base):

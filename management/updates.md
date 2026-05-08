@@ -4,6 +4,19 @@ Most recent entry at the top. Add an entry when a task completes. This is where 
 
 ---
 
+### 2026-05-08 — SUTA date_updated column added
+
+**Task:** ad-hoc fix
+
+`SutaRate` model was missing a `date_updated` field. The download CSV always emitted `None` for the "Date Updated" column, so any round-trip edit-and-reupload silently wiped that column.
+
+- Added `date_updated = Column(String, nullable=True)` to `SutaRate` in `models.py`
+- Download (`GET /download/suta-rates`) now exports `r.date_updated` instead of `None`
+- Upload (`POST /upload/suta-rates`) now reads "Date Updated" from the CSV and saves it to DB
+- Live DB migrated: `ALTER TABLE suta_rates ADD COLUMN date_updated TEXT` run directly on `data/vested_hr.db`
+
+---
+
 ### 2026-05-08 — sheets-upload-fix complete
 
 **Task:** `sheets-upload-fix`

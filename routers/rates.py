@@ -118,7 +118,7 @@ def download_suta_rates(db: Session = Depends(get_db)):
          round(r.vhr_min_rate * 100, 6) if r.vhr_min_rate is not None else None,
          "Y" if r.client_reporting else "N",
          round(r.our_cost * 100, 6) if r.our_cost is not None else None,
-         None]
+         r.date_updated]
         for r in rows
     ]
     return _csv_response(
@@ -235,6 +235,7 @@ async def upload_suta_rates(file: UploadFile = File(...), db: Session = Depends(
             client_reporting = (row.get("Client Reporting") or "").strip().upper() == "Y"
             raw_cost         = _safe_float(row.get("Our Cost") or "")
             our_cost         = raw_cost / 100 if raw_cost is not None else None
+            date_updated     = (row.get("Date Updated") or "").strip() or None
 
             if not state:
                 continue
@@ -246,6 +247,7 @@ async def upload_suta_rates(file: UploadFile = File(...), db: Session = Depends(
                 vhr_min_rate=vhr_min_rate,
                 client_reporting=client_reporting,
                 our_cost=our_cost,
+                date_updated=date_updated,
             ))
             row_id += 1
             imported += 1
