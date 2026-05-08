@@ -1,5 +1,4 @@
 /* ── app.js — shared utilities for VestedHR Pricing Tool ──────────────────── */
-/* wireSearch is defined at the bottom and self-invokes on DOMContentLoaded.  */
 
 /**
  * Show a dismissing toast notification at bottom-right.
@@ -119,7 +118,7 @@ async function apiDelete(path) {
 }
 
 /* ── Global client search ─────────────────────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', function () {
+(function () {
   const input = document.querySelector('.topnav-search');
   if (!input) return;
 
@@ -199,4 +198,4 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   input.addEventListener('blur', () => setTimeout(hideDropdown, 50));
-});
+}());
