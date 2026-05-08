@@ -122,15 +122,29 @@ async function apiDelete(path) {
   const input = document.querySelector('.topnav-search');
   if (!input) return;
 
+  // Inject styles directly so they're never affected by CSS caching
+  const style = document.createElement('style');
+  style.textContent = [
+    '#vhr-search-dropdown{position:fixed;background:#fff;border-radius:8px',
+    'box-shadow:0 4px 16px rgba(0,0,0,.18);border:1px solid #e2e8f0',
+    'overflow:hidden;z-index:9999;list-style:none;padding:0;margin:0;display:none}',
+    '#vhr-search-dropdown li{padding:9px 14px;font-size:.85rem;color:#1a1a2e;cursor:pointer}',
+    '#vhr-search-dropdown li:hover,#vhr-search-dropdown li.search-active{background:#f4f5f7}',
+  ].join(';');
+  document.head.appendChild(style);
+
   input.setAttribute('autocomplete', 'off');
 
   const dropdown = document.createElement('ul');
-  dropdown.className = 'search-dropdown';
-  dropdown.hidden = true;
+  dropdown.id = 'vhr-search-dropdown';
   document.body.appendChild(dropdown);
 
-  let searchClients = [];
-  apiGet('/clients').then(data => { searchClients = data; }).catch(() => {});
+  let searchClients = null;
+
+  function ensureClients() {
+    if (searchClients !== null) return Promise.resolve();
+    return apiGet('/clients').then(data => { searchClients = data; }).catch(() => { searchClients = []; });
+  }
 
   function positionDropdown() {
     const rect = input.getBoundingClientRect();
@@ -140,7 +154,7 @@ async function apiDelete(path) {
   }
 
   function hideDropdown() {
-    dropdown.hidden = true;
+    dropdown.style.display = 'none';
     dropdown.innerHTML = '';
   }
 
@@ -155,7 +169,7 @@ async function apiDelete(path) {
 
   function runFilter(q) {
     if (!q) { hideDropdown(); return; }
-    const matches = searchClients
+    const matches = (searchClients || [])
       .filter(c => (c.legal_name || '').toLowerCase().includes(q.toLowerCase()))
       .slice(0, 8);
     if (matches.length === 0) { hideDropdown(); return; }
@@ -170,11 +184,15 @@ async function apiDelete(path) {
       dropdown.appendChild(li);
     });
     positionDropdown();
-    dropdown.hidden = false;
+    dropdown.style.display = 'block';
   }
 
-  input.addEventListener('input', () => runFilter(input.value.trim()));
-  input.addEventListener('focus', () => runFilter(input.value.trim()));
+  function onActivate() {
+    ensureClients().then(() => runFilter(input.value.trim()));
+  }
+
+  input.addEventListener('focus', onActivate);
+  input.addEventListener('input', onActivate);
 
   input.addEventListener('keydown', e => {
     const items = Array.from(dropdown.querySelectorAll('li'));
