@@ -99,13 +99,23 @@ python testing/seed_client.py    # Hartman Industrial LLC test client
 
 | Doc | Purpose |
 |---|---|
-| `management/status.json` | Active tasks only: `pending`, `in-progress`, `blocked`, `deferred`. No completed tasks. |
+| `management/status.json` | Active task board. |
 | `management/todo.md` | Full brief per active task. |
-| `management/updates.md` | What was built and when. Completed task context lives here. |
+| `management/updates.md` | Changelog. Completed task context lives here permanently. |
+
+### How the three files work together
+
+**status.json** is the active board. It only ever contains tasks that still need doing. Valid statuses: `pending`, `in-progress`, `blocked`, `deferred`. Completed tasks are deleted — they never stay in status.json.
+
+**todo.md** mirrors status.json. One brief per active task. When a task is removed from status.json, its brief is removed from todo.md too. Briefs must be specific enough for a coding agent to execute with no other context: exact file paths, function names, endpoint signatures, expected inputs/outputs.
+
+**updates.md** is permanent. When a task completes, a summary entry goes here — what was built, what files changed, any non-obvious decisions or data format notes a future agent would need. This is how context survives across sessions without bloating the active board.
+
+**The rule:** completed work lives in updates.md, not status.json or todo.md. If you need to know what's been done, read updates.md. If you need to know what's left to do, read status.json.
 
 ### Agent workflow
-1. Read `management/updates.md` briefly — know what's already done
+1. Read `management/updates.md` — know what's already done
 2. Read `management/status.json` — pick a `pending` task, set it to `in-progress`
 3. Read its full brief in `management/todo.md`
 4. Do the work, commit
-5. **Remove the task from both `status.json` and `todo.md`**. Write a summary entry to `management/updates.md`. Commit.
+5. Delete the task from `status.json` and its brief from `todo.md`. Add a summary entry to `management/updates.md`. Commit.
