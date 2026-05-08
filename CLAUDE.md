@@ -28,6 +28,10 @@ FastAPI / SQLite (SQLAlchemy sync) / Vanilla HTML+CSS+JS (no framework)
 Shared styles: `static/style.css`. Page-specific styles: inline `<style>` blocks.
 Shared JS: `static/app.js` — `apiGet`, `apiPost`, `apiPut`, `apiDelete`, `showToast`, `formatCurrency`, `formatPct`.
 
+## SQLite MCP
+
+`.mcp.json` configures `mcp-server-sqlite` (runs via `uvx`) pointed at `data/vested_hr.db`. Agents can query the DB directly — no server needed. Approved in project settings.
+
 ## Key files
 
 ```
