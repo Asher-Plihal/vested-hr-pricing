@@ -1312,13 +1312,37 @@ function addWCCodeRow(data) {
     <td><input type="number" name="wc_payroll_${idx}" step="0.01" min="0" placeholder="0.00" value="${data?.annual_gw || ''}" /></td>
     <td><input type="number" name="wc_fte_${idx}" step="1" min="0" placeholder="0" style="width:60px;" value="${data?.ftes || ''}" /></td>
     <td><input type="number" name="wc_pte_${idx}" step="1" min="0" placeholder="0" style="width:60px;" value="${data?.ptes || ''}" /></td>
-    <td><input type="number" name="wc_rate_${idx}" step="0.0001" min="0" placeholder="0.0000" value="${data?.manual_rate || ''}" /></td>
+    <td><input type="number" name="wc_rate_${idx}" step="0.0001" min="0" placeholder="auto from WC table" value="${data?.manual_rate || ''}" readonly style="background:#f5f5f5;cursor:not-allowed;" /></td>
     <td><button type="button" class="btn-ghost" style="padding:3px 8px;font-size:0.75rem;color:#dc2626;border-color:#fecaca;" onclick="removeWCRow(this)">×</button></td>
   `;
   tr.querySelectorAll('input, select').forEach(inp => {
     inp.addEventListener('input', () => { updateWCTotals(); scheduleCalculate(); });
     inp.addEventListener('change', () => { updateWCTotals(); scheduleCalculate(); });
   });
+
+  // Auto-populate rate from WC table when state or code changes
+  const stateSelect = tr.querySelector(`select[name="wc_state_${idx}"]`);
+  const codeInput   = tr.querySelector(`input[name="wc_code_${idx}"]`);
+  const rateInput   = tr.querySelector(`input[name="wc_rate_${idx}"]`);
+
+  async function lookupWCRate() {
+    const s = stateSelect.value;
+    const c = codeInput.value.trim();
+    if (!s || !c) return;
+    try {
+      const data = await apiGet(`/wc-rate?state=${encodeURIComponent(s)}&code=${encodeURIComponent(c)}`);
+      rateInput.value = data.rate;
+    } catch (_) {
+      rateInput.value = '';
+      rateInput.placeholder = '— not found';
+    }
+    updateWCTotals();
+    scheduleCalculate();
+  }
+
+  stateSelect.addEventListener('change', lookupWCRate);
+  codeInput.addEventListener('blur', lookupWCRate);
+
   tbody.appendChild(tr);
   updateWCTotals();
 }

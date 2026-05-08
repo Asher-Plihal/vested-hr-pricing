@@ -1,7 +1,7 @@
 import csv
 import io
 
-from fastapi import APIRouter, Depends, File, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
@@ -38,6 +38,22 @@ def _safe_float(val: str):
         return float(val)
     except ValueError:
         return None
+
+
+# ── WC Rate Lookup ────────────────────────────────────────────────────────────
+
+@router.get("/wc-rate")
+def get_wc_rate(
+    state: str = Query(..., min_length=2, max_length=2),
+    code: str = Query(...),
+    db: Session = Depends(get_db),
+):
+    """Look up a WC cost rate by state + class code. Returns {"rate": float} or 404."""
+    concat_key = state.upper().strip() + code.strip()
+    row = db.query(WCRate).filter(WCRate.concat == concat_key).first()
+    if row is None or row.rate is None:
+        raise HTTPException(status_code=404, detail="Not found")
+    return {"rate": row.rate}
 
 
 # ── Downloads ─────────────────────────────────────────────────────────────────

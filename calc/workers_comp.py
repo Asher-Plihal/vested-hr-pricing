@@ -1,8 +1,12 @@
-def calculate_wc(lines: list[dict], proposed_mod: float, config: dict) -> dict:
+from models import WCRate
+
+
+def calculate_wc(lines: list[dict], proposed_mod: float, config: dict, db=None) -> dict:
     """
     lines: [{state, wc_code, annual_gw, ftes, ptes, current_client_rate, manual_rate}]
     proposed_mod == 0 means full carve-out; all billing zeros out.
-    manual_rate is passed directly — WC Rates table lookup not yet implemented.
+    If db is provided and manual_rate is 0/blank, the WC Rates table is queried by
+    state+wc_code (concat key) to fill in the rate automatically.
     """
     fixed_cost_factor = config["fixed_cost_factor"]
     loss_fund_factor = config["loss_fund_factor"]
@@ -21,7 +25,14 @@ def calculate_wc(lines: list[dict], proposed_mod: float, config: dict) -> dict:
         gw = line.get("annual_gw", 0.0)
         ftes = line.get("ftes", 0.0)
         ptes = line.get("ptes", 0.0)
-        manual_rate = line.get("manual_rate", 0.0)
+        manual_rate = line.get("manual_rate", 0.0) or 0.0
+        if db is not None and (not manual_rate):
+            state_key = line.get("state", "")
+            wc_code_key = str(line.get("wc_code", "")).strip()
+            concat_key = state_key + wc_code_key
+            wc_row = db.query(WCRate).filter(WCRate.concat == concat_key).first()
+            if wc_row and wc_row.rate is not None:
+                manual_rate = wc_row.rate
         current_client_rate = line.get("current_client_rate", 0.0)
 
         wses = ftes + pte_weight * ptes
