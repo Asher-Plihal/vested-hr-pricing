@@ -1,50 +1,68 @@
 {
+  "import-rate-data": {
+    "status": "complete",
+    "priority": 1,
+    "blocked_by": null,
+    "note": "testing/import_rates.py written and run. WC Cost Rates (~25K rows), WC Sunz Guidelines (~19.5K rows), and SUTA Cost Rates (51 states) all imported from Pricing Template 03.10.26_ALL SHEETS.xlsx. SUTA now has real VHR rates — 22+ states are client-reporting, rates stored as decimals (divided by 100 from spreadsheet's percentage form)."
+  },
   "wc-rates-vlookup": {
+    "status": "complete",
+    "priority": 1,
+    "blocked_by": null,
+    "note": "calc/workers_comp.py now accepts db=None and queries wc_rates by state+code concat key. routers/calculate.py passes db. GET /wc-rate?state=TX&code=5645 endpoint added to routers/rates.py. Rate field in client.html is readonly and auto-populated on state/code input."
+  },
+  "seed-client": {
+    "status": "complete",
+    "priority": 1,
+    "blocked_by": null,
+    "note": "testing/seed_client.py creates Hartman Industrial LLC (TX, biweekly, proposed_mod=0.88, 2 WC lines: codes 5190 and 8810, 1 TX SUTA line). Idempotent — skips if already exists. Does not touch SystemConfig."
+  },
+  "calc-verification": {
     "status": "pending",
     "priority": 1,
     "blocked_by": null,
-    "note": "wc_rates table and WCRate model exist; wc_rates DB is empty until VHR uploads CSV. calc/workers_comp.py has a comment acknowledging the VLOOKUP is not yet wired. No GET /wc-rate endpoint exists yet."
+    "note": "Run POST /calculate with Hartman Industrial LLC and verify every number against the formulas in pricing_math.md. WC rates are now auto-looked up from DB. Check: WC billing/cost/margin, FICA, FUTA, SUTA, admin fee, commission, summary totals. Flag any formula mismatches."
+  },
+  "suta-rates-verify": {
+    "status": "complete",
+    "priority": 1,
+    "blocked_by": null,
+    "note": "Real VHR rates imported from SUTA Cost Rates sheet. Rates converted from percentage to decimal form. 22+ states marked client-reporting (including AK, CT, DE, IA, KS, KY, MA, ME, MI, MN, MS, MT, NE, NV, OH, PA, RI, SC, SD, TN, VT, WA). CA, NY, NJ now correctly show as VHR-reporting with real rates. MO note preserved."
+  },
+  "wc-code-search-endpoint": {
+    "status": "complete",
+    "priority": 2,
+    "blocked_by": null,
+    "note": "GET /wc-rate?state=&code= endpoint added to routers/rates.py as part of wc-rates-vlookup work. Returns {rate} or 404."
   },
   "wc-code-searchable-dropdowns": {
     "status": "pending",
     "priority": 2,
-    "blocked_by": "wc-rates-vlookup",
-    "note": "State column already uses a <select> (STATE_ABBRS list). WC Code column is still a plain text <input>. No GET /wc-codes search endpoint exists yet."
-  },
-  "suta-rates-verify": {
-    "status": "blocked",
-    "priority": 1,
-    "blocked_by": "VHR staff — need confirmed thresholds and rates for all 51 states",
-    "note": "All 51 rows are placeholder values. CSV upload/download already works for when data arrives."
+    "blocked_by": null,
+    "note": "WC code input is still a plain text field. Now unblocked — wc_rates table is populated. Need GET /wc-codes?state=TX&q=clerical search endpoint + combobox UI in addWCCodeRow() in static/client.html."
   },
   "benefits-tab": {
     "status": "blocked",
     "priority": 3,
     "blocked_by": "VHR staff — need plan PEPM data and rate tier band confirmation",
-    "note": "calc/benefits.py does not exist. No benefits fields in SystemConfig or CalculateRequest. Benefits medical/ancillary questionnaire fields exist on Client model but there are no pricing inputs or outputs."
-  },
-  "search-bar": {
-    "status": "pending",
-    "priority": 3,
-    "blocked_by": null,
-    "note": "Search input is decorative on all three pages. No routers/search.py exists."
-  },
-  "generate-doc-proposal": {
-    "status": "pending",
-    "priority": 2,
-    "blocked_by": null,
-    "note": "Generate Doc button fires a toast. No GET /clients/{id}/proposal endpoint exists."
+    "note": "calc/benefits.py does not exist. No benefits fields in SystemConfig or CalculateRequest. Phase 3 unless VHR provides data."
   },
   "auth-roles": {
-    "status": "pending",
-    "priority": 2,
+    "status": "deferred",
+    "priority": 3,
     "blocked_by": null,
-    "note": "User avatar is hardcoded HTML. No users table, no login page, no session tokens, no role-gating on any endpoint."
+    "note": "Deferred to phase 3. No users table, no login, no role-gating. Not needed before internal testing."
   },
-  "wc-code-search-endpoint": {
-    "status": "pending",
-    "priority": 2,
-    "blocked_by": "wc-rates-vlookup",
-    "note": "Split from wc-code-searchable-dropdowns. Backend only: add GET /wc-codes?state=TX&q=clerical to routers/rates.py."
+  "search-bar": {
+    "status": "deferred",
+    "priority": 4,
+    "blocked_by": null,
+    "note": "Deferred to phase 3. Search input is decorative. Not needed for pricing/calc testing."
+  },
+  "generate-doc-proposal": {
+    "status": "deferred",
+    "priority": 3,
+    "blocked_by": null,
+    "note": "Deferred to phase 3. Generate Doc button fires a toast. Nice-to-have, not needed for calc verification."
   }
 }
