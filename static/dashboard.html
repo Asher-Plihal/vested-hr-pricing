@@ -35,6 +35,31 @@
     }
     .btn-delete-row:hover { background: #fee2e2; border-color: #fca5a5; color: #dc2626; }
 
+    /* ── Search dropdown ── */
+    .search-dropdown {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+      border: 1px solid #e2e8f0;
+      overflow: hidden;
+      z-index: 300;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .search-dropdown li {
+      padding: 9px 14px;
+      font-size: 0.85rem;
+      color: #1a1a2e;
+      cursor: pointer;
+    }
+    .search-dropdown li:hover,
+    .search-dropdown li.search-active { background: #f4f5f7; }
+
     /* ── New Client Modal ── */
     .modal-backdrop {
       display: none;
@@ -99,7 +124,8 @@
   <div class="topnav-actions">
     <div class="search-wrap">
       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input class="topnav-search" type="search" placeholder="Search clients..." />
+      <input class="topnav-search" type="search" placeholder="Search clients..." autocomplete="off" />
+      <ul id="search-dropdown" class="search-dropdown" hidden></ul>
     </div>
     <a class="topnav-current" href="/static/config.html">
       <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -265,10 +291,106 @@ document.getElementById('modal-create').addEventListener('click', async () => {
   }
 });
 
+/* ── Search ─────────────────────────────────────────────────────────────────── */
+
+let clients = [];
+
+(function wireSearch() {
+  const input    = document.querySelector('.topnav-search');
+  const dropdown = document.getElementById('search-dropdown');
+
+  function getTableRows() {
+    return Array.from(document.querySelectorAll('#clients-table-wrap tr[data-id]'));
+  }
+
+  function hideDropdown() {
+    dropdown.hidden = true;
+    dropdown.innerHTML = '';
+  }
+
+  function activeItem() {
+    return dropdown.querySelector('li.search-active');
+  }
+
+  function setActive(li) {
+    dropdown.querySelectorAll('li').forEach(el => el.classList.remove('search-active'));
+    if (li) li.classList.add('search-active');
+  }
+
+  function renderDropdown(matches) {
+    dropdown.innerHTML = '';
+    if (matches.length === 0) { hideDropdown(); return; }
+    matches.forEach(c => {
+      const li = document.createElement('li');
+      li.textContent = c.legal_name;
+      li.dataset.id  = c.id;
+      li.addEventListener('mousedown', () => {
+        window.location.href = `/static/client.html?id=${c.id}`;
+      });
+      dropdown.appendChild(li);
+    });
+    dropdown.hidden = false;
+  }
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+
+    if (!q) {
+      hideDropdown();
+      getTableRows().forEach(r => { r.style.display = ''; });
+      return;
+    }
+
+    const matches = clients
+      .filter(c => (c.legal_name || '').toLowerCase().includes(q))
+      .slice(0, 8);
+
+    renderDropdown(matches);
+
+    const matchIds = new Set(matches.map(c => String(c.id)));
+    getTableRows().forEach(r => {
+      r.style.display = matchIds.has(r.dataset.id) ? '' : 'none';
+    });
+  });
+
+  input.addEventListener('keydown', e => {
+    const items = Array.from(dropdown.querySelectorAll('li'));
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const cur = activeItem();
+      const next = cur ? cur.nextElementSibling : items[0];
+      if (next) setActive(next);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const cur = activeItem();
+      const prev = cur ? cur.previousElementSibling : items[items.length - 1];
+      if (prev) setActive(prev);
+    } else if (e.key === 'Enter') {
+      const cur = activeItem();
+      if (cur) {
+        window.location.href = `/static/client.html?id=${cur.dataset.id}`;
+        return;
+      }
+      const visible = getTableRows().filter(r => r.style.display !== 'none');
+      if (visible.length === 1) {
+        window.location.href = `/static/client.html?id=${visible[0].dataset.id}`;
+      }
+    } else if (e.key === 'Escape') {
+      input.value = '';
+      hideDropdown();
+      getTableRows().forEach(r => { r.style.display = ''; });
+    }
+  });
+
+  input.addEventListener('blur', () => {
+    setTimeout(hideDropdown, 50);
+  });
+})();
+
 /* ── Load dashboard data ────────────────────────────────────────────────────── */
 
 async function loadDashboard() {
-  let clients = [];
   try {
     clients = await apiGet('/clients');
   } catch (err) {
