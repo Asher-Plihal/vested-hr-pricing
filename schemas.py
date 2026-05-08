@@ -104,6 +104,7 @@ class ClientListItem(BaseModel):
     legal_name: Optional[str]
     consultant_name: Optional[str]
     status: Optional[str]
+    created_at: Optional[datetime]
     updated_at: Optional[datetime]
     model_config = {"from_attributes": True}
 

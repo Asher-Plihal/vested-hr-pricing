@@ -36,60 +36,12 @@ body {
   display: block;
 }
 
-/* topnav-logo text (used by client.html / config.html) */
-.topnav-logo-text {
-  font-weight: 700;
-  font-size: 1rem;
-  color: #c9a84c;
-  letter-spacing: 0.01em;
-}
-
 /* topnav-actions wraps search + links + user on the right */
 .topnav-actions {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-
-/* topnav-search-wrap: legacy search wrapper used by client.html / config.html */
-.topnav-search-wrap {
-  flex: 1;
-  max-width: 300px;
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-.topnav-search-wrap svg {
-  position: absolute;
-  left: 10px;
-  color: rgba(255,255,255,0.35);
-  pointer-events: none;
-}
-
-/* topnav-nav: legacy right-side nav links used by client.html / config.html */
-.topnav-nav {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-/* topnav-link: plain nav link used in client.html / config.html navbars */
-.topnav-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: rgba(255,255,255,0.7);
-  cursor: pointer;
-  border: none;
-  background: none;
-  text-decoration: none;
-  transition: color 0.15s, background 0.15s;
-}
-.topnav-link:hover { color: #fff; background: rgba(255,255,255,0.08); }
 
 /* Search wrapper inside topnav */
 .search-wrap {
@@ -539,15 +491,6 @@ input[readonly], input[disabled] {
 .sidebar-section {
   padding: 0 12px 20px;
 }
-.sidebar-label {
-  font-size: 0.65rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: #a0aec0;
-  padding: 0 8px;
-  margin-bottom: 6px;
-}
 .sidebar-item {
   display: flex;
   align-items: center;
@@ -574,12 +517,6 @@ input[readonly], input[disabled] {
 }
 .sidebar-item svg { flex-shrink: 0; opacity: 0.6; }
 .sidebar-item.active svg { opacity: 1; color: #c9a84c; }
-.sidebar-divider {
-  border: none;
-  border-top: 1px solid #e2e8f0;
-  margin: 4px 12px 16px;
-}
-
 /* ── Stat Grid & Cards ────────────────────────────────────────────────────── */
 .stat-grid {
   display: grid;

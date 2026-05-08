@@ -20,6 +20,71 @@
       cursor: pointer;
     }
     .empty-state a:hover { text-decoration: underline; }
+
+    /* ── Delete button ── */
+    .btn-delete-row {
+      padding: 3px 8px;
+      border-radius: 5px;
+      border: 1px solid #e2e8f0;
+      background: none;
+      color: #a0aec0;
+      cursor: pointer;
+      font-size: 0.9rem;
+      line-height: 1;
+      transition: background 0.12s, color 0.12s, border-color 0.12s;
+    }
+    .btn-delete-row:hover { background: #fee2e2; border-color: #fca5a5; color: #dc2626; }
+
+    /* ── New Client Modal ── */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-card {
+      background: #fff;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      padding: 28px 32px;
+      width: 420px;
+      max-width: 95vw;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    }
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1e3154;
+      margin-bottom: 20px;
+    }
+    .modal-field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-bottom: 16px;
+    }
+    .modal-field label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #4a5568;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 24px;
+    }
+    .modal-error {
+      font-size: 0.8rem;
+      color: #dc2626;
+      margin-top: -8px;
+      margin-bottom: 8px;
+      min-height: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -59,30 +124,13 @@
   <!-- ── Sidebar ── -->
   <aside class="sidebar">
     <div class="sidebar-section">
-      <div class="sidebar-label">Main</div>
       <a href="/static/dashboard.html" class="sidebar-item active">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
         Dashboard
       </a>
-      <a href="#" class="sidebar-item">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        Clients
-      </a>
-      <a href="#" class="sidebar-item">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-        Quotes
-      </a>
-    </div>
-    <hr class="sidebar-divider" />
-    <div class="sidebar-section">
-      <div class="sidebar-label">Tools</div>
       <a href="/static/config.html" class="sidebar-item">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M20 12h2M2 12H4M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41"/></svg>
         Configuration
-      </a>
-      <a href="#" class="sidebar-item">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        Reports
       </a>
     </div>
   </aside>
@@ -96,9 +144,9 @@
         <div class="page-title">Dashboard</div>
         <div class="page-sub">Welcome back, Asher — here's what's happening.</div>
       </div>
-      <button class="btn-new" id="btn-new-quote" type="button">
+      <button class="btn-new" id="btn-new-client" type="button">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        New Quote
+        New Client
       </button>
     </div>
 
@@ -125,16 +173,36 @@
       </div>
     </div>
 
-    <!-- Recent quotes -->
-    <div class="section-head">Recent Quotes</div>
+    <!-- Client list -->
+    <div class="section-head">Clients</div>
     <div class="card" style="padding:0;overflow:hidden;">
-      <div id="quotes-table-wrap">
+      <div id="clients-table-wrap">
         <div class="empty-state">Loading…</div>
       </div>
     </div>
 
   </main>
 
+</div>
+
+<!-- ── New Client Modal ── -->
+<div class="modal-backdrop" id="modal-new-client">
+  <div class="modal-card">
+    <div class="modal-title">New Client</div>
+    <div class="modal-field">
+      <label for="modal-legal-name">Client Legal Name</label>
+      <input type="text" id="modal-legal-name" placeholder="e.g. Acme Corp LLC" autocomplete="off" />
+    </div>
+    <div class="modal-field">
+      <label for="modal-consultant-name">Consultant Name</label>
+      <input type="text" id="modal-consultant-name" placeholder="e.g. Jane Smith" autocomplete="off" />
+    </div>
+    <div class="modal-error" id="modal-error"></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="modal-cancel" type="button">Cancel</button>
+      <button class="btn-new" id="modal-create" type="button">Create Client</button>
+    </div>
+  </div>
 </div>
 
 <script src="/static/app.js"></script>
@@ -160,18 +228,42 @@ function statusBadge(status) {
   return `<span class="badge ${cls}">${label}</span>`;
 }
 
-/* ── New Quote ──────────────────────────────────────────────────────────────── */
+/* ── New Client Modal ───────────────────────────────────────────────────────── */
 
-async function createNewQuote() {
-  try {
-    const result = await apiPost('/clients', {});
-    window.location.href = `/static/client.html?id=${result.id}`;
-  } catch (err) {
-    showToast('Failed to create quote: ' + err.message, 'error');
-  }
+const modal      = document.getElementById('modal-new-client');
+const modalError = document.getElementById('modal-error');
+
+function openModal() {
+  document.getElementById('modal-legal-name').value = '';
+  document.getElementById('modal-consultant-name').value = '';
+  modalError.textContent = '';
+  modal.classList.add('open');
+  document.getElementById('modal-legal-name').focus();
 }
 
-document.getElementById('btn-new-quote').addEventListener('click', createNewQuote);
+function closeModal() {
+  modal.classList.remove('open');
+}
+
+document.getElementById('btn-new-client').addEventListener('click', openModal);
+document.getElementById('modal-cancel').addEventListener('click', closeModal);
+modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+document.getElementById('modal-create').addEventListener('click', async () => {
+  const legalName     = document.getElementById('modal-legal-name').value.trim();
+  const consultantName = document.getElementById('modal-consultant-name').value.trim();
+  modalError.textContent = '';
+
+  if (!legalName)      { modalError.textContent = 'Client Legal Name is required.'; return; }
+  if (!consultantName) { modalError.textContent = 'Consultant Name is required.'; return; }
+
+  try {
+    const result = await apiPost('/clients', { legal_name: legalName, consultant_name: consultantName });
+    window.location.href = `/static/client.html?id=${result.id}`;
+  } catch (err) {
+    modalError.textContent = 'Failed to create client: ' + err.message;
+  }
+});
 
 /* ── Load dashboard data ────────────────────────────────────────────────────── */
 
@@ -181,27 +273,25 @@ async function loadDashboard() {
     clients = await apiGet('/clients');
   } catch (err) {
     showToast('Failed to load clients: ' + err.message, 'error');
-    document.getElementById('quotes-table-wrap').innerHTML =
+    document.getElementById('clients-table-wrap').innerHTML =
       '<div class="empty-state">Failed to load data.</div>';
     return;
   }
 
-  // Stat cards
   const total  = clients.length;
   const active = clients.filter(c => c.status === 'draft' || c.status === 'in_review').length;
-  document.getElementById('stat-total-clients').textContent  = total;
-  document.getElementById('stat-active-quotes').textContent  = active;
+  document.getElementById('stat-total-clients').textContent = total;
+  document.getElementById('stat-active-quotes').textContent = active;
 
-  // Table
-  const wrap = document.getElementById('quotes-table-wrap');
+  const wrap = document.getElementById('clients-table-wrap');
 
   if (total === 0) {
     wrap.innerHTML = `
       <div class="empty-state">
-        No quotes yet.
-        <a id="empty-new-quote">Create your first quote →</a>
+        No clients yet.
+        <a id="empty-new-client">Create your first client →</a>
       </div>`;
-    document.getElementById('empty-new-quote').addEventListener('click', createNewQuote);
+    document.getElementById('empty-new-client').addEventListener('click', openModal);
     return;
   }
 
@@ -209,10 +299,11 @@ async function loadDashboard() {
     <tr data-id="${c.id}">
       <td><strong>${c.legal_name || '<span style="color:#a0aec0;font-weight:400;">Unnamed</span>'}</strong></td>
       <td>${c.consultant_name || '—'}</td>
-      <td></td>
-      <td></td>
       <td>${statusBadge(c.status)}</td>
-      <td>${formatDate(c.updated_at)}</td>
+      <td>${formatDate(c.created_at || c.updated_at)}</td>
+      <td style="text-align:right;width:40px;">
+        <button class="btn-delete-row" data-id="${c.id}" data-name="${(c.legal_name || 'this client').replace(/"/g, '&quot;')}" title="Delete client" type="button">×</button>
+      </td>
     </tr>
   `).join('');
 
@@ -220,20 +311,49 @@ async function loadDashboard() {
     <table class="clients-table">
       <thead>
         <tr>
-          <th>Client</th>
+          <th>Client Name</th>
           <th>Consultant</th>
-          <th>EEs</th>
-          <th>Gross Wages</th>
           <th>Status</th>
-          <th>Last Updated</th>
+          <th>Created</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>${rows}</tbody>
     </table>`;
 
   wrap.querySelectorAll('tr[data-id]').forEach(row => {
-    row.addEventListener('click', () => {
+    row.addEventListener('click', e => {
+      if (e.target.closest('.btn-delete-row')) return;
       window.location.href = `/static/client.html?id=${row.dataset.id}`;
+    });
+  });
+
+  wrap.querySelectorAll('.btn-delete-row').forEach(btn => {
+    btn.addEventListener('click', async e => {
+      e.stopPropagation();
+      const id   = btn.dataset.id;
+      const name = btn.dataset.name;
+      if (!window.confirm(`Delete ${name}? This cannot be undone.`)) return;
+      try {
+        await apiDelete(`/clients/${id}`);
+        btn.closest('tr').remove();
+        const remaining = wrap.querySelectorAll('tr[data-id]').length;
+        const newTotal  = remaining;
+        const newActive = Array.from(wrap.querySelectorAll('tr[data-id]'))
+          .filter(r => r.querySelector('.badge-draft, .badge-in-review')).length;
+        document.getElementById('stat-total-clients').textContent = newTotal;
+        document.getElementById('stat-active-quotes').textContent = newActive;
+        if (remaining === 0) {
+          wrap.innerHTML = `
+            <div class="empty-state">
+              No clients yet.
+              <a id="empty-new-client">Create your first client →</a>
+            </div>`;
+          document.getElementById('empty-new-client').addEventListener('click', openModal);
+        }
+      } catch (err) {
+        showToast('Failed to delete client: ' + err.message, 'error');
+      }
     });
   });
 }

@@ -74,3 +74,16 @@ def update_client(client_id: int, body: ClientUpdate, db: Session = Depends(get_
     db.commit()
     db.refresh(client)
     return _client_to_out(client, db)
+
+
+@router.delete("/{client_id}", response_model=dict)
+def delete_client(client_id: int, db: Session = Depends(get_db)):
+    client = db.query(Client).filter(Client.id == client_id).first()
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+    db.query(WCLoss).filter(WCLoss.client_id == client_id).delete()
+    db.query(WCLine).filter(WCLine.client_id == client_id).delete()
+    db.query(SutaLine).filter(SutaLine.client_id == client_id).delete()
+    db.delete(client)
+    db.commit()
+    return {"success": True}

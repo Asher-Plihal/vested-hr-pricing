@@ -99,3 +99,20 @@ async function apiPut(path, body) {
   }
   return res.json();
 }
+
+/**
+ * DELETE request wrapper. Returns parsed JSON. Throws on non-OK status.
+ * @param {string} path
+ * @returns {Promise<any>}
+ */
+async function apiDelete(path) {
+  const res = await fetch(path, {
+    method: 'DELETE',
+    headers: { 'Accept': 'application/json' },
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`DELETE ${path} failed (${res.status}): ${text}`);
+  }
+  return res.json();
+}
