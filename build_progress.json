@@ -24,7 +24,11 @@
     "calc/commission.py",
     "calc/summary.py",
     "static/",
-    "data/"
+    "data/",
+    "static/style.css",
+    "static/app.js",
+    "static/client.html",
+    "static/favicon.png"
   ],
   "api_routes": [
     "GET /clients",
@@ -44,6 +48,9 @@
     "WCLoss"
   ],
   "server_start_verified": true,
+  "completed": {
+    "client_page": "complete"
+  },
   "notes": [
     "Python 3.14 is installed; all required packages (fastapi, uvicorn, sqlalchemy, pydantic) were already present in the system Python — no venv created.",
     "manual_rate on WCLine is stored at intake time. Full WC Rates table (~25K rows) lookup is not yet implemented — a future agent should import the WC Rates table and do the VLOOKUP at calculation time.",

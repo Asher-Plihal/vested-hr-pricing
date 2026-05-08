@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VestedHR — Client</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+<!-- ── Top Nav ──────────────────────────────────────────────────────────── -->
+<nav class="topnav">
+  <a href="/static/dashboard.html" class="topnav-logo">
+    <img src="/static/favicon.png" alt="VHR" />
+    <span class="topnav-logo-text">VestedHR</span>
+  </a>
+
+  <div class="topnav-search-wrap">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input type="text" class="topnav-search" placeholder="Search clients…" />
+  </div>
+
+  <div class="topnav-nav">
+    <a href="/static/config.html" class="topnav-link">Config</a>
+    <span class="topnav-current">Client</span>
+  </div>
+
+  <button class="user-menu" type="button">
+    <div class="user-avatar">AP</div>
+    <div class="user-info">
+      <span class="user-name">Asher Plihal</span>
+      <span class="user-role">Admin</span>
+    </div>
+    <span class="user-caret">▾</span>
+  </button>
+</nav>
+
+<!-- ── Subheader ────────────────────────────────────────────────────────── -->
+<div class="subheader">
+  <div class="subheader-inner">
+    <div class="subheader-top">
+      <div>
+        <div class="subheader-title" id="page-title">New Client</div>
+        <div class="subheader-sub" id="page-sub">Consultant: —</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;padding-top:4px;">
+        <span id="status-badge" class="badge badge-draft">Draft</span>
+      </div>
+    </div>
+
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="general">General</button>
+      <button class="tab-btn" data-tab="benefits">Benefits</button>
+      <button class="tab-btn" data-tab="payroll">Payroll</button>
+      <button class="tab-btn" data-tab="workers-comp">Workers' Comp</button>
+      <button class="tab-btn" data-tab="pricing">Pricing</button>
+      <div class="tab-nav-spacer"></div>
+      <div class="tab-nav-actions">
+        <button class="btn-secondary" id="btn-save" type="button">Save Quote</button>
+        <button class="btn-primary" id="btn-generate" type="button">Generate Doc</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Legend Strip ──────────────────────────────────────────────────────── -->
+<div class="legend-strip">
+  <div class="legend-strip-inner">
+    <span class="legend-dot yellow">Required for estimate</span>
+    <span class="legend-dot green">Required for final approval</span>
+  </div>
+</div>
+
+<!-- ── Page Content ──────────────────────────────────────────────────────── -->
+<div class="page-content">
+
+  <!-- ── Tab: General ──────────────────────────────────────────────────── -->
+  <div class="tab-panel active" id="tab-general">
+
+    <div class="card">
+      <div class="card-title">General Information</div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="req-y" for="consultant_name">Business Consultant / Broker</label>
+          <input type="text" id="consultant_name" name="consultant_name" />
+        </div>
+        <div class="form-group">
+          <label class="req-y" for="date">Date</label>
+          <input type="date" id="date" name="date" />
+        </div>
+
+        <div class="form-group">
+          <label class="req-y" for="legal_name">Client Legal Name</label>
+          <input type="text" id="legal_name" name="legal_name" />
+        </div>
+        <div class="form-group">
+          <label for="dba">Client DBA</label>
+          <input type="text" id="dba" name="dba" />
+        </div>
+
+        <div class="form-group full">
+          <label class="req-y" for="main_address">Main Physical Address</label>
+          <input type="text" id="main_address" name="main_address" />
+        </div>
+
+        <div class="form-group">
+          <label class="req-y" for="city">City</label>
+          <input type="text" id="city" name="city" />
+        </div>
+        <div class="form-group" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group" style="margin:0;">
+            <label class="req-y" for="state">State</label>
+            <select id="state" name="state">
+              <option value="">— Select —</option>
+              <option>AL</option><option>AK</option><option>AZ</option><option>AR</option>
+              <option>CA</option><option>CO</option><option>CT</option><option>DE</option>
+              <option>FL</option><option>GA</option><option>HI</option><option>ID</option>
+              <option>IL</option><option>IN</option><option>IA</option><option>KS</option>
+              <option>KY</option><option>LA</option><option>ME</option><option>MD</option>
+              <option>MA</option><option>MI</option><option>MN</option><option>MS</option>
+              <option>MO</option><option>MT</option><option>NE</option><option>NV</option>
+              <option>NH</option><option>NJ</option><option>NM</option><option>NY</option>
+              <option>NC</option><option>ND</option><option>OH</option><option>OK</option>
+              <option>OR</option><option>PA</option><option>RI</option><option>SC</option>
+              <option>SD</option><option>TN</option><option>TX</option><option>UT</option>
+              <option>VT</option><option>VA</option><option>WA</option><option>WV</option>
+              <option>WI</option><option>WY</option><option>DC</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin:0;">
+            <label class="req-y" for="zip">ZIP</label>
+            <input type="text" id="zip" name="zip" maxlength="10" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="req-y" for="fein">FEIN</label>
+          <input type="text" id="fein" name="fein" placeholder="XX-XXXXXXX" />
+        </div>
+        <div class="form-group">
+          <label class="req-y" for="website">Website</label>
+          <input type="text" id="website" name="website" />
+        </div>
+
+        <div class="form-group">
+          <label class="req-g" for="org_structure">Organizational Structure</label>
+          <select id="org_structure" name="org_structure">
+            <option value="">— Select —</option>
+            <option>LLC</option><option>S-Corp</option><option>C-Corp</option>
+            <option>Partnership</option><option>Sole Proprietor</option><option>Non-Profit</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="req-g" for="naics">NAICS</label>
+          <input type="text" id="naics" name="naics" />
+        </div>
+
+        <div class="form-group">
+          <label class="req-g" for="sic">SIC</label>
+          <input type="text" id="sic" name="sic" />
+        </div>
+        <div class="form-group">
+          <label for="years_in_business">Years in Business</label>
+          <input type="number" id="years_in_business" name="years_in_business" min="0" />
+        </div>
+
+        <div class="form-group">
+          <label class="req-y" for="num_locations"># of Locations</label>
+          <input type="number" id="num_locations" name="num_locations" min="1" />
+        </div>
+        <div class="form-group">
+          <label for="main_phone">Main Office Phone</label>
+          <input type="tel" id="main_phone" name="main_phone" />
+        </div>
+      </div>
+
+      <div class="section-subhead">Owner Information</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="req-g" for="owner_name">Owner's Name</label>
+          <input type="text" id="owner_name" name="owner_name" />
+        </div>
+        <div class="form-group">
+          <label for="owner_phone">Owner's Office Number</label>
+          <input type="tel" id="owner_phone" name="owner_phone" />
+        </div>
+        <div class="form-group">
+          <label class="req-g" for="owner_email">Owner's Email</label>
+          <input type="email" id="owner_email" name="owner_email" />
+        </div>
+        <div class="form-group">
+          <label class="req-g" for="owner_cell">Owner's Cell</label>
+          <input type="tel" id="owner_cell" name="owner_cell" />
+        </div>
+      </div>
+
+      <div class="section-subhead">Main Point of Contact</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="req-g" for="contact_name">Contact Name</label>
+          <input type="text" id="contact_name" name="contact_name" />
+        </div>
+        <div class="form-group">
+          <label for="contact_phone">Contact Office Number</label>
+          <input type="tel" id="contact_phone" name="contact_phone" />
+        </div>
+        <div class="form-group">
+          <label class="req-g" for="contact_cell">Contact Cell</label>
+          <input type="tel" id="contact_cell" name="contact_cell" />
+        </div>
+        <div class="form-group">
+          <label class="req-g" for="contact_email">Contact Email</label>
+          <input type="email" id="contact_email" name="contact_email" />
+        </div>
+      </div>
+
+      <div class="section-subhead">Operations</div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label class="req-y" for="states_operating">States Operating In</label>
+          <select id="states_operating" name="states_operating" multiple>
+            <option value="AL">AL — Alabama</option>
+            <option value="AK">AK — Alaska</option>
+            <option value="AZ">AZ — Arizona</option>
+            <option value="AR">AR — Arkansas</option>
+            <option value="CA">CA — California</option>
+            <option value="CO">CO — Colorado</option>
+            <option value="CT">CT — Connecticut</option>
+            <option value="DE">DE — Delaware</option>
+            <option value="FL">FL — Florida</option>
+            <option value="GA">GA — Georgia</option>
+            <option value="HI">HI — Hawaii</option>
+            <option value="ID">ID — Idaho</option>
+            <option value="IL">IL — Illinois</option>
+            <option value="IN">IN — Indiana</option>
+            <option value="IA">IA — Iowa</option>
+            <option value="KS">KS — Kansas</option>
+            <option value="KY">KY — Kentucky</option>
+            <option value="LA">LA — Louisiana</option>
+            <option value="ME">ME — Maine</option>
+            <option value="MD">MD — Maryland</option>
+            <option value="MA">MA — Massachusetts</option>
+            <option value="MI">MI — Michigan</option>
+            <option value="MN">MN — Minnesota</option>
+            <option value="MS">MS — Mississippi</option>
+            <option value="MO">MO — Missouri</option>
+            <option value="MT">MT — Montana</option>
+            <option value="NE">NE — Nebraska</option>
+            <option value="NV">NV — Nevada</option>
+            <option value="NH">NH — New Hampshire</option>
+            <option value="NJ">NJ — New Jersey</option>
+            <option value="NM">NM — New Mexico</option>
+            <option value="NY">NY — New York</option>
+            <option value="NC">NC — North Carolina</option>
+            <option value="ND">ND — North Dakota</option>
+            <option value="OH">OH — Ohio</option>
+            <option value="OK">OK — Oklahoma</option>
+            <option value="OR">OR — Oregon</option>
+            <option value="PA">PA — Pennsylvania</option>
+            <option value="RI">RI — Rhode Island</option>
+            <option value="SC">SC — South Carolina</option>
+            <option value="SD">SD — South Dakota</option>
+            <option value="TN">TN — Tennessee</option>
+            <option value="TX">TX — Texas</option>
+            <option value="UT">UT — Utah</option>
+            <option value="VT">VT — Vermont</option>
+            <option value="VA">VA — Virginia</option>
+            <option value="WA">WA — Washington</option>
+            <option value="WV">WV — West Virginia</option>
+            <option value="WI">WI — Wisconsin</option>
+            <option value="WY">WY — Wyoming</option>
+            <option value="DC">DC — District of Columbia</option>
+          </select>
+          <small style="color:#718096;font-size:0.75rem;margin-top:3px;">Hold Ctrl / Cmd to select multiple</small>
+        </div>
+
+        <div class="form-group full">
+          <label class="req-y" for="description_of_operations">Description of Operations</label>
+          <textarea id="description_of_operations" name="description_of_operations" rows="4"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Compliance Questionnaire -->
+    <div class="card">
+      <div class="card-title">
+        Compliance Questionnaire
+        <span class="req-section-badge y">Required for estimate</span>
+      </div>
+
+      <div id="compliance-questions">
+        <!-- rows injected by JS -->
+      </div>
+    </div>
+
+  </div><!-- /tab-general -->
+
+
+  <!-- ── Tab: Benefits ─────────────────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-benefits">
+
+    <div class="card">
+      <div class="card-title">
+        Medical Questionnaire
+        <span class="req-section-badge y">Required for estimate</span>
+      </div>
+
+      <div id="medical-questions"></div>
+    </div>
+
+    <div class="card" id="ancillary-card">
+      <div class="card-title">
+        Ancillary Benefit Questions
+        <span class="req-section-badge g">Required for approval</span>
+      </div>
+
+      <div id="ancillary-questions"></div>
+
+      <div class="section-subhead">Contribution Strategy</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="current_contribution_strategy">Current Contribution Strategy</label>
+          <input type="text" id="current_contribution_strategy" name="current_contribution_strategy" />
+        </div>
+        <div class="form-group">
+          <label for="new_contribution_strategy">New Contribution Strategy</label>
+          <input type="text" id="new_contribution_strategy" name="new_contribution_strategy" />
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tab-benefits -->
+
+
+  <!-- ── Tab: Payroll ──────────────────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-payroll">
+    <div class="card">
+      <div class="card-title">Payroll Setup</div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="req-y" for="payroll_frequency">Payroll Frequency</label>
+          <select id="payroll_frequency" name="payroll_frequency">
+            <option value="">— Select —</option>
+            <option value="weekly">Weekly</option>
+            <option value="biweekly">Bi-Weekly</option>
+            <option value="semimonthly">Semi-Monthly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="req-g">Pay Cycle</label>
+          <div class="pay-cycle-row">
+            <select id="pay_cycle_start" name="pay_cycle_start">
+              <option value="">— Start —</option>
+              <option value="Sunday">Sunday</option>
+              <option value="Monday">Monday</option>
+              <option value="Tuesday">Tuesday</option>
+              <option value="Wednesday">Wednesday</option>
+              <option value="Thursday">Thursday</option>
+              <option value="Friday">Friday</option>
+              <option value="Saturday">Saturday</option>
+            </select>
+            <span class="pay-cycle-arrow">→</span>
+            <select id="pay_cycle_end" name="pay_cycle_end">
+              <option value="">— End —</option>
+              <option value="Sunday">Sunday</option>
+              <option value="Monday">Monday</option>
+              <option value="Tuesday">Tuesday</option>
+              <option value="Wednesday">Wednesday</option>
+              <option value="Thursday">Thursday</option>
+              <option value="Friday">Friday</option>
+              <option value="Saturday">Saturday</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="req-g" for="pay_date">Pay Date</label>
+          <select id="pay_date" name="pay_date">
+            <option value="">— Select —</option>
+            <option value="Sunday">Sunday</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div><!-- /tab-payroll -->
+
+
+  <!-- ── Tab: Workers' Comp ────────────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-workers-comp">
+
+    <div class="card">
+      <div class="card-title">
+        Workers' Compensation Carve-Out
+        <span class="req-section-badge y">Required for estimate</span>
+      </div>
+      <div class="yn-row" style="border-bottom:none;padding:0;">
+        <span class="yn-question">Is Workers' Compensation a carve-out (client keeps their own WC policy)?</span>
+        <div class="yn-radios" style="padding-top:0;">
+          <label><input type="radio" name="wc_carve_out" value="true" id="wc_carve_out_yes" /> Yes</label>
+          <label><input type="radio" name="wc_carve_out" value="false" id="wc_carve_out_no" checked /> No</label>
+        </div>
+      </div>
+    </div>
+
+    <div id="wc-sections">
+
+      <!-- WC Questionnaire -->
+      <div class="card" id="wc-questionnaire-card">
+        <div class="card-title">
+          Workers' Compensation Questionnaire
+          <span class="req-section-badge y">Required for estimate</span>
+        </div>
+        <div class="yn-grid" id="wc-questions"></div>
+      </div>
+
+      <!-- WC Losses -->
+      <div class="card" id="wc-losses-card">
+        <div class="card-title">
+          Workers' Compensation Losses
+          <span class="req-section-badge g">Required for approval</span>
+        </div>
+
+        <div class="yn-row" style="border-bottom:none;padding-bottom:12px;">
+          <span class="yn-question">New company?</span>
+          <div class="yn-radios">
+            <label><input type="radio" name="new_company" value="true" /> Yes</label>
+            <label><input type="radio" name="new_company" value="false" checked /> No</label>
+          </div>
+        </div>
+        <div class="note-box" id="new-company-note">Loss History Affidavit required for new companies.</div>
+
+        <div class="yn-row" style="border-bottom:none;padding-top:8px;padding-bottom:12px;">
+          <span class="yn-question">Gaps in coverage?</span>
+          <div class="yn-radios">
+            <label><input type="radio" name="gaps_in_coverage" value="true" /> Yes</label>
+            <label><input type="radio" name="gaps_in_coverage" value="false" checked /> No</label>
+          </div>
+        </div>
+        <div class="note-box" id="gaps-note">Loss History Affidavit required for the gap period.</div>
+
+        <div class="section-subhead">Loss History (up to 5 years)</div>
+        <div style="overflow-x:auto;">
+          <table class="data-table" id="wc-losses-table">
+            <thead>
+              <tr>
+                <th>Coverage Start</th>
+                <th>Coverage End</th>
+                <th>Total Losses ($)</th>
+                <th># Claims</th>
+                <th>Months in Policy</th>
+                <th># Open Claims</th>
+              </tr>
+            </thead>
+            <tbody id="wc-losses-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- WC Codes -->
+      <div class="card" id="wc-codes-card">
+        <div class="card-title">Workers' Compensation Codes</div>
+
+        <div style="overflow-x:auto;">
+          <table class="data-table" id="wc-codes-table">
+            <thead>
+              <tr>
+                <th><span class="req-section-badge y" style="margin-left:0;">State</span></th>
+                <th><span class="req-section-badge y" style="margin-left:0;">WC Code</span></th>
+                <th><span class="req-section-badge y" style="margin-left:0;">Annual Payroll ($)</span></th>
+                <th><span class="req-section-badge y" style="margin-left:0;"># FT EEs</span></th>
+                <th><span class="req-section-badge y" style="margin-left:0;"># PT EEs</span></th>
+                <th>Manual Rate (per $100)</th>
+                <th style="width:36px;"></th>
+              </tr>
+            </thead>
+            <tbody id="wc-codes-body"></tbody>
+            <tfoot>
+              <tr id="wc-codes-totals">
+                <td colspan="2">Totals</td>
+                <td id="wc-total-payroll">$0.00</td>
+                <td id="wc-total-fte">0</td>
+                <td id="wc-total-pte">0</td>
+                <td></td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <div style="margin-top:12px;">
+          <button class="btn-ghost" type="button" id="btn-add-wc-code">+ Add Row</button>
+        </div>
+
+        <div class="section-subhead">Additional WC Fields</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="req-g" for="proposed_mod">WC Mod (0 = full carve-out)</label>
+            <input type="number" id="proposed_mod" name="proposed_mod" step="0.01" min="0" value="1.00" />
+          </div>
+          <div class="form-group">
+            <label for="shared_claim_fee">Shared Claim Fee ($)</label>
+            <input type="number" id="shared_claim_fee" name="shared_claim_fee" step="0.01" min="0" value="0" />
+          </div>
+          <div class="form-group">
+            <label for="min_wc_fee_per_week">Min W/C Fee per Week ($)</label>
+            <input type="number" id="min_wc_fee_per_week" name="min_wc_fee_per_week" step="0.01" min="0" value="0" />
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /wc-sections -->
+  </div><!-- /tab-workers-comp -->
+
+
+  <!-- ── Tab: Pricing ──────────────────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-pricing">
+    <div class="pricing-layout">
+
+      <!-- Left: Inputs -->
+      <div>
+
+        <div class="card">
+          <div class="card-title">Admin Fee</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="req-y" for="admin_method">Admin Method</label>
+              <select id="admin_method" name="admin_method">
+                <option value="1">1 — % of Gross Wages</option>
+                <option value="2">2 — Per Check</option>
+                <option value="3">3 — Per WSE per Month</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="req-y" for="admin_rate" id="admin_rate_label">Rate (%)</label>
+              <input type="number" id="admin_rate" name="admin_rate" step="0.01" min="0" value="0" />
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Workers' Comp (Pricing)</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="req-y" for="pricing_proposed_mod">Proposed WC Mod (0 = carve-out)</label>
+              <input type="number" id="pricing_proposed_mod" name="pricing_proposed_mod" step="0.01" min="0" value="1.00" />
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            SUTA
+            <span class="req-section-badge y">Required for estimate</span>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="data-table" id="suta-table">
+              <thead>
+                <tr>
+                  <th>State</th>
+                  <th>VHR Min Rate</th>
+                  <th>Requested Rate (%)</th>
+                  <th>Turnover %</th>
+                  <th style="width:36px;"></th>
+                </tr>
+              </thead>
+              <tbody id="suta-body"></tbody>
+            </table>
+          </div>
+          <div style="margin-top:12px;">
+            <button class="btn-ghost" type="button" id="btn-add-suta">+ Add State</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Additional Fees</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="implementation_fee">Implementation Fee ($)</label>
+              <input type="number" id="implementation_fee" name="implementation_fee" step="0.01" min="0" value="0" />
+            </div>
+            <div class="form-group">
+              <label for="epli_fee">EPLI ($)</label>
+              <input type="number" id="epli_fee" name="epli_fee" step="0.01" min="0" value="0" />
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Commissions</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="broker_wc_commission_pct">Broker Commission on WC (%)</label>
+              <input type="number" id="broker_wc_commission_pct" name="broker_wc_commission_pct" step="0.01" min="0" max="100" value="0" />
+            </div>
+            <div class="form-group">
+              <label for="internal_commission_pct">Internal Commission (%)</label>
+              <input type="number" id="internal_commission_pct" name="internal_commission_pct" step="0.01" min="0" max="100" value="0" />
+            </div>
+            <div class="form-group">
+              <label for="external_commission_pct">External / Broker Commission on Admin (%)</label>
+              <input type="number" id="external_commission_pct" name="external_commission_pct" step="0.01" min="0" max="100" value="0" />
+            </div>
+            <div class="form-group">
+              <label for="w2s_generated">W-2s Generated Last Year (turnover proxy)</label>
+              <input type="number" id="w2s_generated" name="w2s_generated" step="1" min="0" value="0" />
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /left col -->
+
+      <!-- Right: Deal Summary -->
+      <div class="card" id="deal-summary-card" style="position:sticky;top:76px;">
+        <div class="card-title">Deal Summary</div>
+
+        <div id="summary-calculating" class="summary-calculating" style="display:none;">
+          Calculating…
+        </div>
+
+        <div id="summary-content">
+          <div class="summary-section">
+            <div class="summary-section-title">Admin Overview</div>
+            <div class="summary-row"><span class="summary-label">Total WSEs</span><span class="summary-value" id="s-total-wses">—</span></div>
+            <div class="summary-row"><span class="summary-label">Gross Wages</span><span class="summary-value" id="s-total-gws">—</span></div>
+            <div class="summary-row"><span class="summary-label">Avg Wage</span><span class="summary-value" id="s-avg-wage">—</span></div>
+            <div class="summary-row"><span class="summary-label">Admin Margin</span><span class="summary-value" id="s-admin-margin">—</span></div>
+          </div>
+
+          <div class="summary-section">
+            <div class="summary-section-title">WC Overview</div>
+            <div class="summary-row"><span class="summary-label">WC Billed</span><span class="summary-value" id="s-wc-billed">—</span></div>
+            <div class="summary-row"><span class="summary-label">WC Fixed Cost</span><span class="summary-value" id="s-wc-fixed-cost">—</span></div>
+            <div class="summary-row"><span class="summary-label">WC Loss Fund</span><span class="summary-value" id="s-wc-loss-fund">—</span></div>
+            <div class="summary-row"><span class="summary-label">Total WC Cost</span><span class="summary-value" id="s-total-wc-cost">—</span></div>
+            <div class="summary-row"><span class="summary-label">WC Profit / Loss</span><span class="summary-value" id="s-wc-profit-loss">—</span></div>
+          </div>
+
+          <div class="summary-section">
+            <div class="summary-section-title">Taxes Overview</div>
+            <div class="summary-row"><span class="summary-label">SUTA Billed</span><span class="summary-value" id="s-suta-billed">—</span></div>
+            <div class="summary-row"><span class="summary-label">SUTA Cost</span><span class="summary-value" id="s-suta-cost">—</span></div>
+            <div class="summary-row"><span class="summary-label">SUTA Profit / Loss</span><span class="summary-value" id="s-suta-profit-loss">—</span></div>
+            <div class="summary-row"><span class="summary-label">FICA Total</span><span class="summary-value" id="s-fica-total">—</span></div>
+            <div class="summary-row"><span class="summary-label">FUTA Total</span><span class="summary-value" id="s-futa-total">—</span></div>
+          </div>
+
+          <div class="summary-section">
+            <div class="summary-section-title">Other Items</div>
+            <div class="summary-row"><span class="summary-label">EPLI</span><span class="summary-value" id="s-epli">—</span></div>
+            <div class="summary-row"><span class="summary-label">Implementation Fee</span><span class="summary-value" id="s-impl-fee">—</span></div>
+            <div class="summary-row"><span class="summary-label">Total Profit / Loss</span><span class="summary-value" id="s-total-profit-loss">—</span></div>
+          </div>
+
+          <div class="summary-section">
+            <div class="summary-section-title">Commissions</div>
+            <div class="summary-row"><span class="summary-label">Consultant Upfront (25%)</span><span class="summary-value" id="s-consultant-upfront">—</span></div>
+            <div class="summary-row"><span class="summary-label">Consultant Ongoing (20%)</span><span class="summary-value" id="s-consultant-ongoing">—</span></div>
+            <div class="summary-row"><span class="summary-label">Broker WC %</span><span class="summary-value" id="s-broker-wc-pct">—</span></div>
+            <div class="summary-row"><span class="summary-label">Broker Admin %</span><span class="summary-value" id="s-broker-admin-pct">—</span></div>
+            <div class="summary-row"><span class="summary-label">Admin Net of Ongoing</span><span class="summary-value" id="s-admin-net-ongoing">—</span></div>
+            <div class="summary-row"><span class="summary-label">Admin Net of Year 1</span><span class="summary-value" id="s-admin-net-year1">—</span></div>
+          </div>
+        </div><!-- /summary-content -->
+      </div><!-- /deal-summary-card -->
+
+    </div><!-- /pricing-layout -->
+  </div><!-- /tab-pricing -->
+
+</div><!-- /page-content -->
+
+<script src="/static/app.js"></script>
+<script>
+/* ── State ──────────────────────────────────────────────────────────────── */
+const clientId = new URLSearchParams(window.location.search).get('id');
+let calcDebounceTimer = null;
+
+/* ── Tab Navigation ─────────────────────────────────────────────────────── */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tabId = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + tabId).classList.add('active');
+  });
+});
+
+/* ── Build Compliance Questionnaire ─────────────────────────────────────── */
+const COMPLIANCE_QUESTIONS = [
+  { field: 'eeoc_violations',    expl: 'eeoc_explanation',               label: 'EEOC Violations' },
+  { field: 'active_claims',      expl: 'active_claims_explanation',      label: 'Active Claims' },
+  { field: 'cobra_continuation', expl: 'cobra_explanation',              label: 'COBRA / Continuation' },
+  { field: 'past_layoffs',       expl: 'past_layoffs_explanation',       label: 'Past Layoffs' },
+  { field: 'future_layoffs',     expl: 'future_layoffs_explanation',     label: 'Future Layoffs' },
+  { field: 'leave_of_absence',   expl: 'leave_explanation',             label: 'Leave of Absence' },
+];
+
+function buildYNRow(q, container) {
+  const row = document.createElement('div');
+  row.className = 'yn-row';
+  row.innerHTML = `
+    <span class="yn-question">${q.label}</span>
+    <div class="yn-controls">
+      <div class="yn-radios">
+        <label><input type="radio" name="${q.field}" value="true" /> Yes</label>
+        <label><input type="radio" name="${q.field}" value="false" checked /> No</label>
+      </div>
+      <div class="yn-explanation" id="expl-${q.field}">
+        <input type="text" name="${q.expl}" placeholder="Please explain…" />
+      </div>
+    </div>
+  `;
+  row.querySelectorAll(`input[name="${q.field}"]`).forEach(radio => {
+    radio.addEventListener('change', () => {
+      const expl = row.querySelector(`#expl-${q.field}`);
+      expl.style.display = radio.value === 'true' ? 'block' : 'none';
+    });
+  });
+  container.appendChild(row);
+}
+
+const complianceContainer = document.getElementById('compliance-questions');
+COMPLIANCE_QUESTIONS.forEach(q => buildYNRow(q, complianceContainer));
+
+/* ── Build Medical Questionnaire ────────────────────────────────────────── */
+const MEDICAL_QUESTIONS = [
+  { field: 'medical_carve_out',           label: 'Medical Carve-Out?', special: 'carveout' },
+  { field: 'enrolled_over_50',            label: 'More than 50 enrolled?' },
+  { field: 'enrolled_under_10',           label: 'Under 10 enrolled?' },
+  { field: 'level_funded_plan',           label: 'Level-Funded Plan?' },
+  { field: 'currently_has_health_insurance', label: 'Currently provide health insurance?' },
+  { field: 'census_available',            label: 'Employee census available?' },
+  { field: 'cobra_expected',              label: 'COBRA / State continuation expected?' },
+];
+
+const medContainer = document.getElementById('medical-questions');
+MEDICAL_QUESTIONS.forEach(q => {
+  const row = document.createElement('div');
+  row.className = 'yn-row';
+  row.dataset.medField = q.field;
+  row.innerHTML = `
+    <span class="yn-question">${q.label}</span>
+    <div class="yn-radios">
+      <label><input type="radio" name="${q.field}" value="true" /> Yes</label>
+      <label><input type="radio" name="${q.field}" value="false" checked /> No</label>
+    </div>
+  `;
+  if (q.special === 'carveout') {
+    row.querySelectorAll(`input[name="${q.field}"]`).forEach(radio => {
+      radio.addEventListener('change', () => {
+        const hideSection = radio.value === 'true';
+        medContainer.querySelectorAll('.yn-row:not([data-med-field="medical_carve_out"])').forEach(r => {
+          r.style.display = hideSection ? 'none' : '';
+        });
+        document.getElementById('ancillary-card').style.display = hideSection ? 'none' : '';
+      });
+    });
+  }
+  medContainer.appendChild(row);
+});
+
+/* ── Build Ancillary Questions ──────────────────────────────────────────── */
+const ANCILLARY_QUESTIONS = [
+  { field: 'offers_ancillary_benefits', label: 'Do they currently offer ancillary benefits?' },
+  { field: 'wants_ancillary_benefits',  label: 'Do they want to offer ancillary benefits?' },
+];
+const ancContainer = document.getElementById('ancillary-questions');
+ANCILLARY_QUESTIONS.forEach(q => {
+  const row = document.createElement('div');
+  row.className = 'yn-row';
+  row.style.borderBottom = '1px solid #f1f5f9';
+  row.innerHTML = `
+    <span class="yn-question">${q.label}</span>
+    <div class="yn-radios">
+      <label><input type="radio" name="${q.field}" value="true" /> Yes</label>
+      <label><input type="radio" name="${q.field}" value="false" checked /> No</label>
+    </div>
+  `;
+  ancContainer.appendChild(row);
+});
+
+/* ── Build WC Questionnaire ─────────────────────────────────────────────── */
+const WC_QUESTIONS = [
+  { field: 'wc_q_aircraft',        label: 'Aircraft / Watercraft' },
+  { field: 'wc_q_hazmat',          label: 'Hazardous Materials' },
+  { field: 'wc_q_above15ft',       label: 'Work Above 15 Feet' },
+  { field: 'wc_q_overwater',       label: 'Work Over Water' },
+  { field: 'wc_q_other_biz',       label: 'Other Business Activities' },
+  { field: 'wc_q_subcontractors',  label: 'Use of Subcontractors' },
+  { field: 'wc_q_unsub',           label: 'Uninsured Subcontract Work' },
+  { field: 'wc_q_safety',          label: 'Safety Program' },
+  { field: 'wc_q_transport',       label: 'Group Transportation' },
+  { field: 'wc_q_age_extremes',    label: 'Employees Under 16 or Over 60' },
+  { field: 'wc_q_parttime',        label: 'Part-Time / Seasonal Employees' },
+  { field: 'wc_q_volunteer',       label: 'Volunteer Labor' },
+  { field: 'wc_q_disabilities',    label: 'Employees with Disabilities' },
+  { field: 'wc_q_outofstate',      label: 'Out-of-State / Country Travel' },
+  { field: 'wc_q_athletic',        label: 'Athletic Teams Sponsored' },
+  { field: 'wc_q_physicals',       label: 'Post-Offer Physicals' },
+  { field: 'wc_q_turnover',        label: 'Turnover > 30%' },
+  { field: 'wc_q_declined',        label: 'Coverage Declined / Cancelled' },
+  { field: 'wc_q_health_plans',    label: 'Health Plans Provided' },
+  { field: 'wc_q_labor_int',       label: 'Labor Interchange' },
+  { field: 'wc_q_leased',          label: 'Leased Employees' },
+  { field: 'wc_q_remote',          label: 'Remote Employees' },
+  { field: 'wc_q_liens',           label: 'Tax Liens / Bankruptcy' },
+  { field: 'wc_q_unpaid',          label: 'Unpaid WC Premium Debt' },
+  { field: 'wc_q_drivers',         label: 'Company Drivers' },
+  { field: 'wc_q_cdl',             label: 'CDL Drivers' },
+];
+
+const wcQContainer = document.getElementById('wc-questions');
+WC_QUESTIONS.forEach(q => {
+  const row = document.createElement('div');
+  row.className = 'yn-row';
+  row.innerHTML = `
+    <span class="yn-question">${q.label}</span>
+    <div class="yn-controls">
+      <div class="yn-radios">
+        <label><input type="radio" name="${q.field}" value="true" /> Yes</label>
+        <label><input type="radio" name="${q.field}" value="false" checked /> No</label>
+      </div>
+      <div class="yn-explanation" id="expl-${q.field}">
+        <input type="text" name="${q.field}_explanation" placeholder="Please explain…" />
+      </div>
+    </div>
+  `;
+  row.querySelectorAll(`input[name="${q.field}"]`).forEach(radio => {
+    radio.addEventListener('change', () => {
+      const expl = row.querySelector(`#expl-${q.field}`);
+      expl.style.display = radio.value === 'true' ? 'block' : 'none';
+    });
+  });
+  wcQContainer.appendChild(row);
+});
+
+/* ── WC Carve-Out Toggle ─────────────────────────────────────────────────── */
+document.querySelectorAll('input[name="wc_carve_out"]').forEach(radio => {
+  radio.addEventListener('change', () => {
+    document.getElementById('wc-sections').style.display =
+      radio.value === 'true' ? 'none' : '';
+  });
+});
+
+/* ── WC Losses — New Company / Gaps Notes ────────────────────────────────── */
+document.querySelectorAll('input[name="new_company"]').forEach(r => {
+  r.addEventListener('change', () => {
+    document.getElementById('new-company-note').classList.toggle('visible', r.value === 'true');
+  });
+});
+document.querySelectorAll('input[name="gaps_in_coverage"]').forEach(r => {
+  r.addEventListener('change', () => {
+    document.getElementById('gaps-note').classList.toggle('visible', r.value === 'true');
+  });
+});
+
+/* ── WC Losses Table ─────────────────────────────────────────────────────── */
+function buildInitialLossRows() {
+  const tbody = document.getElementById('wc-losses-body');
+  tbody.innerHTML = '';
+  for (let i = 0; i < 5; i++) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input type="date" name="loss_start_${i}" /></td>
+      <td><input type="date" name="loss_end_${i}" /></td>
+      <td><input type="number" name="loss_total_${i}" step="0.01" min="0" placeholder="0.00" /></td>
+      <td><input type="number" name="loss_claims_${i}" step="1" min="0" placeholder="0" /></td>
+      <td><input type="number" name="loss_months_${i}" step="1" min="0" placeholder="0" /></td>
+      <td><input type="number" name="loss_open_${i}" step="1" min="0" placeholder="0" /></td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+buildInitialLossRows();
+
+/* ── WC Codes Table ──────────────────────────────────────────────────────── */
+function addWCCodeRow(data) {
+  const tbody = document.getElementById('wc-codes-body');
+  const idx = tbody.rows.length;
+  const tr = document.createElement('tr');
+  tr.dataset.wcIdx = idx;
+  tr.innerHTML = `
+    <td><input type="text" name="wc_state_${idx}" placeholder="TX" maxlength="2" style="width:56px;" value="${data?.state || ''}" /></td>
+    <td><input type="text" name="wc_code_${idx}" placeholder="8810" style="width:70px;" value="${data?.wc_code || ''}" /></td>
+    <td><input type="number" name="wc_payroll_${idx}" step="0.01" min="0" placeholder="0.00" value="${data?.annual_gw || ''}" /></td>
+    <td><input type="number" name="wc_fte_${idx}" step="1" min="0" placeholder="0" style="width:60px;" value="${data?.ftes || ''}" /></td>
+    <td><input type="number" name="wc_pte_${idx}" step="1" min="0" placeholder="0" style="width:60px;" value="${data?.ptes || ''}" /></td>
+    <td><input type="number" name="wc_rate_${idx}" step="0.0001" min="0" placeholder="0.0000" value="${data?.manual_rate || ''}" /></td>
+    <td><button type="button" class="btn-ghost" style="padding:3px 8px;font-size:0.75rem;color:#dc2626;border-color:#fecaca;" onclick="removeWCRow(this)">×</button></td>
+  `;
+  tr.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('input', () => {
+      updateWCTotals();
+      scheduleCalculate();
+    });
+  });
+  tbody.appendChild(tr);
+  updateWCTotals();
+}
+
+function removeWCRow(btn) {
+  btn.closest('tr').remove();
+  updateWCTotals();
+  scheduleCalculate();
+}
+
+function updateWCTotals() {
+  const tbody = document.getElementById('wc-codes-body');
+  let totalPayroll = 0, totalFTE = 0, totalPTE = 0;
+  tbody.querySelectorAll('tr').forEach((tr, idx) => {
+    totalPayroll += parseFloat(tr.querySelector(`input[name^="wc_payroll_"]`)?.value || 0) || 0;
+    totalFTE     += parseFloat(tr.querySelector(`input[name^="wc_fte_"]`)?.value || 0) || 0;
+    totalPTE     += parseFloat(tr.querySelector(`input[name^="wc_pte_"]`)?.value || 0) || 0;
+  });
+  document.getElementById('wc-total-payroll').textContent = formatCurrency(totalPayroll);
+  document.getElementById('wc-total-fte').textContent = totalFTE;
+  document.getElementById('wc-total-pte').textContent = totalPTE;
+}
+
+document.getElementById('btn-add-wc-code').addEventListener('click', () => addWCCodeRow());
+
+/* ── SUTA Table ──────────────────────────────────────────────────────────── */
+let sutaMinRates = {}; // state → vhr_min_rate
+
+async function loadSutaMinRates() {
+  try {
+    const cfg = await apiGet('/config');
+    // Config doesn't return SUTA rates directly; we'd need a separate endpoint.
+    // For now, leave as blank (display only).
+  } catch (e) { /* silent */ }
+}
+
+function addSutaRow(data) {
+  const tbody = document.getElementById('suta-body');
+  const idx = tbody.rows.length;
+  const state = data?.state || '';
+  const minRate = (data?.billing_rate != null && data.billing_rate > 0)
+    ? formatPct(data.billing_rate)
+    : (state && sutaMinRates[state] ? formatPct(sutaMinRates[state]) : '—');
+  const tr = document.createElement('tr');
+  tr.dataset.sutaIdx = idx;
+  tr.innerHTML = `
+    <td>
+      <select name="suta_state_${idx}" style="width:90px;" onchange="onSutaStateChange(this)">
+        <option value="">—</option>
+        ${['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY','DC'].map(s => `<option value="${s}"${s === state ? ' selected' : ''}>${s}</option>`).join('')}
+      </select>
+    </td>
+    <td><input type="text" name="suta_min_${idx}" readonly style="width:70px;background:#f7fafc;color:#718096;" value="${minRate}" /></td>
+    <td><input type="number" name="suta_rate_${idx}" step="0.01" min="0" max="100" placeholder="0.00" style="width:90px;" value="${data?.billing_rate != null ? (data.billing_rate * 100).toFixed(2) : ''}" /></td>
+    <td><input type="number" name="suta_turnover_${idx}" step="0.1" min="0" max="100" placeholder="10" style="width:70px;" value="${data?.turnover_pct != null ? (data.turnover_pct * 100).toFixed(1) : '10'}" /></td>
+    <td><button type="button" class="btn-ghost" style="padding:3px 8px;font-size:0.75rem;color:#dc2626;border-color:#fecaca;" onclick="removeSutaRow(this)">×</button></td>
+  `;
+  tr.querySelectorAll('input, select').forEach(el => {
+    el.addEventListener('change', scheduleCalculate);
+    el.addEventListener('input', scheduleCalculate);
+  });
+  tbody.appendChild(tr);
+}
+
+function onSutaStateChange(sel) {
+  const tr = sel.closest('tr');
+  const state = sel.value;
+  const minInput = tr.querySelector('input[name^="suta_min_"]');
+  minInput.value = (state && sutaMinRates[state]) ? formatPct(sutaMinRates[state]) : '—';
+}
+
+function removeSutaRow(btn) {
+  btn.closest('tr').remove();
+  scheduleCalculate();
+}
+
+document.getElementById('btn-add-suta').addEventListener('click', () => addSutaRow());
+
+/* ── Admin Method Label ──────────────────────────────────────────────────── */
+const adminMethodSel = document.getElementById('admin_method');
+const adminRateLabel = document.getElementById('admin_rate_label');
+adminMethodSel.addEventListener('change', () => {
+  const v = adminMethodSel.value;
+  if (v === '1') adminRateLabel.textContent = 'Rate (%)';
+  else if (v === '2') adminRateLabel.textContent = 'Rate ($ per check)';
+  else if (v === '3') adminRateLabel.textContent = 'Rate ($ PEPM)';
+});
+
+/* ── Pricing mod sync ────────────────────────────────────────────────────── */
+// Keep pricing_proposed_mod and proposed_mod loosely synced
+const pricingMod = document.getElementById('pricing_proposed_mod');
+const wcMod = document.getElementById('proposed_mod');
+pricingMod.addEventListener('input', () => {
+  wcMod.value = pricingMod.value;
+  scheduleCalculate();
+});
+wcMod.addEventListener('input', () => {
+  pricingMod.value = wcMod.value;
+});
+
+/* ── Pricing inputs → trigger recalculate ────────────────────────────────── */
+['admin_method', 'admin_rate', 'pricing_proposed_mod', 'implementation_fee',
+ 'epli_fee', 'broker_wc_commission_pct', 'internal_commission_pct',
+ 'external_commission_pct', 'w2s_generated'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener('change', scheduleCalculate);
+    el.addEventListener('input', scheduleCalculate);
+  }
+});
+
+document.querySelectorAll('input[name^="suta_"]').forEach(el => {
+  el.addEventListener('input', scheduleCalculate);
+});
+
+/* ── collectClientPayload ─────────────────────────────────────────────────── */
+function getRadioValue(name) {
+  const checked = document.querySelector(`input[name="${name}"]:checked`);
+  if (!checked) return null;
+  if (checked.value === 'true') return true;
+  if (checked.value === 'false') return false;
+  return checked.value;
+}
+
+function getMultiSelectValues(id) {
+  const el = document.getElementById(id);
+  if (!el) return null;
+  const selected = Array.from(el.selectedOptions).map(o => o.value);
+  return selected.length ? JSON.stringify(selected) : null;
+}
+
+function getVal(id) {
+  const el = document.getElementById(id);
+  return el ? (el.value.trim() || null) : null;
+}
+
+function getNumVal(id) {
+  const el = document.getElementById(id);
+  if (!el || el.value === '' || el.value == null) return null;
+  const n = parseFloat(el.value);
+  return isNaN(n) ? null : n;
+}
+
+function getIntVal(id) {
+  const el = document.getElementById(id);
+  if (!el || el.value === '' || el.value == null) return null;
+  const n = parseInt(el.value, 10);
+  return isNaN(n) ? null : n;
+}
+
+function collectWCLines() {
+  const lines = [];
+  const tbody = document.getElementById('wc-codes-body');
+  tbody.querySelectorAll('tr').forEach((tr, i) => {
+    const state   = tr.querySelector(`input[name^="wc_state_"]`)?.value?.trim() || null;
+    const wc_code = tr.querySelector(`input[name^="wc_code_"]`)?.value?.trim() || null;
+    const annual_gw    = parseFloat(tr.querySelector(`input[name^="wc_payroll_"]`)?.value) || 0;
+    const ftes         = parseFloat(tr.querySelector(`input[name^="wc_fte_"]`)?.value) || 0;
+    const ptes         = parseFloat(tr.querySelector(`input[name^="wc_pte_"]`)?.value) || 0;
+    const manual_rate  = parseFloat(tr.querySelector(`input[name^="wc_rate_"]`)?.value) || 0;
+    lines.push({ state, wc_code, annual_gw, ftes, ptes, manual_rate, current_client_rate: 0 });
+  });
+  return lines;
+}
+
+function collectSutaLines() {
+  const lines = [];
+  const tbody = document.getElementById('suta-body');
+  tbody.querySelectorAll('tr').forEach((tr) => {
+    const state    = tr.querySelector(`select[name^="suta_state_"]`)?.value?.trim() || null;
+    const rateRaw  = parseFloat(tr.querySelector(`input[name^="suta_rate_"]`)?.value) || 0;
+    const turnRaw  = parseFloat(tr.querySelector(`input[name^="suta_turnover_"]`)?.value) || 10;
+    const billing_rate  = rateRaw / 100;
+    const turnover_pct  = turnRaw / 100;
+    lines.push({
+      state,
+      gws: 0,        // will be aggregated by server from wc_lines
+      total_wses: 0,
+      current_client_rate: 0,
+      billing_rate,
+      cost_rate: 0,
+      threshold: 0,
+      turnover_pct,
+    });
+  });
+  return lines;
+}
+
+function collectWCLosses() {
+  const losses = [];
+  for (let i = 0; i < 5; i++) {
+    const start  = document.querySelector(`input[name="loss_start_${i}"]`)?.value || null;
+    const end    = document.querySelector(`input[name="loss_end_${i}"]`)?.value || null;
+    const total  = parseFloat(document.querySelector(`input[name="loss_total_${i}"]`)?.value) || 0;
+    const claims = parseInt(document.querySelector(`input[name="loss_claims_${i}"]`)?.value) || 0;
+    const months = parseInt(document.querySelector(`input[name="loss_months_${i}"]`)?.value) || 0;
+    const open   = parseInt(document.querySelector(`input[name="loss_open_${i}"]`)?.value) || 0;
+    losses.push({
+      coverage_period_start: start,
+      coverage_period_end:   end,
+      total_losses_incurred: total,
+      num_claims:   claims,
+      months_in_policy: months,
+      open_claims:  open,
+    });
+  }
+  return losses;
+}
+
+function collectClientPayload() {
+  const adminRateRaw = getNumVal('admin_rate') || 0;
+  const adminMethod  = getIntVal('admin_method') || 1;
+  // Method 1: rate is a %, convert from display % to decimal
+  // Method 2/3: rate is a dollar value, keep as-is
+  const adminRate = adminMethod === 1 ? adminRateRaw / 100 : adminRateRaw;
+
+  const internal = getNumVal('internal_commission_pct') || 0;
+  const external  = getNumVal('external_commission_pct') || 0;
+  const brokerWC  = getNumVal('broker_wc_commission_pct') || 0;
+
+  const client = {
+    legal_name:             getVal('legal_name'),
+    consultant_name:        getVal('consultant_name'),
+    date:                   getVal('date'),
+    dba:                    getVal('dba'),
+    main_address:           getVal('main_address'),
+    city:                   getVal('city'),
+    state:                  getVal('state'),
+    zip:                    getVal('zip'),
+    fein:                   getVal('fein'),
+    website:                getVal('website'),
+    org_structure:          getVal('org_structure'),
+    naics:                  getVal('naics'),
+    sic:                    getVal('sic'),
+    years_in_business:      getIntVal('years_in_business'),
+    num_locations:          getIntVal('num_locations'),
+    main_phone:             getVal('main_phone'),
+    owner_name:             getVal('owner_name'),
+    owner_phone:            getVal('owner_phone'),
+    owner_email:            getVal('owner_email'),
+    owner_cell:             getVal('owner_cell'),
+    contact_name:           getVal('contact_name'),
+    contact_phone:          getVal('contact_phone'),
+    contact_cell:           getVal('contact_cell'),
+    contact_email:          getVal('contact_email'),
+    states_operating:       getMultiSelectValues('states_operating'),
+    description_of_operations: getVal('description_of_operations'),
+
+    // Compliance
+    eeoc_violations:        getRadioValue('eeoc_violations'),
+    eeoc_explanation:       getVal('eeoc_explanation') || document.querySelector('input[name="eeoc_explanation"]')?.value || null,
+    active_claims:          getRadioValue('active_claims'),
+    active_claims_explanation: document.querySelector('input[name="active_claims_explanation"]')?.value || null,
+    cobra_continuation:     getRadioValue('cobra_continuation'),
+    cobra_explanation:      document.querySelector('input[name="cobra_explanation"]')?.value || null,
+    past_layoffs:           getRadioValue('past_layoffs'),
+    past_layoffs_explanation: document.querySelector('input[name="past_layoffs_explanation"]')?.value || null,
+    future_layoffs:         getRadioValue('future_layoffs'),
+    future_layoffs_explanation: document.querySelector('input[name="future_layoffs_explanation"]')?.value || null,
+    leave_of_absence:       getRadioValue('leave_of_absence'),
+    leave_explanation:      document.querySelector('input[name="leave_explanation"]')?.value || null,
+
+    // Medical
+    medical_carve_out:              getRadioValue('medical_carve_out'),
+    enrolled_over_50:               getRadioValue('enrolled_over_50'),
+    enrolled_under_10:              getRadioValue('enrolled_under_10'),
+    level_funded_plan:              getRadioValue('level_funded_plan'),
+    currently_has_health_insurance: getRadioValue('currently_has_health_insurance'),
+    census_available:               getRadioValue('census_available'),
+    cobra_expected:                 getRadioValue('cobra_expected'),
+
+    // Ancillary
+    offers_ancillary_benefits: getRadioValue('offers_ancillary_benefits'),
+    wants_ancillary_benefits:  getRadioValue('wants_ancillary_benefits'),
+    current_contribution_strategy: getVal('current_contribution_strategy'),
+    new_contribution_strategy:     getVal('new_contribution_strategy'),
+
+    // Payroll
+    payroll_frequency: getVal('payroll_frequency'),
+    pay_cycle_start:   getVal('pay_cycle_start'),
+    pay_cycle_end:     getVal('pay_cycle_end'),
+    pay_date:          getVal('pay_date'),
+
+    // WC
+    wc_carve_out:        getRadioValue('wc_carve_out'),
+    proposed_mod:        getNumVal('pricing_proposed_mod'),
+    shared_claim_fee:    getNumVal('shared_claim_fee'),
+    min_wc_fee_per_week: getNumVal('min_wc_fee_per_week'),
+    new_company:         getRadioValue('new_company'),
+    gaps_in_coverage:    getRadioValue('gaps_in_coverage'),
+
+    // Pricing
+    admin_method:              adminMethod,
+    admin_rate:                adminRate,
+    implementation_fee:        getNumVal('implementation_fee'),
+    epli_fee:                  getNumVal('epli_fee'),
+    internal_commission_pct:   internal / 100,
+    external_commission_pct:   external / 100,
+    broker_wc_commission_pct:  brokerWC / 100,
+    w2s_generated:             getNumVal('w2s_generated'),
+  };
+
+  return {
+    client,
+    wc_lines:   collectWCLines(),
+    suta_lines: collectSutaLines(),
+  };
+}
+
+/* ── Calculate ───────────────────────────────────────────────────────────── */
+function scheduleCalculate() {
+  clearTimeout(calcDebounceTimer);
+  calcDebounceTimer = setTimeout(runCalculate, 500);
+}
+
+async function runCalculate() {
+  const payload = collectClientPayload();
+  // Only calculate if there's meaningful data
+  const hasData = payload.wc_lines.some(l => l.annual_gw > 0) ||
+                  payload.suta_lines.length > 0;
+  if (!hasData) return;
+
+  document.getElementById('summary-calculating').style.display = 'block';
+  document.getElementById('summary-content').style.opacity = '0.4';
+
+  try {
+    const result = await apiPost('/calculate', payload);
+    renderSummary(result);
+  } catch (e) {
+    console.error('Calculate error:', e);
+  } finally {
+    document.getElementById('summary-calculating').style.display = 'none';
+    document.getElementById('summary-content').style.opacity = '1';
+  }
+}
+
+function pnlClass(v) {
+  if (v > 0) return 'positive';
+  if (v < 0) return 'negative';
+  return '';
+}
+
+function renderSummary(r) {
+  const ao = r.admin_overview   || {};
+  const wo = r.wc_overview      || {};
+  const to = r.taxes_overview   || {};
+  const oi = r.other_items      || {};
+  const co = r.commissions      || {};
+
+  setText('s-total-wses',   ao.total_wses?.toFixed(2) || '0');
+  setText('s-total-gws',    formatCurrency(ao.total_gws));
+  setText('s-avg-wage',     formatCurrency(ao.avg_wage));
+  setText('s-admin-margin', formatCurrency(ao.admin_margin));
+
+  setText('s-wc-billed',      formatCurrency(wo.wc_billed));
+  setText('s-wc-fixed-cost',  formatCurrency(wo.wc_fixed_cost));
+  setText('s-wc-loss-fund',   formatCurrency(wo.wc_loss_fund));
+  setText('s-total-wc-cost',  formatCurrency(wo.total_wc_cost));
+  setPnl('s-wc-profit-loss',  wo.wc_profit_loss);
+
+  setText('s-suta-billed',      formatCurrency(to.suta_billed));
+  setText('s-suta-cost',        formatCurrency(to.suta_cost));
+  setPnl('s-suta-profit-loss',  to.suta_profit_loss);
+  setText('s-fica-total',   formatCurrency(to.fica_total));
+  setText('s-futa-total',   formatCurrency(to.futa_total));
+
+  setText('s-epli',       formatCurrency(oi.epli));
+  setText('s-impl-fee',   formatCurrency(oi.implementation_fee));
+  setPnl('s-total-profit-loss', oi.total_profit_loss);
+
+  setText('s-consultant-upfront',  formatCurrency(co.consultant_upfront));
+  setText('s-consultant-ongoing',  formatCurrency(co.consultant_ongoing));
+  setText('s-broker-wc-pct',   formatPct(co.broker_wc_pct));
+  setText('s-broker-admin-pct', formatPct(co.broker_admin_pct));
+  setText('s-admin-net-ongoing', formatCurrency(co.admin_net_ongoing));
+  setText('s-admin-net-year1',   formatCurrency(co.admin_net_year1));
+}
+
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = val; el.className = 'summary-value'; }
+}
+function setPnl(id, val) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.textContent = formatCurrency(val);
+    el.className = 'summary-value ' + pnlClass(val || 0);
+  }
+}
+
+/* ── Populate form from API ──────────────────────────────────────────────── */
+function setField(id, value) {
+  const el = document.getElementById(id);
+  if (!el || value == null) return;
+  el.value = value;
+}
+
+function setRadio(name, value) {
+  if (value == null) return;
+  const str = value === true ? 'true' : value === false ? 'false' : String(value);
+  const radio = document.querySelector(`input[name="${name}"][value="${str}"]`);
+  if (radio) {
+    radio.checked = true;
+    radio.dispatchEvent(new Event('change'));
+  }
+}
+
+function populateForm(client) {
+  // Page title
+  document.getElementById('page-title').textContent = client.legal_name || 'New Client';
+  document.getElementById('page-sub').textContent =
+    'Consultant: ' + (client.consultant_name || '—');
+  document.title = 'VestedHR — ' + (client.legal_name || 'New Client');
+
+  // Status badge
+  const badge = document.getElementById('status-badge');
+  const statusMap = { draft: 'badge-draft', in_review: 'badge-in-review', approved: 'badge-approved' };
+  badge.className = 'badge ' + (statusMap[client.status] || 'badge-draft');
+  badge.textContent = (client.status || 'draft').replace('_', ' ');
+
+  // General
+  ['consultant_name','date','legal_name','dba','main_address','city','state','zip',
+   'fein','website','org_structure','naics','sic','years_in_business','num_locations',
+   'main_phone','owner_name','owner_phone','owner_email','owner_cell',
+   'contact_name','contact_phone','contact_cell','contact_email',
+   'description_of_operations'].forEach(f => setField(f, client[f]));
+
+  // States operating (multi-select)
+  if (client.states_operating) {
+    try {
+      const states = JSON.parse(client.states_operating);
+      const sel = document.getElementById('states_operating');
+      Array.from(sel.options).forEach(o => {
+        o.selected = states.includes(o.value);
+      });
+    } catch(e) {}
+  }
+
+  // Compliance radios + explanations
+  [
+    ['eeoc_violations', 'eeoc_explanation'],
+    ['active_claims',   'active_claims_explanation'],
+    ['cobra_continuation', 'cobra_explanation'],
+    ['past_layoffs',    'past_layoffs_explanation'],
+    ['future_layoffs',  'future_layoffs_explanation'],
+    ['leave_of_absence','leave_explanation'],
+  ].forEach(([radio, expl]) => {
+    setRadio(radio, client[radio]);
+    const explEl = document.querySelector(`input[name="${expl}"]`);
+    if (explEl && client[expl]) explEl.value = client[expl];
+    // Show explanation if yes
+    if (client[radio] === true) {
+      const explDiv = document.getElementById(`expl-${radio}`);
+      if (explDiv) explDiv.style.display = 'block';
+    }
+  });
+
+  // Medical
+  ['medical_carve_out','enrolled_over_50','enrolled_under_10','level_funded_plan',
+   'currently_has_health_insurance','census_available','cobra_expected'].forEach(f => setRadio(f, client[f]));
+
+  // Ancillary
+  ['offers_ancillary_benefits','wants_ancillary_benefits'].forEach(f => setRadio(f, client[f]));
+  setField('current_contribution_strategy', client.current_contribution_strategy);
+  setField('new_contribution_strategy',     client.new_contribution_strategy);
+
+  // Payroll
+  ['payroll_frequency','pay_cycle_start','pay_cycle_end','pay_date'].forEach(f => setField(f, client[f]));
+
+  // WC
+  setRadio('wc_carve_out', client.wc_carve_out);
+  if (client.wc_carve_out) document.getElementById('wc-sections').style.display = 'none';
+  setField('proposed_mod',        client.proposed_mod);
+  setField('pricing_proposed_mod',client.proposed_mod);
+  setField('shared_claim_fee',    client.shared_claim_fee);
+  setField('min_wc_fee_per_week', client.min_wc_fee_per_week);
+  setRadio('new_company',      client.new_company);
+  setRadio('gaps_in_coverage', client.gaps_in_coverage);
+  if (client.new_company)      document.getElementById('new-company-note').classList.add('visible');
+  if (client.gaps_in_coverage) document.getElementById('gaps-note').classList.add('visible');
+
+  // WC Lines
+  if (client.wc_lines && client.wc_lines.length) {
+    document.getElementById('wc-codes-body').innerHTML = '';
+    client.wc_lines.forEach(l => addWCCodeRow(l));
+  } else {
+    addWCCodeRow(); // at least one blank row
+  }
+
+  // SUTA Lines
+  if (client.suta_lines && client.suta_lines.length) {
+    client.suta_lines.forEach(l => addSutaRow(l));
+  }
+
+  // WC Losses
+  if (client.wc_losses && client.wc_losses.length) {
+    const tbody = document.getElementById('wc-losses-body');
+    tbody.innerHTML = '';
+    // Fill up to 5 rows
+    for (let i = 0; i < 5; i++) {
+      const loss = client.wc_losses[i];
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="date" name="loss_start_${i}" value="${loss?.coverage_period_start || ''}" /></td>
+        <td><input type="date" name="loss_end_${i}" value="${loss?.coverage_period_end || ''}" /></td>
+        <td><input type="number" name="loss_total_${i}" step="0.01" min="0" value="${loss?.total_losses_incurred || ''}" /></td>
+        <td><input type="number" name="loss_claims_${i}" step="1" min="0" value="${loss?.num_claims || ''}" /></td>
+        <td><input type="number" name="loss_months_${i}" step="1" min="0" value="${loss?.months_in_policy || ''}" /></td>
+        <td><input type="number" name="loss_open_${i}" step="1" min="0" value="${loss?.open_claims || ''}" /></td>
+      `;
+      tbody.appendChild(tr);
+    }
+  }
+
+  // Pricing
+  const method = client.admin_method || 1;
+  setField('admin_method', method);
+  adminMethodSel.dispatchEvent(new Event('change'));
+  // Convert stored decimal rate back to display format
+  const rateDisplay = method === 1
+    ? ((client.admin_rate || 0) * 100).toFixed(4)
+    : (client.admin_rate || 0);
+  setField('admin_rate', rateDisplay);
+
+  setField('implementation_fee',       client.implementation_fee);
+  setField('epli_fee',                 client.epli_fee);
+  setField('broker_wc_commission_pct', ((client.broker_wc_commission_pct || 0) * 100).toFixed(4));
+  setField('internal_commission_pct',  ((client.internal_commission_pct || 0) * 100).toFixed(4));
+  setField('external_commission_pct',  ((client.external_commission_pct || 0) * 100).toFixed(4));
+  setField('w2s_generated',            client.w2s_generated);
+
+  // Trigger initial calc
+  scheduleCalculate();
+}
+
+/* ── Save Quote ──────────────────────────────────────────────────────────── */
+document.getElementById('btn-save').addEventListener('click', async () => {
+  if (!clientId) { showToast('No client ID — open via dashboard', 'error'); return; }
+
+  const payload = collectClientPayload();
+  const saveBody = {
+    ...payload.client,
+    wc_lines:   payload.wc_lines,
+    suta_lines: payload.suta_lines,
+    wc_losses:  collectWCLosses(),
+  };
+
+  // Update title optimistically
+  const name = saveBody.legal_name;
+  if (name) {
+    document.getElementById('page-title').textContent = name;
+    document.title = 'VestedHR — ' + name;
+    document.getElementById('page-sub').textContent =
+      'Consultant: ' + (saveBody.consultant_name || '—');
+  }
+
+  try {
+    await apiPut('/clients/' + clientId, saveBody);
+    showToast('Quote saved successfully', 'success');
+  } catch (e) {
+    showToast('Save failed: ' + e.message, 'error');
+  }
+});
+
+/* ── Generate Doc (placeholder) ─────────────────────────────────────────── */
+document.getElementById('btn-generate').addEventListener('click', () => {
+  showToast('Document generation coming soon', 'info');
+});
+
+/* ── Init ────────────────────────────────────────────────────────────────── */
+async function init() {
+  await loadSutaMinRates();
+  if (clientId) {
+    try {
+      const client = await apiGet('/clients/' + clientId);
+      populateForm(client);
+    } catch (e) {
+      showToast('Failed to load client: ' + e.message, 'error');
+      // Still add a blank WC row so the table isn't empty
+      addWCCodeRow();
+    }
+  } else {
+    // No ID — blank form, add one WC row
+    addWCCodeRow();
+  }
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+/* ── app.js — shared utilities for VestedHR Pricing Tool ──────────────────── */
+
+/**
+ * Show a dismissing toast notification at bottom-right.
+ * @param {string} message
+ * @param {'success'|'error'|'info'} type
+ */
+function showToast(message, type = 'success') {
+  const existing = document.querySelectorAll('.toast');
+  existing.forEach(t => t.remove());
+
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.transition = 'opacity 0.3s';
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 350);
+  }, 3200);
+}
+
+/**
+ * Format a number as currency: $1,234.56
+ * @param {number|null|undefined} value
+ * @returns {string}
+ */
+function formatCurrency(value) {
+  if (value == null || isNaN(value)) return '$0.00';
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
+/**
+ * Format a decimal fraction as a percentage: 0.062 → "6.20%"
+ * @param {number|null|undefined} value
+ * @returns {string}
+ */
+function formatPct(value) {
+  if (value == null || isNaN(value)) return '0.00%';
+  return (value * 100).toFixed(2) + '%';
+}
+
+/**
+ * GET request wrapper. Returns parsed JSON. Throws on non-OK status.
+ * @param {string} path  e.g. "/clients/1"
+ * @returns {Promise<any>}
+ */
+async function apiGet(path) {
+  const res = await fetch(path, {
+    headers: { 'Accept': 'application/json' },
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`GET ${path} failed (${res.status}): ${text}`);
+  }
+  return res.json();
+}
+
+/**
+ * POST request wrapper. Returns parsed JSON. Throws on non-OK status.
+ * @param {string} path
+ * @param {any} body
+ * @returns {Promise<any>}
+ */
+async function apiPost(path, body) {
+  const res = await fetch(path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`POST ${path} failed (${res.status}): ${text}`);
+  }
+  return res.json();
+}
+
+/**
+ * PUT request wrapper. Returns parsed JSON. Throws on non-OK status.
+ * @param {string} path
+ * @param {any} body
+ * @returns {Promise<any>}
+ */
+async function apiPut(path, body) {
+  const res = await fetch(path, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`PUT ${path} failed (${res.status}): ${text}`);
+  }
+  return res.json();
+}
