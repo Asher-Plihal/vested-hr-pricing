@@ -1,6 +1,6 @@
 # To-Do — VestedHR Pricing Tool
 
-Each item is a single-agent task brief. Pick one, read it fully, do the work, commit, update status.json.
+Each item is a single-agent task brief. **Coding agents:** read only your assigned brief plus the files listed in it — you do not need to read this whole file or updates.md. **Task manager:** read the full todo.md each session; read updates.md selectively for context on recently completed work.
 
 ---
 
