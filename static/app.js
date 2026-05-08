@@ -122,15 +122,47 @@ async function apiDelete(path) {
   const input = document.querySelector('.topnav-search');
   if (!input) return;
 
-  // Inject styles directly so they're never affected by CSS caching
   const style = document.createElement('style');
-  style.textContent = [
-    '#vhr-search-dropdown{position:fixed;background:#fff;border-radius:8px',
-    'box-shadow:0 4px 16px rgba(0,0,0,.18);border:1px solid #e2e8f0',
-    'overflow:hidden;z-index:9999;list-style:none;padding:0;margin:0;display:none}',
-    '#vhr-search-dropdown li{padding:9px 14px;font-size:.85rem;color:#1a1a2e;cursor:pointer}',
-    '#vhr-search-dropdown li:hover,#vhr-search-dropdown li.search-active{background:#f4f5f7}',
-  ].join(';');
+  style.textContent = `
+    #vhr-search-dropdown {
+      position: fixed;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.13), 0 2px 6px rgba(0,0,0,.07);
+      border: 1px solid #e2e8f0;
+      overflow: hidden;
+      z-index: 9999;
+      list-style: none;
+      padding: 4px 0;
+      margin: 0;
+      display: none;
+      min-width: 240px;
+    }
+    #vhr-search-dropdown li {
+      padding: 8px 14px;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    #vhr-search-dropdown li:last-child { border-bottom: none; }
+    #vhr-search-dropdown li:hover,
+    #vhr-search-dropdown li.search-active { background: #f8f9fa; }
+    #vhr-search-dropdown .sr-name {
+      display: block;
+      font-size: .875rem;
+      font-weight: 600;
+      color: #1e3154;
+      line-height: 1.3;
+    }
+    #vhr-search-dropdown .sr-sub {
+      display: block;
+      font-size: .75rem;
+      color: #94a3b8;
+      margin-top: 1px;
+      line-height: 1.3;
+    }
+  `;
   document.head.appendChild(style);
 
   input.setAttribute('autocomplete', 'off');
@@ -176,8 +208,10 @@ async function apiDelete(path) {
     dropdown.innerHTML = '';
     matches.forEach(c => {
       const li = document.createElement('li');
-      li.textContent = c.legal_name;
       li.dataset.id = c.id;
+      li.innerHTML =
+        `<span class="sr-name">${c.legal_name || 'Unnamed'}</span>` +
+        (c.consultant_name ? `<span class="sr-sub">${c.consultant_name}</span>` : '');
       li.addEventListener('mousedown', () => {
         window.location.href = `/static/client.html?id=${c.id}`;
       });
