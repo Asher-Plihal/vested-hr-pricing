@@ -124,43 +124,67 @@ async function apiDelete(path) {
 
   const style = document.createElement('style');
   style.textContent = `
+    @keyframes srIn { from { opacity:0; transform:translateY(-6px) } to { opacity:1; transform:translateY(0) } }
     #vhr-search-dropdown {
       position: fixed;
       background: #fff;
       border-radius: 10px;
-      box-shadow: 0 8px 24px rgba(0,0,0,.13), 0 2px 6px rgba(0,0,0,.07);
+      box-shadow: 0 12px 32px rgba(0,0,0,.13), 0 2px 8px rgba(0,0,0,.06);
       border: 1px solid #e2e8f0;
       overflow: hidden;
       z-index: 9999;
       list-style: none;
-      padding: 4px 0;
+      padding: 5px 0;
       margin: 0;
       display: none;
-      min-width: 240px;
+      min-width: 280px;
+      animation: srIn .13s ease;
     }
     #vhr-search-dropdown li {
-      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
       cursor: pointer;
       user-select: none;
       -webkit-user-select: none;
-      border-bottom: 1px solid #f1f5f9;
+      transition: background .1s;
     }
-    #vhr-search-dropdown li:last-child { border-bottom: none; }
     #vhr-search-dropdown li:hover,
-    #vhr-search-dropdown li.search-active { background: #f8f9fa; }
+    #vhr-search-dropdown li.search-active { background: #f8fafc; }
+    #vhr-search-dropdown .sr-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: #1e3154;
+      color: #c9a84c;
+      font-size: .68rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      letter-spacing: .04em;
+    }
+    #vhr-search-dropdown .sr-text { min-width: 0; }
     #vhr-search-dropdown .sr-name {
       display: block;
-      font-size: .875rem;
+      font-size: .855rem;
       font-weight: 600;
       color: #1e3154;
       line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     #vhr-search-dropdown .sr-sub {
       display: block;
-      font-size: .75rem;
+      font-size: .74rem;
       color: #94a3b8;
       margin-top: 1px;
       line-height: 1.3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   `;
   document.head.appendChild(style);
@@ -207,11 +231,16 @@ async function apiDelete(path) {
     if (matches.length === 0) { hideDropdown(); return; }
     dropdown.innerHTML = '';
     matches.forEach(c => {
+      const initials = (c.legal_name || '?')
+        .split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase();
       const li = document.createElement('li');
       li.dataset.id = c.id;
       li.innerHTML =
-        `<span class="sr-name">${c.legal_name || 'Unnamed'}</span>` +
-        (c.consultant_name ? `<span class="sr-sub">${c.consultant_name}</span>` : '');
+        `<span class="sr-avatar">${initials}</span>` +
+        `<span class="sr-text">` +
+          `<span class="sr-name">${c.legal_name || 'Unnamed'}</span>` +
+          (c.consultant_name ? `<span class="sr-sub">${c.consultant_name}</span>` : '') +
+        `</span>`;
       li.addEventListener('mousedown', () => {
         window.location.href = `/static/client.html?id=${c.id}`;
       });
