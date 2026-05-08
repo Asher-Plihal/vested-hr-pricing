@@ -1,0 +1,44 @@
+{
+  "wc-rates-vlookup": {
+    "status": "pending",
+    "priority": 1,
+    "blocked_by": null,
+    "note": "wc_rates table exists and is empty until VHR uploads CSV via config page"
+  },
+  "wc-code-searchable-dropdowns": {
+    "status": "pending",
+    "priority": 2,
+    "blocked_by": null,
+    "note": "depends on wc-rates-vlookup being done first for auto-rate population"
+  },
+  "suta-rates-verify": {
+    "status": "blocked",
+    "priority": 1,
+    "blocked_by": "VHR staff — need confirmed thresholds and rates for all 51 states",
+    "note": "all rows currently placeholder values — tool will not produce accurate SUTA numbers until resolved"
+  },
+  "benefits-tab": {
+    "status": "blocked",
+    "priority": 3,
+    "blocked_by": "VHR staff — need plan PEPM data and rate tier band confirmation",
+    "note": "calc logic fully documented in pricing_math.md, ready to build once data is available"
+  },
+  "search-bar": {
+    "status": "pending",
+    "priority": 3,
+    "blocked_by": null,
+    "note": "topnav search input is decorative on all three pages"
+  },
+  "generate-doc-proposal": {
+    "status": "pending",
+    "priority": 2,
+    "blocked_by": null,
+    "note": "stub as a print-friendly HTML view for now, full PDF is post-prototype"
+  },
+  "auth-roles": {
+    "status": "pending",
+    "priority": 2,
+    "blocked_by": null,
+    "note": "needed before sharing with VHR staff for testing — lightweight local users table is enough for prototype"
+  }
+}

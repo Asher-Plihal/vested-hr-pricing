@@ -89,35 +89,17 @@ All inputs come from the client payload. Config values (rates, factors) are load
 - **Config autosaves**: All system config fields save automatically 600ms after any change. No Save button.
 - **SUTA client-reporting states**: CA, NY, NJ, PA, RI bill at the client's own rate. `vhr_min_rate = None` for these states.
 
-## Known gaps
-
-These are things that need to be built or verified before going to production.
-
-**Needs VHR staff answers before building:**
-- SUTA rates: all 51 state rows are placeholder values — need VHR to confirm actual thresholds, billing rates, and cost rates
-- WC Policy Adjustment (Sunz, 1.55%): seeded at 0.0 — when is it non-zero?
-- MO SUTA: client files under own account but uses VHR's rate — confirm billing formula
-- Open questions flagged throughout `pricing_math.md` (bolded questions in each section)
-
-**Ready to build:**
-- WC Rates VLOOKUP: wire the `wc_rates` DB table into `calc/workers_comp.py` so manual_rate is looked up by `state + wc_code` instead of entered manually
-- WC code searchable dropdowns: `pricing_tool_outline.md` specifies searchable dropdowns for state and WC code — currently plain text inputs
-- Benefits section: full pricing math is in `pricing_math.md` (Master Plan / Client Plan, PEPM tiers, Rate Tier Band) — not yet built
-- Search: topnav search bar not wired to any API
-- Auth: user menu is static, no role system (Admin / WC Admin / SUTA Admin / Sales / General User)
-
-**Post-prototype (Rails phase):**
-- HubSpot integration: auto-create Company, Deal, Contact on quote completion
-- Approval workflow: tasks for Justin (pricing), John (WC), Nate (benefits)
-- Generate Doc: client-facing proposal PDF
-- Client Review tab: actual payroll vs projected, ratio analysis
-- New Client Onboarding doc generation
-
----
 
 ## Management docs
 
 | Doc | Purpose |
 |---|---|
 | `management/updates.md` | Changelog — what was built, what changed, current state of the data. Read this to get up to speed quickly. |
-| `management/todo.md` | Prioritised to-do items. Each item is a full agent-ready brief with context, file pointers, and what to build. |
+| `management/todo.md` | Full agent-ready brief per task — context, file pointers, and exactly what to build. |
+| `management/status.json` | Machine-readable task state: `pending` / `in-progress` / `complete` / `blocked`. **Always read this first. Always update it when you finish work.** |
+
+### Agent workflow
+1. Read `management/status.json` — know what is done, in-progress, and blocked before touching anything
+2. Pick a `pending` task, set it to `in-progress` in status.json, read its full brief in `todo.md`
+3. Do the work, commit
+4. Set the task to `complete` in status.json, commit that too
