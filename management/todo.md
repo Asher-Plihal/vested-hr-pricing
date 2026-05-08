@@ -6,56 +6,6 @@ Each item is a single-agent task brief. **Coding agents:** read only your assign
 
 ## Active — Phase 2
 
-### Sheets Upload/Download Fix
-**Status:** pending — `sheets-upload-fix`
-**Priority:** Highest — do this first
-
-The upload and download handlers for WC Rates, WC Guidelines, and SUTA Rates in `routers/rates.py` may have column name mismatches against the source-of-truth Google Sheet. The fix requires reading the actual sheet column headers, comparing them to the current code, and updating both the upload parsers (column name lookups) and download headers (CSV export) to match exactly.
-
-**What to do:**
-
-1. **Read the Google Sheet using the Google CLI.** The spreadsheet ID is `1NcHPIhsF1uIOQNFWBo-ZpeXWXNewYcEyinx6-IdIaMc`. Use the Sheets API via `gcloud` or the `google-sheets` CLI to list all sheet tab names, then read the first 2 rows (headers + one data row) from each of the three rate tables. The relevant tabs are named something like "WC Cost Rates", "WC Sunz Guidelines", and "SUTA Cost Rates" — confirm by listing tabs first.
-
-   Example using the Sheets API:
-   ```
-   # List all sheet tab names
-   gcloud ... OR use the sheets CLI to GET:
-   https://sheets.googleapis.com/v4/spreadsheets/1NcHPIhsF1uIOQNFWBo-ZpeXWXNewYcEyinx6-IdIaMc?fields=sheets.properties
-
-   # Read first 2 rows from a tab
-   https://sheets.googleapis.com/v4/spreadsheets/1NcHPIhsF1uIOQNFWBo-ZpeXWXNewYcEyinx6-IdIaMc/values/'WC Cost Rates'!A1:Z2
-   ```
-
-2. **Compare sheet headers to current code.** Current expected column names in `routers/rates.py`:
-   - WC Rates upload reads: `Carrier`, `State`, `Class Code`, `Concat`, `Rate`, `Min Premium`, `Description`, `Effective Date`
-   - WC Rates download emits: same 8 columns
-   - WC Guidelines upload reads: `State`, `NCCI Code`, `Lookup Code`, `Concat`, `IRMI Classification`, `NAICS`, `Hazard Group`, `100K Flag`, `Effective Date`
-   - WC Guidelines download emits: same 9 columns
-   - SUTA Rates upload reads: `State`, `Threshold`, `VHR Min Rate`, `Client Reporting`, `Our Cost`
-   - SUTA Rates download emits: same + `Date Updated`
-
-3. **Fix every mismatch** in `routers/rates.py`:
-   - Upload parsers: update `row.get("Old Name")` → `row.get("Actual Sheet Name")` for every mismatched column
-   - Download headers: update the `headers=[...]` list in each `_csv_response(...)` call to match the sheet exactly
-   - If the sheet has columns the DB doesn't have, skip them in the upload (add a comment noting the skipped column)
-   - If the sheet is missing columns the DB has, keep the DB field but map it to `None` / empty on upload
-
-4. **Debug upload returning 0 rows.** After fixing column names, test each upload with a small CSV export from the sheet. If `{"imported": 0}` comes back, check:
-   - Encoding: the parser uses `utf-8-sig` — if the sheet exports UTF-8 without BOM that's fine, but if it exports in a different encoding, update the decode call
-   - Delimiter: Google Sheets CSV export uses comma — confirm no tab-delimited issues
-   - Header row: confirm `csv.DictReader` is picking up row 1 as headers (not a title row above the headers)
-
-5. **Also check `testing/import_rates.py`** — this script imports from the Excel file. If the sheet column names changed, the Excel column references in that script may also be stale. Update them to stay consistent with the Google Sheet.
-
-**Files to read:**
-- `routers/rates.py` — full file (all upload + download handlers)
-- `models.py` — WCRate, WCGuideline, SutaRate field names
-- `testing/import_rates.py` — Excel import script, may need parallel updates
-
-**Commit:** `fix: align upload/download column names with Pricing Tool Tables Google Sheet`
-
----
-
 ### Calculation Verification
 **Status:** pending — `calc-verification`
 **Priority:** High — do after `sheets-upload-fix`

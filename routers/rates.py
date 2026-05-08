@@ -92,18 +92,38 @@ def download_wc_guidelines(db: Session = Depends(get_db)):
     )
 
 
+_STATE_NAMES = {
+    "AK": "Alaska", "AL": "Alabama", "AR": "Arkansas", "AZ": "Arizona",
+    "CA": "California", "CO": "Colorado", "CT": "Connecticut", "DC": "District of Columbia",
+    "DE": "Delaware", "FL": "Florida", "GA": "Georgia", "HI": "Hawaii",
+    "IA": "Iowa", "ID": "Idaho", "IL": "Illinois", "IN": "Indiana",
+    "KS": "Kansas", "KY": "Kentucky", "LA": "Louisiana", "MA": "Massachusetts",
+    "MD": "Maryland", "ME": "Maine", "MI": "Michigan", "MN": "Minnesota",
+    "MO": "Missouri", "MS": "Mississippi", "MT": "Montana", "NC": "North Carolina",
+    "ND": "North Dakota", "NE": "Nebraska", "NH": "New Hampshire", "NJ": "New Jersey",
+    "NM": "New Mexico", "NV": "Nevada", "NY": "New York", "OH": "Ohio",
+    "OK": "Oklahoma", "OR": "Oregon", "PA": "Pennsylvania", "RI": "Rhode Island",
+    "SC": "South Carolina", "SD": "South Dakota", "TN": "Tennessee", "TX": "Texas",
+    "UT": "Utah", "VA": "Virginia", "VT": "Vermont", "WA": "Washington",
+    "WI": "Wisconsin", "WV": "West Virginia", "WY": "Wyoming",
+}
+
+
 @router.get("/download/suta-rates")
 def download_suta_rates(db: Session = Depends(get_db)):
     rows = db.query(SutaRate).order_by(SutaRate.state).all()
+    # DB stores decimals (0.027); sheet expects percentages (2.7)
     data = [
-        [r.state, r.threshold, r.vhr_min_rate,
+        [_STATE_NAMES.get(r.state, ""), r.state, r.threshold,
+         round(r.vhr_min_rate * 100, 6) if r.vhr_min_rate is not None else None,
          "Y" if r.client_reporting else "N",
-         r.our_cost, None]
+         round(r.our_cost * 100, 6) if r.our_cost is not None else None,
+         None]
         for r in rows
     ]
     return _csv_response(
         data,
-        ["State", "Threshold", "VHR Min Rate",
+        ["State Name", "State", "Threshold", "VHR Min Rate",
          "Client Reporting", "Our Cost", "Date Updated"],
         "suta_rates.csv",
     )
@@ -209,9 +229,12 @@ async def upload_suta_rates(file: UploadFile = File(...), db: Session = Depends(
         try:
             state            = (row.get("State") or "").strip()
             threshold        = _safe_float(row.get("Threshold") or "")
-            vhr_min_rate     = _safe_float(row.get("VHR Min Rate") or "")
+            # Sheet stores rates as percentages (2.7 = 2.7%); DB stores decimals (0.027)
+            raw_vhr          = _safe_float(row.get("VHR Min Rate") or "")
+            vhr_min_rate     = raw_vhr / 100 if raw_vhr is not None else None
             client_reporting = (row.get("Client Reporting") or "").strip().upper() == "Y"
-            our_cost         = _safe_float(row.get("Our Cost") or "")
+            raw_cost         = _safe_float(row.get("Our Cost") or "")
+            our_cost         = raw_cost / 100 if raw_cost is not None else None
 
             if not state:
                 continue

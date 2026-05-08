@@ -1,10 +1,4 @@
 {
-  "sheets-upload-fix": {
-    "status": "pending",
-    "priority": 0,
-    "blocked_by": null,
-    "note": "Upload/download for WC Rates, WC Guidelines, and SUTA Rates is broken and/or column names don't match the source-of-truth Google Sheet. Use Google CLI to read actual column headers from the sheet, compare against routers/rates.py, fix mismatches in both upload parsers and download headers. Sheet ID: 1NcHPIhsF1uIOQNFWBo-ZpeXWXNewYcEyinx6-IdIaMc. Full brief in todo.md."
-  },
   "calc-verification": {
     "status": "pending",
     "priority": 1,

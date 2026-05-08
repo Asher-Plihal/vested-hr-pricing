@@ -4,6 +4,20 @@ Most recent entry at the top. Add an entry when a task completes. This is where 
 
 ---
 
+### 2026-05-08 — sheets-upload-fix complete
+
+**Task:** `sheets-upload-fix`
+
+Compared all three rate table handlers in `routers/rates.py` against the live Google Sheet (ID: `1NcHPIhsF1uIOQNFWBo-ZpeXWXNewYcEyinx6-IdIaMc`) using the Sheets API. WC Rates and WC Guidelines column names matched exactly — no changes needed for those. SUTA Rates had two issues:
+
+1. **Missing "State Name" column in download.** Sheet has `State Name | State | ...`; download was emitting `State | ...`. Fixed by adding `State Name` as the first column, backed by a `_STATE_NAMES` lookup dict in `routers/rates.py`.
+
+2. **SUTA rate percentage-to-decimal conversion missing from upload.** The sheet stores `VHR Min Rate` and `Our Cost` as percentages (e.g., 2.7 for 2.7%). The DB stores decimals (0.027) for the calc pipeline (`suta_bill = billing_rate * taxable_gws`). The upload handler was storing raw sheet values without dividing by 100. Fixed: upload now divides both fields by 100. Download now multiplies by 100 so round-trip from sheet → upload → download → sheet is lossless.
+
+All three uploads confirmed working (24,965 / 19,552 / 51 rows) with correct values. DB restored from the full Google Sheet after the fix.
+
+---
+
 ### 2026-05-08 — Phase 2 data foundation complete
 
 **Tasks completed:** `import-rate-data`, `wc-rates-vlookup`, `wc-code-search-endpoint`, `seed-client`, `suta-rates-verify`
