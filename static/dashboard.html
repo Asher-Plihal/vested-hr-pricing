@@ -37,16 +37,13 @@
 
     /* ── Search dropdown ── */
     .search-dropdown {
-      position: absolute;
-      top: calc(100% + 6px);
-      left: 0;
-      right: 0;
+      position: fixed;
       background: #fff;
       border-radius: 8px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.18);
       border: 1px solid #e2e8f0;
       overflow: hidden;
-      z-index: 300;
+      z-index: 9999;
       list-style: none;
       padding: 0;
       margin: 0;
@@ -125,7 +122,6 @@
     <div class="search-wrap">
       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input class="topnav-search" type="search" placeholder="Search clients..." autocomplete="off" />
-      <ul id="search-dropdown" class="search-dropdown" hidden></ul>
     </div>
     <a class="topnav-current" href="/static/config.html">
       <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -297,7 +293,19 @@ let clients = [];
 
 (function wireSearch() {
   const input    = document.querySelector('.topnav-search');
-  const dropdown = document.getElementById('search-dropdown');
+
+  const dropdown = document.createElement('ul');
+  dropdown.id    = 'search-dropdown';
+  dropdown.className = 'search-dropdown';
+  dropdown.hidden    = true;
+  document.body.appendChild(dropdown);
+
+  function positionDropdown() {
+    const rect = input.getBoundingClientRect();
+    dropdown.style.top   = (rect.bottom + 6) + 'px';
+    dropdown.style.left  = rect.left + 'px';
+    dropdown.style.width = rect.width + 'px';
+  }
 
   function getTableRows() {
     return Array.from(document.querySelectorAll('#clients-table-wrap tr[data-id]'));
@@ -329,6 +337,7 @@ let clients = [];
       });
       dropdown.appendChild(li);
     });
+    positionDropdown();
     dropdown.hidden = false;
   }
 
