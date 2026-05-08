@@ -1,68 +1,38 @@
 {
-  "import-rate-data": {
-    "status": "complete",
-    "priority": 1,
-    "blocked_by": null,
-    "note": "testing/import_rates.py written and run. WC Cost Rates (~25K rows), WC Sunz Guidelines (~19.5K rows), and SUTA Cost Rates (51 states) all imported from Pricing Template 03.10.26_ALL SHEETS.xlsx. SUTA now has real VHR rates — 22+ states are client-reporting, rates stored as decimals (divided by 100 from spreadsheet's percentage form)."
-  },
-  "wc-rates-vlookup": {
-    "status": "complete",
-    "priority": 1,
-    "blocked_by": null,
-    "note": "calc/workers_comp.py now accepts db=None and queries wc_rates by state+code concat key. routers/calculate.py passes db. GET /wc-rate?state=TX&code=5645 endpoint added to routers/rates.py. Rate field in client.html is readonly and auto-populated on state/code input."
-  },
-  "seed-client": {
-    "status": "complete",
-    "priority": 1,
-    "blocked_by": null,
-    "note": "testing/seed_client.py creates Hartman Industrial LLC (TX, biweekly, proposed_mod=0.88, 2 WC lines: codes 5190 and 8810, 1 TX SUTA line). Idempotent — skips if already exists. Does not touch SystemConfig."
-  },
   "calc-verification": {
     "status": "pending",
     "priority": 1,
     "blocked_by": null,
-    "note": "Run POST /calculate with Hartman Industrial LLC and verify every number against the formulas in pricing_math.md. WC rates are now auto-looked up from DB. Check: WC billing/cost/margin, FICA, FUTA, SUTA, admin fee, commission, summary totals. Flag any formula mismatches."
-  },
-  "suta-rates-verify": {
-    "status": "complete",
-    "priority": 1,
-    "blocked_by": null,
-    "note": "Real VHR rates imported from SUTA Cost Rates sheet. Rates converted from percentage to decimal form. 22+ states marked client-reporting (including AK, CT, DE, IA, KS, KY, MA, ME, MI, MN, MS, MT, NE, NV, OH, PA, RI, SC, SD, TN, VT, WA). CA, NY, NJ now correctly show as VHR-reporting with real rates. MO note preserved."
-  },
-  "wc-code-search-endpoint": {
-    "status": "complete",
-    "priority": 2,
-    "blocked_by": null,
-    "note": "GET /wc-rate?state=&code= endpoint added to routers/rates.py as part of wc-rates-vlookup work. Returns {rate} or 404."
+    "note": "Run POST /calculate with Hartman Industrial LLC, verify every output against pricing_math.md formulas, fix any bugs. WC rates now auto-looked up from DB. Full expected numbers in todo.md brief."
   },
   "wc-code-searchable-dropdowns": {
     "status": "pending",
     "priority": 2,
     "blocked_by": null,
-    "note": "WC code input is still a plain text field. Now unblocked — wc_rates table is populated. Need GET /wc-codes?state=TX&q=clerical search endpoint + combobox UI in addWCCodeRow() in static/client.html."
+    "note": "WC code input is still plain text. wc_rates table is now populated. Need GET /wc-codes?state=TX&q=clerical search endpoint in routers/rates.py + combobox UI replacing plain text input in addWCCodeRow() in client.html."
   },
   "benefits-tab": {
     "status": "blocked",
     "priority": 3,
-    "blocked_by": "VHR staff — need plan PEPM data and rate tier band confirmation",
-    "note": "calc/benefits.py does not exist. No benefits fields in SystemConfig or CalculateRequest. Phase 3 unless VHR provides data."
+    "blocked_by": "VHR staff — need actual plan PEPM data and rate tier band confirmation",
+    "note": "calc/benefits.py does not exist. No benefits fields in SystemConfig or CalculateRequest. Benefit-RateTierBands sheet exists in Excel template. Math is in pricing_math.md. Do not start until VHR provides data."
   },
   "auth-roles": {
     "status": "deferred",
     "priority": 3,
     "blocked_by": null,
-    "note": "Deferred to phase 3. No users table, no login, no role-gating. Not needed before internal testing."
+    "note": "Phase 3. No users table, no login, no role-gating. Full brief in old todo if needed."
   },
   "search-bar": {
     "status": "deferred",
     "priority": 4,
     "blocked_by": null,
-    "note": "Deferred to phase 3. Search input is decorative. Not needed for pricing/calc testing."
+    "note": "Phase 3. Search input is decorative on all pages."
   },
   "generate-doc-proposal": {
     "status": "deferred",
     "priority": 3,
     "blocked_by": null,
-    "note": "Deferred to phase 3. Generate Doc button fires a toast. Nice-to-have, not needed for calc verification."
+    "note": "Phase 3. Generate Doc button fires a toast. No proposal endpoint exists."
   }
 }

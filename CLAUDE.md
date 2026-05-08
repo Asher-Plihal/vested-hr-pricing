@@ -69,34 +69,43 @@ WSE → Workers' Comp → FICA → FUTA → SUTA → Admin Fee → Commission �
 
 ## Key design decisions
 
-These are non-obvious choices made in Phase 1. Do not undo them without asking.
+Non-obvious choices. Do not undo without asking.
 
-- **FUTA uses Approach B only**: `W × wage_base × rate × turnover_pct`. Turnover % is a required client input (`w2s_generated` field). No default assumed. Approach A (burden-rate display) is not used.
-- **WC manual rate**: The `WCLine.manual_rate` field is entered directly on the client form. The 25K-row `wc_rates` DB table exists and is indexed by `concat` (state+code) but is **not yet wired into calculations** — see todo `wc-rates-vlookup`.
-- **Config autosaves**: All system config fields save 600ms after any change. No Save button anywhere.
-- **SUTA client-reporting states**: CA, NY, NJ, PA, RI bill at the client's own rate. These rows have `vhr_min_rate = None` and `client_reporting = True` in the DB.
-- **WC carve-out**: `proposed_mod = 0` signals full carve-out; `calculate_wc` zeros all WC billing/cost when mod is 0.
-- **WC state lists stored as comma-separated strings** in `SystemConfig`: `monopolistic_states` (WA/WY/ND/OH — always carve-out) and `mcp_states` (binding takes longer). These drive UI warnings, not calculation changes.
-- **CSV upload replaces entire table**: `POST /upload/wc-rates`, `/upload/wc-guidelines`, `/upload/suta-rates` each delete all existing rows before inserting. There is no merge/upsert.
-- **`POST /calculate` is stateless**: takes a full client payload, returns summary dict. Nothing is written to DB.
-- **Sub-line records (WCLine, SutaLine, WCLoss) are replace-on-save**: `PUT /clients/{id}` deletes all existing child rows for a given type and re-inserts if the corresponding list is present in the payload.
+- **FUTA Approach B only**: `W × wage_base × rate × turnover_pct`. `w2s_generated` is a required client input. Approach A not used.
+- **WC rate auto-lookup**: `calc/workers_comp.py` queries `wc_rates` by `state+code` concat key. Falls back to `WCLine.manual_rate` if not found or db=None. Rate field in `client.html` is readonly and auto-populated.
+- **SUTA client-reporting states**: ~22 states where the client files under their own SUTA account (`client_reporting=True`). These include AK, CT, DE, IA, KS, KY, MA, ME, MI, MN, MS, MT, NE, NV, OH, PA, RI, SC, SD, TN, VT, WA. CA, NY, NJ are VHR-reporting with real rates. See `management/updates.md` for the full import note.
+- **Config autosaves**: All system config fields save 600ms after any change. No Save button.
+- **WC carve-out**: `proposed_mod = 0` zeros all WC billing/cost in `calculate_wc`.
+- **WC state lists**: `SystemConfig.monopolistic_states` and `mcp_states` are comma-separated strings. Drive UI warnings only, not calc changes.
+- **CSV upload replaces entire table**: `/upload/wc-rates`, `/upload/wc-guidelines`, `/upload/suta-rates` delete all rows before inserting. No merge/upsert.
+- **`POST /calculate` is stateless**: full client payload in, summary dict out. Nothing written to DB.
+- **Sub-line replace-on-save**: `PUT /clients/{id}` deletes and re-inserts WCLine, SutaLine, WCLoss rows when those lists are present in the payload.
 
-## Data state (as of Phase 1 completion)
+## Data state
 
-- All 51 SUTA state rows are **placeholder values** — tool will not produce accurate SUTA numbers until VHR provides real data.
-- `wc_rates` and `wc_guidelines` tables are **empty** until VHR uploads CSV via config page.
-- `wc_policy_adjustment` seeded at `0.0` — purpose not confirmed with VHR.
+- `wc_rates`: 24,965 rows (2026 UWIC). Imported from "WC Cost Rates" sheet in `Pricing Template 03.10.26_ALL SHEETS.xlsx`.
+- `wc_guidelines`: 19,552 rows. Reference only — not used in billing math.
+- `suta_rates`: 51 states with real VHR rates. Rates stored as decimals (0.027 = 2.7%).
+- `wc_policy_adjustment`: seeded at 0.0 — purpose not confirmed with VHR.
+
+**To populate a fresh DB:**
+```
+python testing/seed.py           # SystemConfig defaults
+python testing/import_rates.py   # real WC and SUTA rate data from Excel
+python testing/seed_client.py    # Hartman Industrial LLC test client
+```
 
 ## Management docs
 
 | Doc | Purpose |
 |---|---|
-| `management/status.json` | Task states: `pending`/`in-progress`/`complete`/`blocked`. Read first, update when done. |
-| `management/todo.md` | Full brief per task — exact function names, file paths, endpoint signatures. |
-| `management/updates.md` | Changelog — what was built, what changed. |
+| `management/status.json` | Active tasks only: `pending`, `in-progress`, `blocked`, `deferred`. No completed tasks. |
+| `management/todo.md` | Full brief per active task. |
+| `management/updates.md` | What was built and when. Completed task context lives here. |
 
 ### Agent workflow
-1. Read `management/status.json`
-2. Pick a `pending` task, set to `in-progress`, read its brief in `todo.md`
-3. Do the work, commit
-4. Set to `complete` in `status.json`, commit
+1. Read `management/updates.md` briefly — know what's already done
+2. Read `management/status.json` — pick a `pending` task, set it to `in-progress`
+3. Read its full brief in `management/todo.md`
+4. Do the work, commit
+5. **Remove the task from both `status.json` and `todo.md`**. Write a summary entry to `management/updates.md`. Commit.

@@ -1,6 +1,30 @@
 # Update Log — VestedHR Pricing Tool
 
-Most recent entry at the top. Add an entry any time a meaningful change is made.
+Most recent entry at the top. Add an entry when a task completes. This is where completed task context lives — status.json and todo.md only track what's left to do.
+
+---
+
+### 2026-05-08 — Phase 2 data foundation complete
+
+**Tasks completed:** `import-rate-data`, `wc-rates-vlookup`, `wc-code-search-endpoint`, `seed-client`, `suta-rates-verify`
+
+**Rate data imported from `Pricing Template 03.10.26_ALL SHEETS.xlsx`:**
+- `wc_rates`: 24,965 rows (2026 UWIC rates). Source sheet: "WC Cost Rates" cols A–H. Class codes stored as strings. Rates are per $100 payroll, used as-is.
+- `wc_guidelines`: 19,552 rows. Source sheet: "WC Sunz Guidelines". Reference only — not used in billing math.
+- `suta_rates`: 51 states. Source sheet: "SUTA Cost Rates". **Rates in spreadsheet are in percentage form (2.7 = 2.7%) — divided by 100 on import.** Exception: values already < 0.10 treated as already decimal.
+
+**SUTA client-reporting states corrected.** The original seed had CA, NY, NJ, PA, RI as client-reporting. The real spreadsheet data shows ~22 client-reporting states: AK, CT, DE, IA, KS, KY, MA, ME, MI, MN, MS, MT, NE, NV, OH, PA, RI, SC, SD, TN, VT, WA. CA, NY, NJ are VHR-reporting with real rates (6.82%, 4.5%, 3.75%). CLAUDE.md Key Design Decisions entry for SUTA is now outdated — the spreadsheet is authoritative.
+
+**WC VLOOKUP wired:** `calc/workers_comp.py` now accepts `db=None` and queries `wc_rates` by `state+code` concat key per line. Falls back to `manual_rate` if not found or db is None. `routers/calculate.py` passes `db`. Rate field in `client.html` is readonly and auto-populates via `GET /wc-rate?state=&code=`.
+
+**Test client:** `testing/seed_client.py` creates Hartman Industrial LLC (TX, biweekly, proposed_mod=0.88, admin_rate=3.5%, 2 WC lines: TX5190 + TX8810, 1 TX SUTA line). Idempotent. Does not touch SystemConfig.
+
+**Scripts to run on a fresh DB:**
+```
+python testing/seed.py          # SystemConfig defaults + 51 SUTA placeholder rows
+python testing/import_rates.py  # real WC and SUTA rate data from Excel
+python testing/seed_client.py   # Hartman Industrial LLC test client
+```
 
 ---
 
