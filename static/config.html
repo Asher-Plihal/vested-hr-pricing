@@ -146,6 +146,7 @@
           <div class="csv-btns">
             <button class="csv-btn csv-btn-dl" type="button" id="wc-rates-dl">Download CSV</button>
             <button class="csv-btn csv-btn-ul" type="button" id="wc-rates-ul">Upload CSV</button>
+            <input type="file" id="wc-rates-file" accept=".csv" style="display:none" />
           </div>
         </div>
         <div class="csv-columns">Columns: Carrier, State, Class Code, Concat, Rate, Min Premium, Description, Effective Date</div>
@@ -155,6 +156,7 @@
           <div class="csv-btns">
             <button class="csv-btn csv-btn-dl" type="button" id="wc-guide-dl">Download CSV</button>
             <button class="csv-btn csv-btn-ul" type="button" id="wc-guide-ul">Upload CSV</button>
+            <input type="file" id="wc-guide-file" accept=".csv" style="display:none" />
           </div>
         </div>
         <div class="csv-columns">Columns: State, NCCI Code, Lookup Code, Concat, IRMI Classification, NAICS, Hazard Group, 100K Flag, Effective Date</div>
@@ -184,6 +186,7 @@
           <div class="csv-btns">
             <button class="csv-btn csv-btn-dl" type="button" id="suta-rates-dl">Download CSV</button>
             <button class="csv-btn csv-btn-ul" type="button" id="suta-rates-ul">Upload CSV</button>
+            <input type="file" id="suta-rates-file" accept=".csv" style="display:none" />
           </div>
         </div>
         <div class="csv-columns">Columns: State, Threshold (Wage Base), VHR Min Rate, Client Reporting (Y/N), Our Cost Rate, Date Updated</div>
@@ -372,13 +375,47 @@ document.getElementById('save-suta').addEventListener('click', () => {
   saveTab(collectSuta());
 });
 
-/* ── CSV button stubs (all fire a "Coming soon" toast) ──────────────────────── */
-['wc-rates-dl','wc-rates-ul','wc-guide-dl','wc-guide-ul','suta-rates-dl','suta-rates-ul']
-  .forEach(id => {
-    document.getElementById(id).addEventListener('click', () => {
-      showToast('Coming soon', 'info');
-    });
+/* ── CSV downloads ──────────────────────────────────────────────────────────── */
+document.getElementById('wc-rates-dl').addEventListener('click', () => {
+  window.location.href = '/download/wc-rates';
+});
+document.getElementById('wc-guide-dl').addEventListener('click', () => {
+  window.location.href = '/download/wc-guidelines';
+});
+document.getElementById('suta-rates-dl').addEventListener('click', () => {
+  window.location.href = '/download/suta-rates';
+});
+
+/* ── CSV uploads ────────────────────────────────────────────────────────────── */
+function wireUpload(btnId, inputId, endpoint, label) {
+  const btn   = document.getElementById(btnId);
+  const input = document.getElementById(inputId);
+  btn.addEventListener('click', () => input.click());
+  input.addEventListener('change', async () => {
+    if (!input.files[0]) return;
+    const origText = btn.textContent;
+    btn.textContent = 'Uploading...';
+    btn.disabled = true;
+    try {
+      const form = new FormData();
+      form.append('file', input.files[0]);
+      const res  = await fetch(endpoint, { method: 'POST', body: form });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Server error');
+      showToast(`Imported ${data.imported.toLocaleString()} ${label}`);
+    } catch (e) {
+      showToast('Upload failed: ' + e.message, 'error');
+    } finally {
+      btn.textContent = origText;
+      btn.disabled    = false;
+      input.value     = '';
+    }
   });
+}
+
+wireUpload('wc-rates-ul',   'wc-rates-file',   '/upload/wc-rates',       'WC rates');
+wireUpload('wc-guide-ul',   'wc-guide-file',   '/upload/wc-guidelines',  'WC guidelines');
+wireUpload('suta-rates-ul', 'suta-rates-file', '/upload/suta-rates',     'SUTA rates');
 
 /* ── Load on page open ──────────────────────────────────────────────────────── */
 async function loadConfig() {

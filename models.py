@@ -190,3 +190,32 @@ class WCLoss(Base):
     num_claims = Column(Integer, default=0)
     months_in_policy = Column(Integer, default=0)
     open_claims = Column(Integer, default=0)
+
+
+class WCRate(Base):
+    __tablename__ = "wc_rates"
+
+    id = Column(Integer, primary_key=True)
+    carrier = Column(String)
+    state = Column(String(2), index=True)
+    class_code = Column(String, index=True)
+    concat = Column(String, index=True)  # state + class_code, lookup key
+    rate = Column(Float)                 # per $100 payroll
+    min_premium = Column(Float, nullable=True)
+    description = Column(String, nullable=True)
+    effective_date = Column(String, nullable=True)
+
+
+class WCGuideline(Base):
+    __tablename__ = "wc_guidelines"
+
+    id = Column(Integer, primary_key=True)
+    state = Column(String(2), index=True)
+    ncci_code = Column(String)
+    lookup_code = Column(String)
+    concat = Column(String, index=True)
+    irmi_classification = Column(String, nullable=True)
+    naics = Column(String, nullable=True)
+    hazard_group = Column(String, nullable=True)
+    flag_100k = Column(String, nullable=True)  # SUB, RSTD, EXCLD
+    effective_date = Column(String, nullable=True)
