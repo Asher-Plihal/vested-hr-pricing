@@ -9,7 +9,7 @@ import os
 sys.path.insert(0, os.path.dirname(__file__))
 
 from database import engine, SessionLocal, Base
-from models import SystemConfig, SutaRate
+from models import SystemConfig, SutaRate, Client, WCLine, SutaLine, WCLoss
 
 Base.metadata.create_all(bind=engine)
 
