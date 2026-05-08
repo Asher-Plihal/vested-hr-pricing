@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VestedHR — System Configuration</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+<!-- ── Top Nav ──────────────────────────────────────────────────────────── -->
+<nav class="topnav">
+  <a href="/static/dashboard.html" class="topnav-logo">
+    <img src="/static/favicon.png" alt="VHR" />
+    <span class="topnav-logo-text">VestedHR</span>
+  </a>
+
+  <div class="topnav-search-wrap">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input type="text" class="topnav-search" placeholder="Search clients…" />
+  </div>
+
+  <div class="topnav-nav">
+    <span class="topnav-current">Config</span>
+  </div>
+
+  <button class="user-menu" type="button">
+    <div class="user-avatar">AP</div>
+    <div class="user-info">
+      <span class="user-name">Asher Plihal</span>
+      <span class="user-role">Admin</span>
+    </div>
+    <span class="user-caret">▾</span>
+  </button>
+</nav>
+
+<!-- ── Subheader ────────────────────────────────────────────────────────── -->
+<div class="subheader">
+  <div class="subheader-inner">
+    <div class="subheader-top">
+      <div>
+        <div class="subheader-title">System Configuration</div>
+      </div>
+    </div>
+
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="federal-tax">Federal Tax</button>
+      <button class="tab-btn" data-tab="workers-comp">Workers' Comp</button>
+      <button class="tab-btn" data-tab="suta">SUTA</button>
+      <button class="tab-btn" data-tab="admin">Admin</button>
+      <button class="tab-btn" data-tab="additional-fees">Additional Fees</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Page Content ──────────────────────────────────────────────────────── -->
+<div class="page-content">
+
+  <!-- ── Tab: Federal Tax ─────────────────────────────────────────────── -->
+  <div class="tab-panel active" id="tab-federal-tax">
+    <div class="card">
+      <div class="card-title">FICA</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="ss_rate">FICA SS Rate (%)</label>
+          <input type="number" id="ss_rate" step="0.001" min="0" max="100"
+                 placeholder="6.200" />
+        </div>
+        <div class="form-group">
+          <label for="medicare_rate">Medicare Rate (%)</label>
+          <input type="number" id="medicare_rate" step="0.001" min="0" max="100"
+                 placeholder="1.450" />
+        </div>
+        <div class="form-group">
+          <label for="ss_wage_base">SS Wage Base ($)</label>
+          <input type="number" id="ss_wage_base" step="1" min="0"
+                 placeholder="176100" />
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">FUTA</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="futa_rate">FUTA Rate (%)</label>
+          <input type="number" id="futa_rate" step="0.001" min="0" max="100"
+                 placeholder="0.600" />
+        </div>
+        <div class="form-group">
+          <label for="futa_wage_base">FUTA Wage Base ($)</label>
+          <input type="number" id="futa_wage_base" step="1" min="0"
+                 placeholder="7000" />
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;">
+      <button class="btn-primary" id="save-federal-tax" type="button">Save Changes</button>
+    </div>
+  </div>
+
+  <!-- ── Tab: Workers' Comp ───────────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-workers-comp">
+    <div class="card">
+      <div class="card-title">WC Cost Factors</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="fixed_cost_factor">Fixed Cost Factor</label>
+          <input type="number" id="fixed_cost_factor" step="0.01" min="0"
+                 placeholder="0.39" />
+        </div>
+        <div class="form-group">
+          <label for="loss_fund_factor">Loss Fund Factor</label>
+          <input type="number" id="loss_fund_factor" step="0.01" min="0"
+                 placeholder="0.50" />
+        </div>
+        <div class="form-group">
+          <label for="combined_cost_factor">Combined Cost Factor</label>
+          <input type="number" id="combined_cost_factor" step="0.01" min="0"
+                 placeholder="0.89" />
+          <span style="font-size:0.75rem;color:#718096;margin-top:2px;">Derived from Fixed + Loss Fund — editable for override</span>
+        </div>
+        <div class="form-group">
+          <label for="pte_weight">PTE Weight</label>
+          <input type="number" id="pte_weight" step="0.01" min="0" max="1"
+                 placeholder="0.75" />
+        </div>
+        <div class="form-group">
+          <label for="wc_policy_adjustment">WC Policy Adjustment / Sunz (%)</label>
+          <input type="number" id="wc_policy_adjustment" step="0.001" min="0" max="100"
+                 placeholder="0.000" />
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">State Lists</div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label for="monopolistic_states">Monopolistic States</label>
+          <textarea id="monopolistic_states" rows="2"
+                    placeholder="WA,WY,ND,OH"></textarea>
+          <span style="font-size:0.75rem;color:#718096;margin-top:2px;">Comma-separated 2-letter state codes. These states always carve out WC.</span>
+        </div>
+        <div class="form-group full">
+          <label for="mcp_states">MCP States</label>
+          <textarea id="mcp_states" rows="3"
+                    placeholder="RI,NY,NJ,PA,LA,WI,MN,SD,KS,MT,AZ,UT,NV,CA,OR"></textarea>
+          <span style="font-size:0.75rem;color:#718096;margin-top:2px;">Comma-separated 2-letter state codes. Manual Class Pricing — binding takes longer in these states.</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;">
+      <button class="btn-primary" id="save-workers-comp" type="button">Save Changes</button>
+    </div>
+  </div>
+
+  <!-- ── Tab: SUTA ────────────────────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-suta">
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div style="padding:20px 28px 16px;border-bottom:1px solid #e2e8f0;">
+        <div class="card-title" style="margin-bottom:0;">SUTA Rates by State</div>
+      </div>
+      <div style="overflow-x:auto;max-height:560px;overflow-y:auto;">
+        <table class="data-table" id="suta-table">
+          <thead>
+            <tr>
+              <th style="position:sticky;top:0;background:#fff;z-index:1;">State</th>
+              <th style="position:sticky;top:0;background:#fff;z-index:1;">Threshold ($)</th>
+              <th style="position:sticky;top:0;background:#fff;z-index:1;">VHR Min Rate (%)</th>
+              <th style="position:sticky;top:0;background:#fff;z-index:1;">Client Reporting</th>
+              <th style="position:sticky;top:0;background:#fff;z-index:1;">Our Cost (%)</th>
+            </tr>
+          </thead>
+          <tbody id="suta-tbody">
+            <!-- rows injected by JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div id="suta-gap-notice" class="note-box visible" style="margin:16px 28px;display:block;">
+        <strong>Backend gap:</strong> SUTA rates are stored in a separate <code>suta_rates</code> table.
+        The current <code>GET /config</code> and <code>PUT /config</code> endpoints do not include them.
+        A dedicated <code>GET /suta-rates</code> and <code>PUT /suta-rates</code> endpoint is required
+        before this tab can load or save data. See build_progress.json for details.
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;margin-top:20px;">
+      <button class="btn-primary" id="save-suta" type="button">Save Changes</button>
+    </div>
+  </div>
+
+  <!-- ── Tab: Admin ───────────────────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-admin">
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div style="padding:20px 28px 16px;border-bottom:1px solid #e2e8f0;">
+        <div class="card-title" style="margin-bottom:0;">Pay Periods</div>
+      </div>
+      <table class="data-table" id="pay-periods-table">
+        <thead>
+          <tr>
+            <th>Frequency</th>
+            <th>Periods per Year</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Weekly</td>
+            <td><input type="number" id="pp_weekly" min="1" step="1" style="max-width:120px;" /></td>
+          </tr>
+          <tr>
+            <td>Bi-Weekly</td>
+            <td><input type="number" id="pp_biweekly" min="1" step="1" style="max-width:120px;" /></td>
+          </tr>
+          <tr>
+            <td>Semi-Monthly</td>
+            <td><input type="number" id="pp_semimonthly" min="1" step="1" style="max-width:120px;" /></td>
+          </tr>
+          <tr>
+            <td>Monthly</td>
+            <td><input type="number" id="pp_monthly" min="1" step="1" style="max-width:120px;" /></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;margin-top:20px;">
+      <button class="btn-primary" id="save-admin" type="button">Save Changes</button>
+    </div>
+  </div>
+
+  <!-- ── Tab: Additional Fees ─────────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-additional-fees">
+    <div class="card">
+      <div class="card-title">Additional Fees</div>
+      <p style="font-size:0.875rem;color:#4a5568;line-height:1.6;">
+        Additional fees (TLM, EPLI, Wire/ACH, Setup Fee) are entered per client record
+        in the Pricing tab. No system-level defaults are configured here.
+      </p>
+    </div>
+  </div>
+
+</div><!-- /page-content -->
+
+<script src="/static/app.js"></script>
+<script>
+
+/* ── State ─────────────────────────────────────────────────────────────── */
+
+// Live copy of last-fetched config — we merge tab changes into this before PUT
+let currentConfig = null;
+
+// Live copy of last-fetched suta rates (pending backend endpoint)
+let sutaRates = [];
+
+/* ── Tab switching ──────────────────────────────────────────────────────── */
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ── Helpers ────────────────────────────────────────────────────────────── */
+
+// Decimal stored → percentage displayed (0.062 → 6.2)
+function toDisplayPct(decimal) {
+  if (decimal == null) return '';
+  return parseFloat((decimal * 100).toPrecision(10)).toString();
+}
+
+// Percentage entered → decimal to store (6.2 → 0.062)
+function fromDisplayPct(str) {
+  const v = parseFloat(str);
+  return isNaN(v) ? null : v / 100;
+}
+
+/* ── Populate fields from config ────────────────────────────────────────── */
+
+function populateFederalTax(cfg) {
+  document.getElementById('ss_rate').value        = toDisplayPct(cfg.ss_rate);
+  document.getElementById('medicare_rate').value  = toDisplayPct(cfg.medicare_rate);
+  document.getElementById('ss_wage_base').value   = cfg.ss_wage_base ?? '';
+  document.getElementById('futa_rate').value      = toDisplayPct(cfg.futa_rate);
+  document.getElementById('futa_wage_base').value = cfg.futa_wage_base ?? '';
+}
+
+function populateWorkersComp(cfg) {
+  document.getElementById('fixed_cost_factor').value    = cfg.fixed_cost_factor ?? '';
+  document.getElementById('loss_fund_factor').value     = cfg.loss_fund_factor ?? '';
+  document.getElementById('combined_cost_factor').value = cfg.combined_cost_factor ?? '';
+  document.getElementById('pte_weight').value           = cfg.pte_weight ?? '';
+  document.getElementById('wc_policy_adjustment').value = toDisplayPct(cfg.wc_policy_adjustment);
+  document.getElementById('monopolistic_states').value  = cfg.monopolistic_states ?? '';
+  document.getElementById('mcp_states').value           = cfg.mcp_states ?? '';
+}
+
+function populateAdmin(cfg) {
+  let pp = { weekly: 52, biweekly: 26, semimonthly: 24, monthly: 12 };
+  try { pp = JSON.parse(cfg.pay_periods_json); } catch (e) {}
+  document.getElementById('pp_weekly').value      = pp.weekly      ?? 52;
+  document.getElementById('pp_biweekly').value    = pp.biweekly    ?? 26;
+  document.getElementById('pp_semimonthly').value = pp.semimonthly ?? 24;
+  document.getElementById('pp_monthly').value     = pp.monthly     ?? 12;
+}
+
+function populateSutaTable(rates) {
+  const tbody = document.getElementById('suta-tbody');
+  tbody.innerHTML = '';
+
+  if (!rates || rates.length === 0) {
+    const row = tbody.insertRow();
+    const cell = row.insertCell();
+    cell.colSpan = 5;
+    cell.style.cssText = 'text-align:center;color:#718096;padding:20px;';
+    cell.textContent = 'No SUTA rate data available — backend endpoint required.';
+    return;
+  }
+
+  rates.forEach(r => {
+    const row = tbody.insertRow();
+    row.dataset.state = r.state;
+
+    // State (read-only)
+    const tdState = row.insertCell();
+    tdState.textContent = r.state;
+    tdState.style.fontWeight = '600';
+
+    // Threshold
+    const tdThresh = row.insertCell();
+    const inThresh = document.createElement('input');
+    inThresh.type = 'number';
+    inThresh.step = '1';
+    inThresh.min = '0';
+    inThresh.value = r.threshold ?? '';
+    inThresh.dataset.field = 'threshold';
+    tdThresh.appendChild(inThresh);
+
+    // VHR Min Rate (stored as decimal, display as %)
+    const tdMin = row.insertCell();
+    const inMin = document.createElement('input');
+    inMin.type = 'number';
+    inMin.step = '0.001';
+    inMin.min = '0';
+    inMin.value = r.vhr_min_rate != null ? toDisplayPct(r.vhr_min_rate) : '';
+    inMin.dataset.field = 'vhr_min_rate';
+    tdMin.appendChild(inMin);
+
+    // Client Reporting (checkbox)
+    const tdCR = row.insertCell();
+    tdCR.style.textAlign = 'center';
+    const inCR = document.createElement('input');
+    inCR.type = 'checkbox';
+    inCR.checked = !!r.client_reporting;
+    inCR.dataset.field = 'client_reporting';
+    tdCR.appendChild(inCR);
+
+    // Our Cost (stored as decimal, display as %)
+    const tdCost = row.insertCell();
+    const inCost = document.createElement('input');
+    inCost.type = 'number';
+    inCost.step = '0.001';
+    inCost.min = '0';
+    inCost.value = r.our_cost != null ? toDisplayPct(r.our_cost) : '';
+    inCost.dataset.field = 'our_cost';
+    tdCost.appendChild(inCost);
+  });
+}
+
+/* ── Collect fields for save ────────────────────────────────────────────── */
+
+function collectFederalTax() {
+  return {
+    ss_rate:        fromDisplayPct(document.getElementById('ss_rate').value),
+    medicare_rate:  fromDisplayPct(document.getElementById('medicare_rate').value),
+    ss_wage_base:   parseFloat(document.getElementById('ss_wage_base').value) || null,
+    futa_rate:      fromDisplayPct(document.getElementById('futa_rate').value),
+    futa_wage_base: parseFloat(document.getElementById('futa_wage_base').value) || null,
+  };
+}
+
+function collectWorkersComp() {
+  return {
+    fixed_cost_factor:    parseFloat(document.getElementById('fixed_cost_factor').value) || null,
+    loss_fund_factor:     parseFloat(document.getElementById('loss_fund_factor').value) || null,
+    combined_cost_factor: parseFloat(document.getElementById('combined_cost_factor').value) || null,
+    pte_weight:           parseFloat(document.getElementById('pte_weight').value) || null,
+    wc_policy_adjustment: fromDisplayPct(document.getElementById('wc_policy_adjustment').value),
+    monopolistic_states:  document.getElementById('monopolistic_states').value.trim() || null,
+    mcp_states:           document.getElementById('mcp_states').value.trim() || null,
+  };
+}
+
+function collectAdmin() {
+  const pp = {
+    weekly:      parseInt(document.getElementById('pp_weekly').value)      || 52,
+    biweekly:    parseInt(document.getElementById('pp_biweekly').value)    || 26,
+    semimonthly: parseInt(document.getElementById('pp_semimonthly').value) || 24,
+    monthly:     parseInt(document.getElementById('pp_monthly').value)     || 12,
+  };
+  return { pay_periods_json: JSON.stringify(pp) };
+}
+
+function collectSutaRows() {
+  const rows = document.querySelectorAll('#suta-tbody tr');
+  const result = [];
+  rows.forEach(row => {
+    if (!row.dataset.state) return;
+    const inputs = row.querySelectorAll('input');
+    const entry = { state: row.dataset.state };
+    inputs.forEach(inp => {
+      const field = inp.dataset.field;
+      if (!field) return;
+      if (inp.type === 'checkbox') {
+        entry[field] = inp.checked;
+      } else if (field === 'vhr_min_rate' || field === 'our_cost') {
+        entry[field] = inp.value !== '' ? fromDisplayPct(inp.value) : null;
+      } else {
+        entry[field] = inp.value !== '' ? parseFloat(inp.value) : null;
+      }
+    });
+    result.push(entry);
+  });
+  return result;
+}
+
+/* ── Save handlers ──────────────────────────────────────────────────────── */
+
+async function saveTab(tabFields) {
+  if (!currentConfig) {
+    showToast('Config not loaded yet', 'error');
+    return;
+  }
+  // Merge tab-specific fields into the current config snapshot
+  const payload = Object.assign({}, currentConfig, tabFields);
+  // Remove id — it's not in SystemConfigUpdate
+  delete payload.id;
+
+  try {
+    const updated = await apiPut('/config', payload);
+    currentConfig = updated;
+    showToast('Changes saved');
+  } catch (err) {
+    showToast('Save failed: ' + err.message, 'error');
+  }
+}
+
+document.getElementById('save-federal-tax').addEventListener('click', () => {
+  saveTab(collectFederalTax());
+});
+
+document.getElementById('save-workers-comp').addEventListener('click', () => {
+  saveTab(collectWorkersComp());
+});
+
+document.getElementById('save-admin').addEventListener('click', () => {
+  saveTab(collectAdmin());
+});
+
+document.getElementById('save-suta').addEventListener('click', async () => {
+  // Backend gap: no PUT /suta-rates endpoint exists yet
+  showToast('SUTA save not yet available — backend endpoint required', 'error');
+});
+
+/* ── Load on page open ──────────────────────────────────────────────────── */
+
+async function loadConfig() {
+  try {
+    const cfg = await apiGet('/config');
+    currentConfig = cfg;
+    populateFederalTax(cfg);
+    populateWorkersComp(cfg);
+    populateAdmin(cfg);
+  } catch (err) {
+    showToast('Failed to load config: ' + err.message, 'error');
+  }
+}
+
+async function loadSutaRates() {
+  // Backend gap: GET /suta-rates does not exist yet.
+  // When the endpoint is added, replace this block with:
+  //   const rates = await apiGet('/suta-rates');
+  //   sutaRates = rates;
+  //   populateSutaTable(rates);
+  populateSutaTable([]);
+}
+
+loadConfig();
+loadSutaRates();
+
+</script>
+</body>
+</html>

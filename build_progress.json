@@ -49,7 +49,8 @@
   ],
   "server_start_verified": true,
   "completed": {
-    "client_page": "complete"
+    "client_page": "complete",
+    "config_page": "complete"
   },
   "notes": [
     "Python 3.14 is installed; all required packages (fastapi, uvicorn, sqlalchemy, pydantic) were already present in the system Python — no venv created.",
@@ -59,6 +60,7 @@
     "FUTA uses Approach B only per the spec. Approach A (burden-rate display) can be added later if VHR decides they want it.",
     "WC losses questionnaire fields (aircraft, hazmat, etc.) are not stored in the DB — the outline describes them as compliance questionnaire items. They can be added as a separate WCQuestionnaire model when the frontend needs them.",
     "The static/ directory is empty — frontend agents will add HTML files there.",
-    "Seed is idempotent — running seed.py twice will not duplicate rows."
+    "Seed is idempotent — running seed.py twice will not duplicate rows.",
+    "SUTA tab on config page is built but non-functional: GET /config and PUT /config do not expose suta_rates. The SutaRate model exists in models.py but has no router. A future agent must add GET /suta-rates and PUT /suta-rates endpoints (returning list[SutaRateOut] and accepting list[SutaRateUpdate]) before the SUTA tab can load or save data. The config.html SUTA tab already has the full table UI and collectSutaRows() wired — only the API calls need to be swapped in."
   ]
 }
