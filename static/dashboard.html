@@ -6,68 +6,7 @@
   <title>VestedHR — Dashboard</title>
   <link rel="stylesheet" href="/static/style.css" />
   <style>
-    /* ── Sidebar active gold tint ─────────────────────────────────────────── */
-    .sidebar-item.active {
-      background: rgba(201, 168, 76, 0.10);
-      color: #1e3154;
-      font-weight: 600;
-      border-left: 3px solid #c9a84c;
-      padding-left: 17px;
-    }
-    .sidebar-item:hover {
-      border-left: 3px solid #c9a84c;
-      padding-left: 17px;
-    }
-    .sidebar-section-label {
-      font-size: 0.65rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: #a0aec0;
-      padding: 16px 20px 6px;
-    }
-    /* ── Dashboard layout ─────────────────────────────────────────────────── */
-    .dash-layout {
-      margin-top: 56px;
-      margin-left: 220px;
-      min-height: calc(100vh - 56px);
-    }
-    .dash-content {
-      padding: 32px 32px 80px;
-      max-width: 1040px;
-    }
-    .dash-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 28px;
-    }
-    .dash-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #1a202c;
-    }
-    /* ── Stat cards row ───────────────────────────────────────────────────── */
-    .stat-cards-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-bottom: 28px;
-    }
-    /* ── Recent quotes table card ─────────────────────────────────────────── */
-    .table-card {
-      background: #fff;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    .table-card-header {
-      padding: 18px 24px;
-      border-bottom: 1px solid #e2e8f0;
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: #1e3154;
-    }
+    /* ── Empty state ── */
     .empty-state {
       text-align: center;
       padding: 48px 24px;
@@ -81,131 +20,121 @@
       cursor: pointer;
     }
     .empty-state a:hover { text-decoration: underline; }
-    .clickable-row { cursor: pointer; }
-    .clickable-row:hover td { background: #f0f4ff !important; }
   </style>
 </head>
 <body>
 
-<!-- ── Top Nav ──────────────────────────────────────────────────────────────── -->
+<!-- ═══════════════════════════════════════════════════
+     TOP NAV
+════════════════════════════════════════════════════ -->
 <nav class="topnav">
-  <a href="/static/dashboard.html" class="topnav-logo">
-    <img src="/static/favicon.png" alt="VHR" />
-    <span class="topnav-logo-text">VestedHR</span>
+  <a class="topnav-logo" href="/static/dashboard.html">
+    <img src="/static/favicon.png" alt="VestedHR" />
   </a>
-
-  <div class="topnav-search-wrap">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-    </svg>
-    <input type="text" class="topnav-search" placeholder="Search clients…" />
-  </div>
-
-  <div class="topnav-nav">
-    <a href="/static/dashboard.html" class="topnav-current">Dashboard</a>
-    <a href="/static/config.html" class="topnav-link">Config</a>
-  </div>
-
-  <button class="user-menu" type="button">
-    <div class="user-avatar">AP</div>
-    <div class="user-info">
-      <span class="user-name">Asher Plihal</span>
-      <span class="user-role">Admin</span>
+  <div class="topnav-actions">
+    <div class="search-wrap">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="topnav-search" type="search" placeholder="Search clients..." />
     </div>
-    <span class="user-caret">▾</span>
-  </button>
+    <a class="topnav-current" href="/static/config.html">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Config
+    </a>
+    <div class="user-menu">
+      <div class="user-avatar">AP</div>
+      <div class="user-info">
+        <span class="user-name">Asher Plihal</span>
+        <span class="user-role">Admin</span>
+      </div>
+      <span class="user-caret">▾</span>
+    </div>
+  </div>
 </nav>
 
-<!-- ── Sidebar ───────────────────────────────────────────────────────────────── -->
-<aside class="sidebar">
-  <div class="sidebar-section-label">Main</div>
-  <a href="/static/dashboard.html" class="sidebar-item active">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-      <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-    </svg>
-    Dashboard
-  </a>
-  <a href="#" class="sidebar-item">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-      <circle cx="9" cy="7" r="4"/>
-      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-    </svg>
-    Clients
-  </a>
-  <a href="#" class="sidebar-item">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-      <polyline points="14 2 14 8 20 8"/>
-      <line x1="16" y1="13" x2="8" y2="13"/>
-      <line x1="16" y1="17" x2="8" y2="17"/>
-      <polyline points="10 9 9 9 8 9"/>
-    </svg>
-    Quotes
-  </a>
+<!-- ═══════════════════════════════════════════════════
+     LAYOUT
+════════════════════════════════════════════════════ -->
+<div class="layout">
 
-  <div class="sidebar-section-label">Tools</div>
-  <a href="/static/config.html" class="sidebar-item">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="12" cy="12" r="3"/>
-      <path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M20 12h2M2 12H4M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41"/>
-    </svg>
-    Configuration
-  </a>
-  <a href="#" class="sidebar-item">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-    </svg>
-    Reports
-  </a>
-</aside>
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Main</div>
+      <a href="/static/dashboard.html" class="sidebar-item active">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a href="#" class="sidebar-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Clients
+      </a>
+      <a href="#" class="sidebar-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Quotes
+      </a>
+    </div>
+    <hr class="sidebar-divider" />
+    <div class="sidebar-section">
+      <div class="sidebar-label">Tools</div>
+      <a href="/static/config.html" class="sidebar-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M20 12h2M2 12H4M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41"/></svg>
+        Configuration
+      </a>
+      <a href="#" class="sidebar-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Reports
+      </a>
+    </div>
+  </aside>
 
-<!-- ── Main content ──────────────────────────────────────────────────────────── -->
-<div class="dash-layout">
-  <div class="dash-content">
+  <!-- ── Main ── -->
+  <main class="main">
 
     <!-- Header row -->
-    <div class="dash-header">
-      <h1 class="dash-title">Dashboard</h1>
-      <button class="btn-primary" id="btn-new-quote" type="button">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-        </svg>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px">
+      <div>
+        <div class="page-title">Dashboard</div>
+        <div class="page-sub">Welcome back, Asher — here's what's happening.</div>
+      </div>
+      <button class="btn-new" id="btn-new-quote" type="button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         New Quote
       </button>
     </div>
 
     <!-- Stat cards -->
-    <div class="stat-cards-row">
+    <div class="stat-grid">
       <div class="stat-card">
-        <div class="stat-card-label">Active Quotes</div>
-        <div class="stat-card-value" id="stat-active-quotes">—</div>
+        <div class="stat-label">Active Quotes</div>
+        <div class="stat-value" id="stat-active-quotes">—</div>
+        <div class="stat-sub">draft &amp; in review</div>
       </div>
       <div class="stat-card">
-        <div class="stat-card-label">Total Clients</div>
-        <div class="stat-card-value" id="stat-total-clients">—</div>
+        <div class="stat-label">Total Clients</div>
+        <div class="stat-value" id="stat-total-clients">—</div>
       </div>
       <div class="stat-card">
-        <div class="stat-card-label">Avg. Admin Rate</div>
-        <div class="stat-card-value">—</div>
+        <div class="stat-label">Avg. Admin Rate</div>
+        <div class="stat-value"><span class="stat-accent">—</span></div>
+        <div class="stat-sub">of gross wages</div>
       </div>
       <div class="stat-card">
-        <div class="stat-card-label">Total GWs</div>
-        <div class="stat-card-value">—</div>
+        <div class="stat-label">Total GWs (MTD)</div>
+        <div class="stat-value">—</div>
+        <div class="stat-sub">across all active clients</div>
       </div>
     </div>
 
-    <!-- Recent quotes table -->
-    <div class="table-card">
-      <div class="table-card-header">Recent Quotes</div>
+    <!-- Recent quotes -->
+    <div class="section-head">Recent Quotes</div>
+    <div class="card" style="padding:0;overflow:hidden;">
       <div id="quotes-table-wrap">
         <div class="empty-state">Loading…</div>
       </div>
     </div>
 
-  </div>
+  </main>
+
 </div>
 
 <script src="/static/app.js"></script>
@@ -222,25 +151,27 @@ function formatDate(iso) {
 
 function statusBadge(status) {
   const map = {
-    draft: 'badge-draft',
+    draft:     'badge-draft',
     in_review: 'badge-in-review',
-    approved: 'badge-approved',
+    approved:  'badge-approved',
   };
-  const cls = map[status] || 'badge-draft';
+  const cls   = map[status] || 'badge-draft';
   const label = status ? status.replace('_', ' ') : 'draft';
   return `<span class="badge ${cls}">${label}</span>`;
 }
 
 /* ── New Quote ──────────────────────────────────────────────────────────────── */
 
-document.getElementById('btn-new-quote').addEventListener('click', async () => {
+async function createNewQuote() {
   try {
     const result = await apiPost('/clients', {});
     window.location.href = `/static/client.html?id=${result.id}`;
   } catch (err) {
     showToast('Failed to create quote: ' + err.message, 'error');
   }
-});
+}
+
+document.getElementById('btn-new-quote').addEventListener('click', createNewQuote);
 
 /* ── Load dashboard data ────────────────────────────────────────────────────── */
 
@@ -256,10 +187,10 @@ async function loadDashboard() {
   }
 
   // Stat cards
-  const total = clients.length;
-  const active = clients.filter(c => c.status !== 'approved').length;
-  document.getElementById('stat-total-clients').textContent = total;
-  document.getElementById('stat-active-quotes').textContent = active;
+  const total  = clients.length;
+  const active = clients.filter(c => c.status === 'draft' || c.status === 'in_review').length;
+  document.getElementById('stat-total-clients').textContent  = total;
+  document.getElementById('stat-active-quotes').textContent  = active;
 
   // Table
   const wrap = document.getElementById('quotes-table-wrap');
@@ -270,32 +201,29 @@ async function loadDashboard() {
         No quotes yet.
         <a id="empty-new-quote">Create your first quote →</a>
       </div>`;
-    document.getElementById('empty-new-quote').addEventListener('click', async () => {
-      try {
-        const result = await apiPost('/clients', {});
-        window.location.href = `/static/client.html?id=${result.id}`;
-      } catch (err) {
-        showToast('Failed to create quote: ' + err.message, 'error');
-      }
-    });
+    document.getElementById('empty-new-quote').addEventListener('click', createNewQuote);
     return;
   }
 
   const rows = clients.map(c => `
-    <tr class="clickable-row" data-id="${c.id}">
-      <td style="font-weight:600;">${c.legal_name || '<span style="color:#a0aec0;font-weight:400;">Unnamed</span>'}</td>
+    <tr data-id="${c.id}">
+      <td><strong>${c.legal_name || '<span style="color:#a0aec0;font-weight:400;">Unnamed</span>'}</strong></td>
       <td>${c.consultant_name || '—'}</td>
+      <td></td>
+      <td></td>
       <td>${statusBadge(c.status)}</td>
       <td>${formatDate(c.updated_at)}</td>
     </tr>
   `).join('');
 
   wrap.innerHTML = `
-    <table class="data-table">
+    <table class="clients-table">
       <thead>
         <tr>
-          <th>Client Name</th>
+          <th>Client</th>
           <th>Consultant</th>
+          <th>EEs</th>
+          <th>Gross Wages</th>
           <th>Status</th>
           <th>Last Updated</th>
         </tr>
@@ -303,7 +231,7 @@ async function loadDashboard() {
       <tbody>${rows}</tbody>
     </table>`;
 
-  wrap.querySelectorAll('.clickable-row').forEach(row => {
+  wrap.querySelectorAll('tr[data-id]').forEach(row => {
     row.addEventListener('click', () => {
       window.location.href = `/static/client.html?id=${row.dataset.id}`;
     });
