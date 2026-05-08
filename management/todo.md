@@ -1,62 +1,132 @@
 # To-Do — VestedHR Pricing Tool
 
-Each item is written so it can be handed directly to an agent as a task brief.
-Items are grouped by theme and roughly prioritized within each group.
+Each item is a single-agent task brief. Pick one, read it fully, do the work, commit, update status.json.
 
 ---
 
 ## Data & Calculations
 
 ### WC Rates VLOOKUP
-**Status:** Ready to build  
-**Priority:** High — without this, sales reps must look up manual rates themselves
+**Status:** pending — `wc-rates-vlookup`
+**Priority:** High
 
-Currently `WCLine.manual_rate` is a field the user types in on the client form. The `wc_rates` table in the DB has ~25K rows (once uploaded via config page CSV upload) with `state`, `class_code`, `concat` (state+code), and `rate` per $100 payroll.
+Wire the `wc_rates` DB table into the calculation pipeline so the manual rate is looked up automatically instead of typed in.
 
 **What to build:**
-- In `calc/workers_comp.py`, accept an optional `db` session and look up `manual_rate` from `wc_rates` by `concat = state + wc_code` when `manual_rate` is not provided or is 0
-- In `routers/calculate.py`, pass the DB session to the WC calc function
-- In `static/client.html`, the Manual Rate column on the WC Codes table should become read-only once a valid state+code is entered, auto-populated from `GET /wc-rate?state=TX&code=3599`. Add a new `GET /wc-rate` endpoint to `routers/rates.py` that returns the rate for a given state+code concat.
-- If no rate is found (code not in table), keep the field editable and show a warning indicator on the row
+
+1. Add `GET /wc-rate` endpoint to `routers/rates.py`:
+   ```
+   GET /wc-rate?state=TX&code=5645
+   → 200: {"rate": 12.34}  or  404: {"detail": "Not found"}
+   ```
+   Query: `db.query(WCRate).filter(WCRate.concat == (state + code)).first()`
+
+2. In `calc/workers_comp.py`, `calculate_wc(lines, proposed_mod, config, db=None)`:
+   - Add optional `db: Session = None` parameter.
+   - For each line: if `manual_rate` is 0 or None AND `db` is not None, query `WCRate` by `concat = line["state"] + line["wc_code"]` and use that rate. Fall back to `manual_rate` if not found.
+   - The function must remain callable without `db` (smoke tests pass `None`).
+
+3. In `routers/calculate.py`, pass `db` to `calculate_wc`: `calculate_wc(wc_line_dicts, proposed_mod, config, db=db)`.
+
+4. In `static/client.html`, update `addWCCodeRow()`:
+   - On state `<select>` change and WC code input `blur`: if both state and code are filled, call `GET /wc-rate?state=X&code=Y`.
+   - On success: set `wc_rate_${idx}` value to returned rate, make it `readonly`, add CSS class `auto-populated`.
+   - On 404: remove `readonly`, remove `auto-populated` class, add a `⚠` warning icon on the row (`data-rate-missing="true"`).
+   - On empty state or code: revert to editable, clear warning.
 
 **Files to read before starting:**
 - `calc/workers_comp.py` — current implementation
-- `routers/rates.py` — where to add the lookup endpoint
-- `models.py` — WCRate model definition
-- `static/client.html` — WC Codes table JS (around the `addWcRow` function)
-- `C:\workspaces\business\vested-hr\plan_drafts\pricing_math.md` — WC section for formula context
+- `routers/rates.py` — existing download/upload endpoints as pattern
+- `models.py` — WCRate fields: `state`, `class_code`, `concat`, `rate`
+- `static/client.html` — `addWCCodeRow()` function (~line 1297)
+- `C:\workspaces\business\vested-hr\plan_drafts\pricing_math.md` — WC section
 
 ---
 
-### WC Code Searchable Dropdowns
-**Status:** Ready to build  
-**Priority:** Medium — current plain text inputs require knowing the exact code
+### WC Code Search Endpoint
+**Status:** pending — `wc-code-search-endpoint`
+**Priority:** Medium (prerequisite for searchable dropdown UI)
+**Blocked by:** `wc-rates-vlookup` should be done first
 
-`pricing_tool_outline.md` specifies: "All states and all WC codes as searchable dropdowns." Currently the WC Codes table on the client form has plain `<input type="text">` for State and WC Code.
+Add a search endpoint to `routers/rates.py` so the frontend can offer matching WC codes as the user types.
 
 **What to build:**
-- State column: replace text input with a `<select>` of all 50 states (or a searchable combobox)
-- WC Code column: replace text input with a searchable input that queries `GET /wc-codes?state=TX&q=clerical` and shows a dropdown of matching codes + descriptions. Add this endpoint to `routers/rates.py` — query `wc_rates` by state + description LIKE search, return top 20 results.
-- When a code is selected, auto-populate the Manual Rate field (ties into the VLOOKUP task above)
+
+Add `GET /wc-codes?state=TX&q=clerical` to `routers/rates.py`:
+```
+GET /wc-codes?state=TX&q=clerical
+→ 200: [{"class_code": "8810", "description": "Clerical Office", "rate": 0.12}, ...]
+```
+- Filter: `WCRate.state == state` AND `WCRate.description ILIKE %q%` (use `func.lower` + `.contains` for SQLite — no ILIKE).
+- Return top 20 results ordered by `class_code`.
+- Response schema: list of `{"class_code": str, "description": str | None, "rate": float | None}`.
+- If `state` is missing, return 400. If `q` is empty string, return all codes for the state (still limit 20).
 
 **Files to read before starting:**
-- `static/client.html` — WC Codes table section
-- `routers/rates.py` — where to add the search endpoint
-- `models.py` — WCRate model (has `description` column)
+- `routers/rates.py` — add alongside existing endpoints
+- `models.py` — WCRate fields
+
+---
+
+### WC Code Searchable Dropdown UI
+**Status:** pending — `wc-code-searchable-dropdowns`
+**Priority:** Medium
+**Blocked by:** `wc-code-search-endpoint`
+
+Replace the plain WC Code text input on the client form with a live-search combobox.
+
+**What to build:**
+
+In `static/client.html`, update `addWCCodeRow()`:
+- Replace `<input type="text" name="wc_code_${idx}">` with a combobox pattern:
+  - Visible text input for search/display.
+  - Hidden `<input type="hidden" name="wc_code_${idx}">` that holds the committed code value.
+  - A `<ul>` dropdown below the input that appears on focus/type.
+- On each keystroke (debounce 200ms): if state is selected, call `GET /wc-codes?state=X&q=<input>`. Render up to 20 results as `<li>` items showing `code — description`.
+- On `<li>` click: set hidden input to `class_code`, set visible input to `class_code — description`, close dropdown, trigger rate lookup (per `wc-rates-vlookup` task).
+- On blur with no selection: if typed value matches a code exactly, accept it; otherwise clear and show validation error.
+- Keyboard navigation: arrow up/down to move highlight, Enter to select, Escape to close.
+
+**Files to read before starting:**
+- `static/client.html` — `addWCCodeRow()` function (~line 1297)
+- `static/style.css` — existing dropdown/combobox patterns to stay consistent
 
 ---
 
 ### Benefits Tab
-**Status:** Blocked — needs VHR rate data (plan PEPMs) before it produces useful numbers  
+**Status:** blocked — `benefits-tab`
+**Blocked by:** VHR staff — need plan PEPM data and rate tier band confirmation
 **Priority:** Low until data is available
 
-The Benefits section of the client form (Tab 2) currently captures Medical Questionnaire and Ancillary Benefit questions but has no pricing outputs. The full calculation logic is documented.
+Full benefits pricing module. Do not start until VHR provides actual plan PEPM data.
 
-**What to build:**
-- Add benefits pricing inputs to the Pricing tab (or a new Benefits Pricing sub-section): Plan Type (Master/Client), Deductible Tier, Rate Tier Band, Medical PEPM per tier (WAIVED/GOOD/BETTER/BEST), toggles and PEPMs for Dental/Vision/Life/STD/LTD, Benefits Admin Fee PEPM
-- Add a `BenefitsConfig` or extend `SystemConfig` with the Rate Tier Band lookup table (bands 6–28 with multipliers)
-- Add `calc/benefits.py` using the formulas in `pricing_math.md` Benefits section
-- Wire into the `POST /calculate` pipeline and add Benefits output to the Deal Summary
+**What to build (once unblocked):**
+
+1. Extend `SystemConfig` model (`models.py`) with benefits config columns:
+   - `benefits_rate_tier_bands_json` — JSON encoding of band lookup (bands 6–28, multipliers per band)
+   - `medical_pepm_waived`, `medical_pepm_good`, `medical_pepm_better`, `medical_pepm_best` (Float)
+   - `dental_pepm`, `vision_pepm`, `life_pepm`, `std_pepm`, `ltd_pepm` (Float)
+   - `benefits_admin_fee_pepm` (Float)
+   Add corresponding fields to `SystemConfigOut` and `SystemConfigUpdate` in `schemas.py`.
+
+2. Add benefits pricing inputs to the Pricing tab in `static/client.html`:
+   - Plan Type (Master/Client) select
+   - Deductible Tier select
+   - Rate Tier Band number input
+   - Medical PEPM per tier (WAIVED/GOOD/BETTER/BEST) — four inputs auto-populated from config
+   - Toggles + PEPMs for Dental / Vision / Life / STD / LTD
+   - Benefits Admin Fee PEPM input
+   Add corresponding fields to `ClientUpdate`, `ClientOut`, and `CalculateRequest` in `schemas.py` and `models.py`.
+
+3. Create `calc/benefits.py`:
+   ```python
+   def calculate_benefits(inputs: dict, config: dict) -> dict:
+       # See pricing_math.md Benefits section for full formulas
+   ```
+
+4. Wire into `routers/calculate.py` pipeline between `admin_fee` and `commission`.
+
+5. Add benefits output to Deal Summary in `calc/summary.py` and `static/client.html`.
 
 **Files to read before starting:**
 - `C:\workspaces\business\vested-hr\plan_drafts\pricing_math.md` — Benefits section (full formulas, band table, utilization load)
@@ -67,81 +137,149 @@ The Benefits section of the client form (Tab 2) currently captures Medical Quest
 ---
 
 ### Verify and Correct SUTA Rates
-**Status:** Blocked — needs VHR staff input  
+**Status:** blocked — `suta-rates-verify`
+**Blocked by:** VHR staff input
 **Priority:** High for accuracy
 
-All 51 state rows in the `suta_rates` table were seeded with placeholder values. VHR staff need to confirm actual thresholds, VHR billing rates, and VHR cost rates for every state. Once confirmed, they can be uploaded via the SUTA CSV upload on the config page, or corrected directly in `seed.py`.
+All 51 state rows are placeholder values. Tool will not produce accurate SUTA numbers until resolved.
 
-**What needs to happen:**
+**What needs to happen (human task, not agent):**
 - VHR staff review `seed.py` SUTA_ROWS and correct every row marked `# PLACEHOLDER`
-- Particular attention to client-reporting states: CA, NY, NJ, PA, RI (currently have `vhr_min_rate=None`)
-- MO needs clarification: files under client account but uses VHR rate — confirm the billing formula
-- Once verified, remove the PLACEHOLDER comments from `seed.py`
+- Check client-reporting states: CA, NY, NJ, PA, RI (currently have `vhr_min_rate=None`)
+- Clarify MO: client files under own account but uses VHR rate — confirm billing formula
+- Once verified: upload corrected CSV via config page, or edit `seed.py` and remove PLACEHOLDER comments
 
 ---
 
 ## UI & UX
 
 ### Search Bar
-**Status:** Ready to build  
+**Status:** pending — `search-bar`
 **Priority:** Low
 
-The topnav search input on all three pages is currently decorative. 
+Wire the topnav search input on all three pages. It is currently a decorative `<input class="topnav-search">` with no event handlers.
 
 **What to build:**
-- `GET /search?q=acme` endpoint in a new `routers/search.py` — queries `Client.legal_name`, `Client.dba`, `Client.consultant_name` with ILIKE
-- On the dashboard, wire the search input to filter the displayed client list in real time (client-side filter is fine given small dataset, or hit the API)
-- On client.html and config.html, hitting Enter in the search bar navigates to `dashboard.html?q={query}`
+
+1. Create `routers/search.py`:
+   ```
+   GET /search?q=acme
+   → 200: [{"id": 1, "legal_name": "Acme Mfg", "dba": null, "consultant_name": "Bob"}, ...]
+   ```
+   Query: `Client.legal_name`, `Client.dba`, `Client.consultant_name` using `func.lower().contains(q.lower())` (SQLite-safe ILIKE equivalent). Return up to 20 results.
+
+2. Register `routers/search.py` in `server.py` (same pattern as other routers).
+
+3. `static/dashboard.html` — on search input with debounce 300ms:
+   - If input length ≥ 2: call `GET /search?q=<value>`, re-render the client list rows to matching results only.
+   - If input cleared: restore full client list.
+   - No separate results dropdown — filter in place.
+
+4. `static/client.html` and `static/config.html` — on Enter in search input: `window.location.href = '/static/dashboard.html?q=' + encodeURIComponent(value)`.
+   On `dashboard.html` load: check `?q=` param, pre-fill search input and fire search.
+
+**Files to read before starting:**
+- `static/dashboard.html` — client list render function
+- `static/client.html` and `static/config.html` — topnav search input
+- `routers/clients.py` — pattern for DB queries
+- `server.py` — router registration
 
 ---
 
-### Generate Doc / Proposal PDF
-**Status:** Ready to stub, full implementation is post-prototype  
-**Priority:** Medium — sales reps need a client-facing output
+### Generate Doc / Proposal
+**Status:** pending — `generate-doc-proposal`
+**Priority:** Medium
 
-The "Generate Doc" button on the client page currently fires a toast. 
+The "Generate Doc" button on the client page currently fires a toast. Build a print-friendly HTML proposal view.
 
-**What to build (stub for now):**
-- A simple HTML print view: `GET /clients/{id}/proposal` renders a clean, print-friendly HTML page with the Deal Summary, client name, date, and key numbers
-- The Generate Doc button opens this URL in a new tab — browser print to PDF works fine for a prototype
+**What to build:**
 
-**Full implementation (Rails phase):**
-- Templated PDF via a proper PDF library
-- VHR-branded proposal document matching their existing format
+1. Add `GET /clients/{id}/proposal` to `routers/clients.py`:
+   - Load the client from DB (404 if not found).
+   - Call `POST /calculate` logic inline (reuse the same pipeline from `routers/calculate.py`) by importing and calling the calc functions directly — do not make an internal HTTP call.
+   - Render and return an HTML page (use `HTMLResponse` from FastAPI) with: client legal name, date, consultant name, Deal Summary numbers (total GWs, total WSEs, WC billed, SUTA billed, admin fee, total profit/loss), and VHR branding.
+   - Page should be clean and print-friendly: no nav, no sidebar, `@media print` styles.
+
+2. In `static/client.html`, update the "Generate Doc" button click handler:
+   - Replace the toast with `window.open('/clients/' + CLIENT_ID + '/proposal', '_blank')`.
+
+**Files to read before starting:**
+- `routers/clients.py` — existing client fetch pattern
+- `routers/calculate.py` — calculation pipeline to replicate inline
+- `static/client.html` — Generate Doc button handler and current Deal Summary display
 
 ---
 
 ## Auth & Roles
 
 ### Basic Auth / User System
-**Status:** Ready to build  
-**Priority:** Medium — needed before sharing with VHR staff for testing
+**Status:** pending — `auth-roles`
+**Priority:** Medium — needed before sharing with VHR staff
 
-Currently the user avatar (AP / Asher Plihal / Admin) is hardcoded static HTML. No login, no sessions.
+Topnav user avatar is hardcoded. No login, no sessions, no role-gating.
 
-**What to build (lightweight for prototype):**
-- `users` table: id, name, email, role (admin / wc_admin / suta_admin / sales / general)
-- Simple session token in localStorage — login page with email + password (bcrypt hash)
-- `GET /me` returns current user
-- Role-gating on `PUT /config` (admin, wc_admin, suta_admin only) and `DELETE /clients/{id}` (admin, sales only)
-- The topnav user menu populates from `GET /me` instead of being hardcoded
+**What to build:**
+
+1. Add `User` model to `models.py`:
+   ```python
+   class User(Base):
+       __tablename__ = "users"
+       id = Column(Integer, primary_key=True, autoincrement=True)
+       name = Column(String, nullable=False)
+       email = Column(String, unique=True, nullable=False)
+       password_hash = Column(String, nullable=False)  # bcrypt
+       role = Column(String, default="general")  # admin|wc_admin|suta_admin|sales|general
+       created_at = Column(DateTime, default=datetime.utcnow)
+   ```
+
+2. Add Pydantic schemas to `schemas.py`: `UserOut` (id, name, email, role), `LoginRequest` (email, password), `TokenResponse` (token, user: UserOut).
+
+3. Create `routers/auth.py`:
+   - `POST /auth/login` — verify email+password (bcrypt), return `{"token": "<uuid>", "user": {...}}`. Store token in a simple in-memory dict or `sessions` table for prototype.
+   - `GET /auth/me` — read `Authorization: Bearer <token>` header, return current user or 401.
+   - `POST /auth/logout` — invalidate token.
+
+4. Add `get_current_user(token)` dependency to `database.py` or a new `auth.py` module. Use it to gate:
+   - `PUT /config` — require `role in ("admin", "wc_admin", "suta_admin")`
+   - `DELETE /clients/{id}` — require `role in ("admin", "sales")`
+
+5. Create `static/login.html` — email + password form, posts to `POST /auth/login`, stores token in `localStorage`, redirects to dashboard.
+
+6. In `static/app.js`:
+   - Add `getToken()` helper that reads `localStorage.getItem("vhr_token")`.
+   - Update `apiGet`, `apiPost`, `apiPut`, `apiDelete` to include `Authorization: Bearer <token>` header if token present.
+   - Add `checkAuth()` — calls `GET /auth/me`; on 401 redirects to `/static/login.html`.
+
+7. In `static/dashboard.html`, `static/client.html`, `static/config.html`:
+   - Call `checkAuth()` on page load.
+   - Populate topnav user name and initials from `GET /auth/me` response.
+   - Wire the "Sign out" menu item to `POST /auth/logout` then redirect to login.
+
+8. Seed one default admin user in `seed.py`: `admin@vestedhr.com` / `changeme` (bcrypt-hashed).
 
 **Roles from `pricing_tool_outline.md`:**
-| Role | What they can do |
+| Role | Permissions |
 |---|---|
-| Admin | Full access |
-| WC Admin | Change WC rates in config |
-| SUTA Admin | Change SUTA rates in config |
-| Sales | Enter and edit client records |
-| General User | View and print only |
+| admin | Full access |
+| wc_admin | Change WC rates in config |
+| suta_admin | Change SUTA rates in config |
+| sales | Enter and edit client records |
+| general | View and print only |
+
+**Files to read before starting:**
+- `models.py`, `schemas.py`, `database.py` — existing patterns
+- `server.py` — router registration
+- `static/app.js` — `apiGet`/`apiPost` helpers to extend
+- `static/dashboard.html` — topnav user menu HTML
+- `C:\workspaces\business\vested-hr\plan_drafts\pricing_tool_outline.md` — roles section
 
 ---
 
 ## Post-Prototype (Rails Phase)
 
-These are noted for planning — do not build in the prototype.
+Do not build in prototype.
 
-- **HubSpot integration**: auto-create Company, Deal, Contact on quote completion. `pricing_tool_outline.md` has the full spec.
-- **Approval workflow**: after form completion, create tasks for Justin (pricing pre-approval), John (WC), Nate (benefits). After verbal from prospect, final approval tasks. Workflow is fully documented in `pricing_tool_outline.md` Post-Completion section.
-- **Client Review tab**: enter actual payroll data and compare to projected — see if the deal is panning out. Mentioned by Nicole in `pricing_tool_outline.md`.
-- **New Client Onboarding doc**: auto-generated from client data.
+- **HubSpot integration** — auto-create Company, Deal, Contact on quote completion. Full spec in `pricing_tool_outline.md`.
+- **Approval workflow** — tasks for Justin (pricing), John (WC), Nate (benefits). Documented in `pricing_tool_outline.md` Post-Completion section.
+- **Client Review tab** — enter actual payroll data, compare to projected. Mentioned by Nicole in `pricing_tool_outline.md`.
+- **New Client Onboarding doc** — auto-generated from client data.

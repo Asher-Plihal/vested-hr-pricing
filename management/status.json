@@ -3,42 +3,48 @@
     "status": "pending",
     "priority": 1,
     "blocked_by": null,
-    "note": "wc_rates table exists and is empty until VHR uploads CSV via config page"
+    "note": "wc_rates table and WCRate model exist; wc_rates DB is empty until VHR uploads CSV. calc/workers_comp.py has a comment acknowledging the VLOOKUP is not yet wired. No GET /wc-rate endpoint exists yet."
   },
   "wc-code-searchable-dropdowns": {
     "status": "pending",
     "priority": 2,
-    "blocked_by": null,
-    "note": "depends on wc-rates-vlookup being done first for auto-rate population"
+    "blocked_by": "wc-rates-vlookup",
+    "note": "State column already uses a <select> (STATE_ABBRS list). WC Code column is still a plain text <input>. No GET /wc-codes search endpoint exists yet."
   },
   "suta-rates-verify": {
     "status": "blocked",
     "priority": 1,
     "blocked_by": "VHR staff — need confirmed thresholds and rates for all 51 states",
-    "note": "all rows currently placeholder values — tool will not produce accurate SUTA numbers until resolved"
+    "note": "All 51 rows are placeholder values. CSV upload/download already works for when data arrives."
   },
   "benefits-tab": {
     "status": "blocked",
     "priority": 3,
     "blocked_by": "VHR staff — need plan PEPM data and rate tier band confirmation",
-    "note": "calc logic fully documented in pricing_math.md, ready to build once data is available"
+    "note": "calc/benefits.py does not exist. No benefits fields in SystemConfig or CalculateRequest. Benefits medical/ancillary questionnaire fields exist on Client model but there are no pricing inputs or outputs."
   },
   "search-bar": {
     "status": "pending",
     "priority": 3,
     "blocked_by": null,
-    "note": "topnav search input is decorative on all three pages"
+    "note": "Search input is decorative on all three pages. No routers/search.py exists."
   },
   "generate-doc-proposal": {
     "status": "pending",
     "priority": 2,
     "blocked_by": null,
-    "note": "stub as a print-friendly HTML view for now, full PDF is post-prototype"
+    "note": "Generate Doc button fires a toast. No GET /clients/{id}/proposal endpoint exists."
   },
   "auth-roles": {
     "status": "pending",
     "priority": 2,
     "blocked_by": null,
-    "note": "needed before sharing with VHR staff for testing — lightweight local users table is enough for prototype"
+    "note": "User avatar is hardcoded HTML. No users table, no login page, no session tokens, no role-gating on any endpoint."
+  },
+  "wc-code-search-endpoint": {
+    "status": "pending",
+    "priority": 2,
+    "blocked_by": "wc-rates-vlookup",
+    "note": "Split from wc-code-searchable-dropdowns. Backend only: add GET /wc-codes?state=TX&q=clerical to routers/rates.py."
   }
 }
