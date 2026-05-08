@@ -1,4 +1,5 @@
 /* ── app.js — shared utilities for VestedHR Pricing Tool ──────────────────── */
+/* wireSearch is defined at the bottom and self-invokes on DOMContentLoaded.  */
 
 /**
  * Show a dismissing toast notification at bottom-right.
@@ -116,3 +117,86 @@ async function apiDelete(path) {
   }
   return res.json();
 }
+
+/* ── Global client search ─────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', function () {
+  const input = document.querySelector('.topnav-search');
+  if (!input) return;
+
+  input.setAttribute('autocomplete', 'off');
+
+  const dropdown = document.createElement('ul');
+  dropdown.className = 'search-dropdown';
+  dropdown.hidden = true;
+  document.body.appendChild(dropdown);
+
+  let searchClients = [];
+  apiGet('/clients').then(data => { searchClients = data; }).catch(() => {});
+
+  function positionDropdown() {
+    const rect = input.getBoundingClientRect();
+    dropdown.style.top   = (rect.bottom + 6) + 'px';
+    dropdown.style.left  = rect.left + 'px';
+    dropdown.style.width = rect.width + 'px';
+  }
+
+  function hideDropdown() {
+    dropdown.hidden = true;
+    dropdown.innerHTML = '';
+  }
+
+  function activeItem() {
+    return dropdown.querySelector('li.search-active');
+  }
+
+  function setActive(li) {
+    dropdown.querySelectorAll('li').forEach(el => el.classList.remove('search-active'));
+    if (li) li.classList.add('search-active');
+  }
+
+  function runFilter(q) {
+    if (!q) { hideDropdown(); return; }
+    const matches = searchClients
+      .filter(c => (c.legal_name || '').toLowerCase().includes(q.toLowerCase()))
+      .slice(0, 8);
+    if (matches.length === 0) { hideDropdown(); return; }
+    dropdown.innerHTML = '';
+    matches.forEach(c => {
+      const li = document.createElement('li');
+      li.textContent = c.legal_name;
+      li.dataset.id = c.id;
+      li.addEventListener('mousedown', () => {
+        window.location.href = `/static/client.html?id=${c.id}`;
+      });
+      dropdown.appendChild(li);
+    });
+    positionDropdown();
+    dropdown.hidden = false;
+  }
+
+  input.addEventListener('input', () => runFilter(input.value.trim()));
+  input.addEventListener('focus', () => runFilter(input.value.trim()));
+
+  input.addEventListener('keydown', e => {
+    const items = Array.from(dropdown.querySelectorAll('li'));
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const cur = activeItem();
+      const next = cur ? cur.nextElementSibling : items[0];
+      if (next) setActive(next);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const cur = activeItem();
+      const prev = cur ? cur.previousElementSibling : items[items.length - 1];
+      if (prev) setActive(prev);
+    } else if (e.key === 'Enter') {
+      const cur = activeItem();
+      if (cur) window.location.href = `/static/client.html?id=${cur.dataset.id}`;
+    } else if (e.key === 'Escape') {
+      input.value = '';
+      hideDropdown();
+    }
+  });
+
+  input.addEventListener('blur', () => setTimeout(hideDropdown, 50));
+});
