@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VestedHR — System Configuration</title>
   <link rel="stylesheet" href="/static/style.css" />
+  <style>
+    /* Tab seam fix: dark border on full-width subheader, not the constrained tab-nav */
+    .subheader-config { border-bottom: 2px solid #1a202c; }
+    .subheader-config .tab-nav { border-bottom: none; }
+  </style>
 </head>
 <body>
 
@@ -96,9 +101,6 @@
           <input type="number" id="futa_wage_base" step="100" />
         </div>
       </div>
-      <div class="save-row">
-        <button class="btn-save" id="save-federal" type="button">Save Changes</button>
-      </div>
     </div>
   </div>
 
@@ -162,9 +164,6 @@
         <div class="csv-columns">Columns: State, NCCI Code, Lookup Code, Concat, IRMI Classification, NAICS, Hazard Group, 100K Flag, Effective Date</div>
       </div>
 
-      <div class="save-row">
-        <button class="btn-save" id="save-wc" type="button">Save Changes</button>
-      </div>
     </div>
   </div>
 
@@ -192,9 +191,6 @@
         <div class="csv-columns">Columns: State, Threshold (Wage Base), VHR Min Rate, Client Reporting (Y/N), Our Cost Rate, Date Updated</div>
       </div>
 
-      <div class="save-row">
-        <button class="btn-save" id="save-suta" type="button">Save Changes</button>
-      </div>
     </div>
   </div>
 
@@ -225,9 +221,6 @@
         </div>
       </div>
 
-      <div class="save-row">
-        <button class="btn-save" id="save-admin" type="button">Save Changes</button>
-      </div>
     </div>
   </div>
 
@@ -341,38 +334,40 @@ function collectSuta() {
   };
 }
 
-/* ── Save handler ───────────────────────────────────────────────────────────── */
-async function saveTab(tabFields) {
-  if (!currentConfig) {
-    showToast('Config not loaded yet', 'error');
-    return;
-  }
-  const payload = Object.assign({}, currentConfig, tabFields);
+/* ── Autosave ───────────────────────────────────────────────────────────────── */
+let autosaveTimer = null;
+
+function scheduleAutosave() {
+  clearTimeout(autosaveTimer);
+  autosaveTimer = setTimeout(doAutosave, 600);
+}
+
+async function doAutosave() {
+  if (!currentConfig) return;
+  // Merge all fields from all tabs into currentConfig before PUT
+  Object.assign(currentConfig, collectFederal(), collectWC(), collectAdmin(), collectSuta());
+  const payload = Object.assign({}, currentConfig);
   delete payload.id;
   try {
     const updated = await apiPut('/config', payload);
     currentConfig = updated;
-    showToast('Changes saved');
+    showToast('Saved', 'success');
   } catch (err) {
-    showToast('Save failed: ' + err.message, 'error');
+    showToast('Autosave failed', 'error');
   }
 }
 
-/* ── Save button wiring ─────────────────────────────────────────────────────── */
-document.getElementById('save-federal').addEventListener('click', () => {
-  saveTab(collectFederal());
-});
-
-document.getElementById('save-wc').addEventListener('click', () => {
-  saveTab(collectWC());
-});
-
-document.getElementById('save-admin').addEventListener('click', () => {
-  saveTab(collectAdmin());
-});
-
-document.getElementById('save-suta').addEventListener('click', () => {
-  saveTab(collectSuta());
+/* ── Wire autosave on all input fields ─────────────────────────────────────── */
+const autosaveFields = [
+  'ss_rate', 'medicare_rate', 'ss_wage_base', 'futa_rate', 'futa_wage_base',
+  'fixed_cost_factor', 'loss_fund_factor', 'combined_cost_factor', 'pte_weight',
+  'monopolistic_states', 'mcp_states',
+  'suta_default_turnover',
+  'pp_weekly', 'pp_biweekly', 'pp_semimonthly', 'pp_monthly', 'wc_policy_adjustment',
+];
+autosaveFields.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', scheduleAutosave);
 });
 
 /* ── CSV downloads ──────────────────────────────────────────────────────────── */
