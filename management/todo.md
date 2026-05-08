@@ -60,8 +60,6 @@ Run a full end-to-end calculation with the Hartman Industrial LLC test client an
 
 6. If TX WC codes 5190 or 8810 return rate=0 (not found in DB), check `testing/import_rates.py` ran successfully and the wc_rates table has data: `GET /download/wc-rates` should return rows.
 
-**DB access:** A `sqlite` MCP server is configured in `.mcp.json` — use it to query `data/vested_hr.db` directly (e.g. `SELECT * FROM wc_rates WHERE state='TX' AND class_code IN ('5190','8810')`, `SELECT * FROM suta_rates WHERE state='TX'`, `SELECT * FROM system_config`). No need to start the server just to check rate data.
-
 **Files to read:**
 - `C:\workspaces\business\vested-hr\plan_drafts\pricing_math.md` — authoritative formulas
 - `calc/workers_comp.py`, `calc/fica.py`, `calc/futa.py`, `calc/suta.py`, `calc/admin_fee.py`, `calc/commission.py`, `calc/summary.py`
