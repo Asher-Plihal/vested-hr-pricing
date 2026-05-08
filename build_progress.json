@@ -1,0 +1,57 @@
+{
+  "agent": "base",
+  "status": "complete",
+  "built": [
+    "server.py",
+    "database.py",
+    "models.py",
+    "schemas.py",
+    "seed.py",
+    "requirements.txt",
+    ".gitignore",
+    "build_progress.json",
+    "routers/__init__.py",
+    "routers/clients.py",
+    "routers/config.py",
+    "routers/calculate.py",
+    "calc/__init__.py",
+    "calc/wse.py",
+    "calc/workers_comp.py",
+    "calc/fica.py",
+    "calc/futa.py",
+    "calc/suta.py",
+    "calc/admin_fee.py",
+    "calc/commission.py",
+    "calc/summary.py",
+    "static/",
+    "data/"
+  ],
+  "api_routes": [
+    "GET /clients",
+    "POST /clients",
+    "GET /clients/{id}",
+    "PUT /clients/{id}",
+    "GET /config",
+    "PUT /config",
+    "POST /calculate"
+  ],
+  "db_models": [
+    "SystemConfig",
+    "Client",
+    "WCLine",
+    "SutaLine",
+    "SutaRate",
+    "WCLoss"
+  ],
+  "server_start_verified": true,
+  "notes": [
+    "Python 3.14 is installed; all required packages (fastapi, uvicorn, sqlalchemy, pydantic) were already present in the system Python — no venv created.",
+    "manual_rate on WCLine is stored at intake time. Full WC Rates table (~25K rows) lookup is not yet implemented — a future agent should import the WC Rates table and do the VLOOKUP at calculation time.",
+    "All 51 SUTA rows seeded. Most values are placeholders sourced from common state data. States that are client-reporting (CA, NY, NJ, PA, RI) have vhr_min_rate=None. MO has a note about its ambiguous status per pricing_math.md. All rows flagged with PLACEHOLDER comments need verification with VHR staff.",
+    "wc_policy_adjustment (Sunz charge) is seeded at 0.0 per current practice. The 1.55% value from pricing_math.md is noted but unused in both example clients.",
+    "FUTA uses Approach B only per the spec. Approach A (burden-rate display) can be added later if VHR decides they want it.",
+    "WC losses questionnaire fields (aircraft, hazmat, etc.) are not stored in the DB — the outline describes them as compliance questionnaire items. They can be added as a separate WCQuestionnaire model when the frontend needs them.",
+    "The static/ directory is empty — frontend agents will add HTML files there.",
+    "Seed is idempotent — running seed.py twice will not duplicate rows."
+  ]
+}
