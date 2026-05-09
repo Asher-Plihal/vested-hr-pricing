@@ -4,6 +4,16 @@ Most recent entry at the top. Add an entry when a task completes. This is where 
 
 ---
 
+### 2026-05-08 — Form Safety UX (`form-safety-ux`)
+
+Pure frontend changes in `static/client.html`:
+
+**Per-card lock toggle:** All 12 input cards (General Information, Compliance Questions, Medical Questions, Ancillary Benefit Questions, Payroll Information, Admin Fee, Additional Fees, Commissions, SUTA, Workers' Compensation Codes, Workers' Compensation Losses, Workers' Comp Questions) now have `data-locked="true"` and a 🔒 button in the card-title header. On page load, `applyCardLock` disables all inputs/selects/textareas/buttons inside each locked card. Clicking the lock button toggles to 🔓 and re-enables. Read-only display cards (Proposal, Annual Billing Analysis, Loss Analysis, Deal Summary) were left unchanged.
+
+**Delete confirmations:** `removeWCRow`, `removeSutaRow`, `removeWCLossRow` (new named function, replaces inline onclick), and `removeLocationRow` (new named function, replaces inline onclick) all call `confirm()` before removing the row.
+
+---
+
 ### 2026-05-08 — Calculation Verification (`calc-verification`)
 
 All calc formulas were correct. The only issue: `wc_rates`, `wc_guidelines`, and `suta_rates` tables were empty after a DB reset — the `testing/import_rates.py` script referenced in the setup instructions didn't exist in the repo. Created it to import all three rate tables from the Excel pricing template (`Pricing Template 03.10.26_ALL SHEETS.xlsx`): 24,965 WC cost rates, 19,552 WC guidelines, 51 SUTA state rows.
