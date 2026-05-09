@@ -10,10 +10,6 @@ def _lookup_rate(state: str, code: str, db, independent_bureau_states: str) -> f
     row = db.query(WCRate).filter(WCRate.concat == concat_key).first()
     if row is not None and row.rate is not None:
         return row.rate
-    if state not in ib_states:
-        fallback = db.query(WCRate).filter(WCRate.concat == "Other" + code).first()
-        if fallback and fallback.rate is not None:
-            return fallback.rate
     return None
 
 
