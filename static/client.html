@@ -24,6 +24,17 @@
     /* WC codes — description col left-aligned */
     #wc-codes-table th:nth-child(3), #wc-codes-table td:nth-child(3) { text-align: left; }
     #wc-codes-table td:nth-child(3) input { text-align: left; }
+    /* Proposal WC table — compact padding, smaller font, truncate description col */
+    #proposal-wc-table { font-size: 0.8rem; }
+    #proposal-wc-table th, #proposal-wc-table td { padding: 5px 6px; }
+    #proposal-wc-table th:nth-child(3), #proposal-wc-table td:nth-child(3) { text-align: left; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    /* Annual Billing Analysis — single wide table */
+    #analysis-table { font-size: 0.8rem; }
+    #analysis-table th, #analysis-table td { padding: 5px 6px; }
+    /* Group header row — blank identifier cells have no border */
+    #analysis-table thead tr:first-child th { border-bottom: none; background: transparent; text-transform: none; letter-spacing: 0; }
+    /* Group label cells — gold underline, navy text */
+    #analysis-table thead tr:first-child th.analysis-group-label { color: #1e3154; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; border-bottom: 2px solid #c9a84c; padding-bottom: 4px; }
 
     /* State picker */
     .state-picker {
@@ -766,6 +777,24 @@
   ══════════════════════════════════════════ -->
   <div id="panel-benefits" class="tab-panel">
 
+    <!-- Medical Carve-Out -->
+    <div class="card" style="padding:10px 16px;">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <span style="font-size:0.85rem;font-weight:600;color:#2d3748;">Medical Carve-Out?</span>
+        <select name="medical_carve_out" onchange="onMedCarveOut(this)" style="width:auto;padding:3px 6px;font-size:0.8rem;height:auto;">
+          <option value="">—</option>
+          <option value="false">No</option>
+          <option value="true">Yes</option>
+        </select>
+        <span class="info-note warn" id="med-carveout-note" style="display:none;margin:0;padding:4px 10px;">
+          Carve-out selected — remaining questions skipped.
+        </span>
+      </div>
+    </div>
+
+    <!-- Sections hidden on carve-out -->
+    <div id="benefits-sections-wrapper">
+
     <!-- Medical Questions -->
     <div class="card" data-card-id="medical" data-locked="true">
       <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
@@ -775,15 +804,6 @@
       <hr class="card-divider" />
 
       <div class="compliance-rows" id="medical-rows">
-
-        <div class="q-row" data-med-field="medical_carve_out">
-          <span class="q-label">Is this a medical carve-out?</span>
-          <select class="q-select" name="medical_carve_out" onchange="onMedCarveOut(this)">
-            <option value="false" selected>No</option>
-            <option value="true">Yes</option>
-          </select>
-          <div class="q-note" id="med-note-carveout">Medical carve-out — remaining questions skipped.</div>
-        </div>
 
         <div class="q-row" data-med-field="enrolled_over_50">
           <span class="q-label">More than 50 enrolled?</span>
@@ -877,6 +897,8 @@
 
       </div>
     </div><!-- /card ancillary -->
+
+    </div><!-- /benefits-sections-wrapper -->
 
   </div><!-- /panel-benefits -->
 
@@ -986,14 +1008,34 @@
       </div>
       <input type="hidden" id="admin_method" name="admin_method" value="1" />
 
-      <div class="form-grid" id="admin-rate-fields">
+      <div id="admin-rate-fields-1" class="form-grid admin-rate-fields">
         <div class="form-group">
-          <label class="req-y" id="admin_rate_label" for="admin_rate">Vested Rate (%)</label>
+          <label class="req-y" for="admin_rate">Vested Rate (%)</label>
           <input type="number" id="admin_rate" name="admin_rate" step="0.01" min="0" value="0" />
         </div>
         <div class="form-group">
-          <label id="current_admin_rate_label" for="current_admin_rate">Current Rate (%)</label>
+          <label for="current_admin_rate">Current Rate (%)</label>
           <input type="number" id="current_admin_rate" name="current_admin_rate" step="0.01" min="0" value="0" />
+        </div>
+      </div>
+      <div id="admin-rate-fields-2" class="form-grid admin-rate-fields" style="display:none;">
+        <div class="form-group">
+          <label class="req-y" for="admin_rate_2">Vested Rate ($ per check)</label>
+          <input type="number" id="admin_rate_2" name="admin_rate_2" step="0.01" min="0" value="0" />
+        </div>
+        <div class="form-group">
+          <label for="current_admin_rate_2">Current Rate ($ per check)</label>
+          <input type="number" id="current_admin_rate_2" name="current_admin_rate_2" step="0.01" min="0" value="0" />
+        </div>
+      </div>
+      <div id="admin-rate-fields-3" class="form-grid admin-rate-fields" style="display:none;">
+        <div class="form-group">
+          <label class="req-y" for="admin_rate_3">Vested Rate ($ per WSE/mo)</label>
+          <input type="number" id="admin_rate_3" name="admin_rate_3" step="0.01" min="0" value="0" />
+        </div>
+        <div class="form-group">
+          <label for="current_admin_rate_3">Current Rate ($ per WSE/mo)</label>
+          <input type="number" id="current_admin_rate_3" name="current_admin_rate_3" step="0.01" min="0" value="0" />
         </div>
       </div>
 
@@ -1112,7 +1154,7 @@
         <hr class="card-divider" />
 
         <div style="overflow-x:auto;">
-          <table class="data-table" id="wc-codes-table" style="font-size:0.8rem;">
+          <table class="data-table tbl-fixed" id="wc-codes-table" style="font-size:0.8rem;">
             <thead>
               <tr>
                 <th class="req-y" style="width:60px;">State</th>
@@ -1367,62 +1409,42 @@
 
       <div id="proposal-content">
 
-        <p class="section-subhead">Workers' Compensation</p>
         <div style="overflow-x:auto;margin-bottom:20px;">
-          <table class="data-table">
+          <table class="data-table" id="proposal-wc-table">
             <thead>
               <tr>
                 <th>State</th>
-                <th>Code</th>
-                <th style="text-align:right;">Annual Payroll</th>
-                <th style="text-align:right;">Eff. Rate (per $100)</th>
-                <th style="text-align:right;">Annual Billing</th>
+                <th>WC<br>Code</th>
+                <th>WC<br>Description</th>
+                <th style="text-align:right;">Total<br>WSEs</th>
+                <th style="text-align:right;">Annual<br>GWs</th>
+                <th style="text-align:right;">WC<br>Rate</th>
+                <th style="text-align:right;">FICA</th>
+                <th style="text-align:right;">FUTA</th>
+                <th style="text-align:right;">SUTA</th>
+                <th style="text-align:right;" id="proposal-admin-th">Admin</th>
+                <th style="text-align:right;">Pre<br>Cutoff<br>Cost %</th>
+                <th style="text-align:right;">Post<br>Cutoff<br>Cost %</th>
               </tr>
             </thead>
             <tbody id="proposal-wc-body"></tbody>
             <tfoot>
               <tr class="totals-row">
-                <td colspan="4" style="text-align:right;">WC Total</td>
-                <td style="text-align:right;" id="p-wc-total">—</td>
+                <td colspan="3">Totals</td>
+                <td style="text-align:right;" id="p-total-wses">—</td>
+                <td style="text-align:right;" id="p-total-gws">—</td>
+                <td style="text-align:right;" id="p-wc-billed">—</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td style="text-align:right;" id="p-admin-total">—</td>
+                <td></td>
+                <td></td>
               </tr>
             </tfoot>
           </table>
         </div>
 
-        <p class="section-subhead">SUTA (State Unemployment)</p>
-        <div style="overflow-x:auto;margin-bottom:20px;">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>State</th>
-                <th>Reporting</th>
-                <th style="text-align:right;">Billing Rate</th>
-                <th style="text-align:right;">Billed</th>
-              </tr>
-            </thead>
-            <tbody id="proposal-suta-body"></tbody>
-            <tfoot>
-              <tr class="totals-row">
-                <td colspan="3" style="text-align:right;">SUTA Total</td>
-                <td style="text-align:right;" id="p-suta-total">—</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-
-        <p class="section-subhead">Taxes, Admin &amp; Additional Fees</p>
-        <div class="deal-summary-grid">
-          <div class="ds-row"><span class="ds-label">FICA (SS + Medicare)</span><span class="ds-value" id="p-fica">—</span></div>
-          <div class="ds-row"><span class="ds-label">FUTA</span><span class="ds-value" id="p-futa">—</span></div>
-          <div class="ds-row"><span class="ds-label">Admin Fee</span><span class="ds-value" id="p-admin-fee">—</span></div>
-          <div class="ds-row" id="p-epli-row" style="display:none;"><span class="ds-label">EPLI</span><span class="ds-value" id="p-epli">—</span></div>
-          <div class="ds-row" id="p-impl-row" style="display:none;"><span class="ds-label">Implementation Fee</span><span class="ds-value" id="p-impl-fee">—</span></div>
-        </div>
-
-        <div class="ds-row total" style="margin-top:16px;">
-          <span class="ds-label">Total Annual Billing</span>
-          <span class="ds-value" id="p-total-billing">—</span>
-        </div>
 
       </div><!-- /proposal-content -->
     </div>
@@ -1435,19 +1457,58 @@
         <div style="overflow-x:auto;">
           <table class="data-table" id="analysis-table">
             <thead>
+              <!-- Group header row -->
               <tr>
-                <th>Item</th>
-                <th style="text-align:right;">VHR Rate</th>
-                <th style="text-align:right;">VHR Amount</th>
-                <th style="text-align:right;">Current Rate</th>
-                <th style="text-align:right;">Current Amount</th>
-                <th style="text-align:right;">Difference</th>
+                <th colspan="4"></th>
+                <th colspan="3" class="analysis-group-label" style="text-align:center;">Workers' Compensation</th>
+                <th colspan="3" class="analysis-group-label" style="text-align:center;">Administrative Fees</th>
+                <th colspan="3" class="analysis-group-label" style="text-align:center;">SUTA</th>
+              </tr>
+              <!-- Column header row -->
+              <tr>
+                <th>State</th>
+                <th>WC<br>Code</th>
+                <th style="text-align:right;">Total<br>WSEs</th>
+                <th style="text-align:right;">Annual<br>GWs</th>
+                <th style="text-align:right;">Current<br>Rate</th>
+                <th style="text-align:right;">VHR<br>Rate</th>
+                <th style="text-align:right;">WC<br>Savings</th>
+                <th style="text-align:right;">Current<br>Admin</th>
+                <th style="text-align:right;">VHR<br>Admin</th>
+                <th style="text-align:right;">Admin<br>Savings</th>
+                <th style="text-align:right;">Current<br>SUTA</th>
+                <th style="text-align:right;">VHR<br>SUTA</th>
+                <th style="text-align:right;">SUTA<br>Savings</th>
               </tr>
             </thead>
-            <tbody id="analysis-body"></tbody>
+
+            <!-- WC rows (SUTA cols inline, first row per state) -->
+            <tbody id="analysis-wc-body"></tbody>
+
+            <!-- Savings totals row -->
+            <tbody>
+              <tr class="totals-row">
+                <td colspan="4">Totals</td>
+                <td></td><td></td>
+                <td style="text-align:right;" id="a-wc-savings">—</td>
+                <td></td>
+                <td></td>
+                <td style="text-align:right;" id="a-admin-savings">—</td>
+                <td></td>
+                <td></td>
+                <td style="text-align:right;" id="a-suta-savings">—</td>
+              </tr>
+            </tbody>
+
+            <tfoot>
+              <tr class="totals-row">
+                <td colspan="12">Total Savings — Vested HR</td>
+                <td style="text-align:right;" id="a-grand-total-savings">—</td>
+              </tr>
+            </tfoot>
+
           </table>
         </div>
-        <div class="info-note" style="margin-top:12px;">Difference = VHR Amount − Current Amount. Green = client saves with VHR. SUTA dollar amounts require taxable wage data — only rate comparison shown per state.</div>
       </div><!-- /analysis-content -->
 
     </div>
@@ -1559,6 +1620,15 @@
 
 <script src="/static/app.js"></script>
 <script>
+/* ── Formatting helpers (also defined here in case app.js is cached) ── */
+function formatDollars(value) {
+  if (value == null || isNaN(value)) return '$0';
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency', currency: 'USD',
+    minimumFractionDigits: 0, maximumFractionDigits: 0,
+  }).format(value);
+}
+
 /* ── State ──────────────────────────────────────────────────────────────── */
 const clientId = new URLSearchParams(window.location.search).get('id');
 let calcDebounceTimer = null;
@@ -1608,11 +1678,8 @@ function toggleMedNote(sel, triggerValue, noteId) {
 
 function onMedCarveOut(sel) {
   const isCarveOut = sel.value === 'true';
-  document.getElementById('med-note-carveout').style.display = isCarveOut ? 'block' : 'none';
-  document.querySelectorAll('#medical-rows .q-row:not([data-med-field="medical_carve_out"])').forEach(r => {
-    r.style.display = isCarveOut ? 'none' : '';
-  });
-  document.getElementById('ancillary-card').style.display = isCarveOut ? 'none' : '';
+  document.getElementById('med-carveout-note').style.display = isCarveOut ? 'block' : 'none';
+  document.getElementById('benefits-sections-wrapper').style.display = isCarveOut ? 'none' : '';
 }
 
 /* ── WC Carve-Out Toggle ─────────────────────────────────────────────────── */
@@ -1801,7 +1868,10 @@ document.getElementById('btn-add-wc-code').addEventListener('click', () => {
 document.getElementById('btn-remove-wc-rows').addEventListener('click', () => wcCodesRM.toggle());
 
 /* ── SUTA Table ──────────────────────────────────────────────────────────── */
-let sutaMinRates = {};
+let sutaMinRates  = {};
+let sutaThresholds = {};
+let sutaCostRates  = {};
+let systemConfig = {};
 
 const CLIENT_REPORTING_STATES = new Set([
   'AK','CT','DE','IA','KS','KY','MA','ME','MI','MN','MS','MT',
@@ -1812,7 +1882,10 @@ async function loadSutaMinRates() {
   try {
     const rates = await apiGet('/suta-rates');
     rates.forEach(r => {
-      if (r.state && r.vhr_min_rate != null) sutaMinRates[r.state] = r.vhr_min_rate;
+      if (!r.state) return;
+      if (r.vhr_min_rate != null) sutaMinRates[r.state]   = r.vhr_min_rate;
+      if (r.threshold    != null) sutaThresholds[r.state] = r.threshold;
+      if (r.our_cost     != null) sutaCostRates[r.state]  = r.our_cost;
     });
   } catch (e) { /* silent */ }
 }
@@ -1864,10 +1937,10 @@ function removeLocationRow(btn) {
   btn.closest('.location-row').remove();
 }
 
+const sutaRM = makeRemoveMode('suta-body', 'btn-add-suta', 'btn-remove-suta', '+ Add State', () => { scheduleCalculate(); scheduleAutoSave(); });
 document.getElementById('btn-add-suta').addEventListener('click', () => {
   sutaRM.isActive() ? sutaRM.cancel() : addSutaRow();
 });
-const sutaRM = makeRemoveMode('suta-body', 'btn-add-suta', 'btn-remove-suta', '+ Add State', () => { scheduleCalculate(); scheduleAutoSave(); });
 document.getElementById('btn-remove-suta').addEventListener('click', () => sutaRM.toggle());
 
 /* ── Locations ───────────────────────────────────────────────────────────── */
@@ -1899,19 +1972,14 @@ function getLocations() {
 document.getElementById('btn-add-location').addEventListener('click', () => addLocationRow());
 
 /* ── Admin Method Selection ──────────────────────────────────────────────── */
-const adminMethodLabels = {
-  1: ['Vested Rate (%)',          'Current Rate (%)'],
-  2: ['Vested Rate ($ per check)','Current Rate ($ per check)'],
-  3: ['Vested Rate ($ per WSE/mo)','Current Rate ($ per WSE/mo)'],
-};
 function selectAdminMethod(method) {
   document.querySelectorAll('.admin-method-box').forEach(b => b.classList.remove('selected'));
   const box = document.querySelector(`.admin-method-box[data-method="${method}"]`);
   if (box) box.classList.add('selected');
   document.getElementById('admin_method').value = method;
-  const [vLabel, cLabel] = adminMethodLabels[method] || adminMethodLabels[1];
-  document.getElementById('admin_rate_label').textContent = vLabel;
-  document.getElementById('current_admin_rate_label').textContent = cLabel;
+  document.querySelectorAll('.admin-rate-fields').forEach(el => el.style.display = 'none');
+  const active = document.getElementById(`admin-rate-fields-${method}`);
+  if (active) active.style.display = '';
   scheduleCalculate();
   scheduleAutoSave();
 }
@@ -1930,7 +1998,9 @@ wcMod.addEventListener('input', () => {
 });
 
 /* ── Pricing inputs → trigger recalculate ────────────────────────────────── */
-['admin_method', 'admin_rate', 'pricing_proposed_mod', 'implementation_fee',
+['admin_method', 'admin_rate', 'admin_rate_2', 'admin_rate_3',
+ 'current_admin_rate', 'current_admin_rate_2', 'current_admin_rate_3',
+ 'pricing_proposed_mod', 'implementation_fee',
  'epli_fee', 'broker_wc_commission_pct', 'internal_commission_pct',
  'external_commission_pct', 'w2s_generated'].forEach(id => {
   const el = document.getElementById(id);
@@ -2012,8 +2082,8 @@ function collectSutaLines() {
       total_wses,
       current_client_rate: currRateRaw / 100,
       billing_rate: rateRaw / 100,
-      cost_rate: 0,
-      threshold: 0,
+      cost_rate: sutaCostRates[state]  || 0,
+      threshold: sutaThresholds[state] || 0,
       turnover_pct: 0.1,
     });
   });
@@ -2042,9 +2112,7 @@ function collectWCLosses() {
 }
 
 function collectClientPayload() {
-  const adminRateRaw = getNumVal('admin_rate') || 0;
   const adminMethod  = getIntVal('admin_method') || 1;
-  const adminRate    = adminMethod === 1 ? adminRateRaw / 100 : adminRateRaw;
 
   const internal = getNumVal('internal_commission_pct') || 0;
   const external  = getNumVal('external_commission_pct') || 0;
@@ -2129,9 +2197,14 @@ function collectClientPayload() {
     new_company:         getSelectBool('new_company'),
     gaps_in_coverage:    getSelectBool('gaps_in_coverage'),
 
-    // Pricing
+    // Pricing — each method stores its rate independently
     admin_method:              adminMethod,
-    admin_rate:                adminRate,
+    admin_rate:                (getNumVal('admin_rate') || 0) / 100,
+    admin_rate_2:              getNumVal('admin_rate_2') || 0,
+    admin_rate_3:              getNumVal('admin_rate_3') || 0,
+    current_admin_rate:        getNumVal('current_admin_rate') || 0,
+    current_admin_rate_2:      getNumVal('current_admin_rate_2') || 0,
+    current_admin_rate_3:      getNumVal('current_admin_rate_3') || 0,
     implementation_fee:        getNumVal('implementation_fee'),
     epli_fee:                  getNumVal('epli_fee'),
     internal_commission_pct:   internal / 100,
@@ -2262,77 +2335,85 @@ function renderProposal(r) {
   const ao = r.admin_overview || {};
   const wo = r.wc_overview    || {};
   const to = r.taxes_overview || {};
-  const oi = r.other_items    || {};
 
   const proposedMod = parseFloat(document.getElementById('pricing_proposed_mod')?.value) || 0;
   const wcLines     = collectWCLines().filter(l => l.wc_code || l.annual_gw > 0);
   const sutaLines   = collectSutaLines().filter(l => l.state);
 
+  const ficaRate     = (systemConfig.ss_rate || 0) + (systemConfig.medicare_rate || 0);
+  const futaRate     = systemConfig.futa_rate || 0;
+  const adminMethod  = getIntVal('admin_method') || 1;
+  const adminRateRaw = adminMethod === 1
+    ? (getNumVal('admin_rate') || 0)
+    : (getNumVal('admin_rate_' + adminMethod) || 0);
+  const payPeriods   = getAdminPayPeriods();
+  const adminHeaders = { 1: 'Admin', 2: 'Admin<br>per EE<br>per Check', 3: 'Admin<br>per EE<br>per Month' };
+  const adminDisplay = adminMethod === 1
+    ? (adminRateRaw ? adminRateRaw.toFixed(2) + '%' : '—')
+    : (adminRateRaw ? '$' + adminRateRaw.toFixed(2) : '—');
+  document.getElementById('proposal-admin-th').innerHTML = adminHeaders[adminMethod] || 'Admin';
+  const sutaRateMap = {};
+  sutaLines.forEach(l => { sutaRateMap[l.state] = l.billing_rate; });
+
   // WC table
   const wcBody = document.getElementById('proposal-wc-body');
   wcBody.innerHTML = '';
+  let sumWses = 0, sumGws = 0;
   if (wcLines.length === 0) {
-    wcBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#a0aec0;">—</td></tr>`;
+    wcBody.innerHTML = `<tr><td colspan="12" style="text-align:center;color:#a0aec0;">—</td></tr>`;
   } else {
     wcLines.forEach(line => {
-      const gw   = line.annual_gw || 0;
-      const rate = line.manual_rate || 0;
-      const eff  = proposedMod === 0 ? 0 : rate * proposedMod;
-      const bill = eff * gw / 100;
-      const tr   = document.createElement('tr');
+      const wses     = Math.round((line.ftes || 0) + 0.75 * (line.ptes || 0));
+      const gw       = line.annual_gw || 0;
+      const rate     = line.manual_rate || 0;
+      const desc     = line.wc_description || '—';
+      const sutaRate = sutaRateMap[line.state];
+      const isClientReporting = CLIENT_REPORTING_STATES.has(line.state);
+      const sutaDisplay = isClientReporting
+        ? 'PT'
+        : (sutaRate != null ? (sutaRate * 100).toFixed(2) + '%' : '—');
+
+      const sutaPct = (!isClientReporting && sutaRate != null) ? sutaRate * 100 : 0;
+      let adminPct = 0;
+      if (adminMethod === 1) {
+        adminPct = adminRateRaw;
+      } else if (gw > 0) {
+        const adminCost = adminMethod === 2
+          ? adminRateRaw * wses * payPeriods
+          : adminRateRaw * wses * 12;
+        adminPct = (adminCost / gw) * 100;
+      }
+      const costBeforePct = rate + (ficaRate * 100) + (futaRate * 100) + sutaPct + adminPct;
+      const costAfterPct  = costBeforePct - (futaRate * 100) - sutaPct;
+      const costBeforeDisplay = gw > 0 ? costBeforePct.toFixed(2) + '%' : '—';
+      const costAfterDisplay  = gw > 0 ? costAfterPct.toFixed(2)  + '%' : '—';
+
+      const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${line.state || '—'}</td>
         <td>${line.wc_code || '—'}</td>
-        <td style="text-align:right;">${formatCurrency(gw)}</td>
-        <td style="text-align:right;">${eff ? eff.toFixed(4) : '—'}</td>
-        <td style="text-align:right;">${formatCurrency(bill)}</td>`;
+        <td title="${desc}">${desc}</td>
+        <td style="text-align:right;">${wses || '—'}</td>
+        <td style="text-align:right;">${gw ? formatDollars(gw) : '—'}</td>
+        <td style="text-align:right;">${rate ? rate.toFixed(2) + '%' : '—'}</td>
+        <td style="text-align:right;">${ficaRate ? (ficaRate * 100).toFixed(2) + '%' : '—'}</td>
+        <td style="text-align:right;">${futaRate ? (futaRate * 100).toFixed(2) + '%' : '—'}</td>
+        <td style="text-align:right;">${sutaDisplay}</td>
+        <td style="text-align:right;">${adminDisplay}</td>
+        <td style="text-align:right;">${costBeforeDisplay}</td>
+        <td style="text-align:right;">${costAfterDisplay}</td>`;
+      sumWses += wses;
+      sumGws  += gw;
       wcBody.appendChild(tr);
     });
   }
-  document.getElementById('p-wc-total').textContent = wo.wc_billed != null ? formatCurrency(wo.wc_billed) : '—';
 
-  // SUTA table
-  const sutaBody = document.getElementById('proposal-suta-body');
-  sutaBody.innerHTML = '';
-  const sutaLineMap = {};
-  (r.suta_lines || []).forEach(l => { sutaLineMap[l.state] = l; });
-  if (sutaLines.length === 0) {
-    sutaBody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#a0aec0;">—</td></tr>`;
-  } else {
-    sutaLines.forEach(line => {
-      const rep      = CLIENT_REPORTING_STATES.has(line.state) ? 'Client' : 'VHR';
-      const sl       = sutaLineMap[line.state];
-      const billAmt  = sl ? formatCurrency(sl.suta_bill) : '—';
-      const tr       = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${line.state}</td>
-        <td>${rep}</td>
-        <td style="text-align:right;">${formatPct(line.billing_rate)}</td>
-        <td style="text-align:right;">${billAmt}</td>`;
-      sutaBody.appendChild(tr);
-    });
-  }
-  document.getElementById('p-suta-total').textContent = to.suta_billed != null ? formatCurrency(to.suta_billed) : '—';
+  // WC totals footer
+  document.getElementById('p-total-wses').textContent = sumWses || '—';
+  document.getElementById('p-total-gws').textContent  = sumGws  ? formatDollars(sumGws)         : '—';
+  document.getElementById('p-wc-billed').textContent  = wo.wc_billed   != null ? formatCurrency(wo.wc_billed)   : '—';
+  document.getElementById('p-admin-total').textContent = ao.admin_margin != null ? formatCurrency(ao.admin_margin) : '—';
 
-  // Taxes & fees
-  setDS('p-fica',      to.fica_total   != null ? formatCurrency(to.fica_total)   : '—');
-  setDS('p-futa',      to.futa_total   != null ? formatCurrency(to.futa_total)   : '—');
-  setDS('p-admin-fee', ao.admin_margin != null ? formatCurrency(ao.admin_margin) : '—');
-
-  const epli    = oi.epli || 0;
-  const implFee = oi.implementation_fee || 0;
-  document.getElementById('p-epli-row').style.display = epli    > 0 ? '' : 'none';
-  document.getElementById('p-impl-row').style.display = implFee > 0 ? '' : 'none';
-  setDS('p-epli',     formatCurrency(epli));
-  setDS('p-impl-fee', formatCurrency(implFee));
-
-  const hasCalcData = ao.admin_margin != null;
-  const total = hasCalcData
-    ? (wo.wc_billed || 0) + (to.suta_billed || 0) +
-      (to.fica_total || 0) + (to.futa_total || 0) +
-      (ao.admin_margin || 0) + epli + implFee
-    : null;
-  setDS('p-total-billing', total != null ? formatCurrency(total) : '—');
 }
 
 /* ── Annual Billing Analysis ─────────────────────────────────────────────── */
@@ -2344,129 +2425,125 @@ function getAdminPayPeriods() {
 
 function renderBillingAnalysis(r) {
   const ao = r.admin_overview || {};
-  const wo = r.wc_overview    || {};
-  const to = r.taxes_overview || {};
 
   const proposedMod     = parseFloat(document.getElementById('pricing_proposed_mod')?.value) || 0;
   const wcLines         = collectWCLines().filter(l => l.wc_code || l.annual_gw > 0);
   const sutaLines       = collectSutaLines().filter(l => l.state);
   const adminMethod     = getIntVal('admin_method') || 1;
-  const adminRateRaw    = getNumVal('admin_rate')         || 0;
-  const curAdminRateRaw = getNumVal('current_admin_rate') || 0;
+  const _adminSuffix    = adminMethod === 1 ? '' : '_' + adminMethod;
+  const curAdminRateRaw = getNumVal('current_admin_rate' + _adminSuffix) || 0;
+  const adminRateRaw    = adminMethod === 1
+    ? (getNumVal('admin_rate') || 0)
+    : (getNumVal('admin_rate_' + adminMethod) || 0);
   const totalGWs        = ao.total_gws  || 0;
   const totalWses       = ao.total_wses || 0;
   const payPeriods      = getAdminPayPeriods();
 
-  const tbody = document.getElementById('analysis-body');
-  tbody.innerHTML = '';
+  function savCls(v) { return v > 0 ? 'positive' : v < 0 ? 'negative' : ''; }
 
-  function sectionRow(label) {
-    const tr = document.createElement('tr');
-    tr.className = 'analysis-section-hdr';
-    tr.innerHTML = `<td colspan="6">${label}</td>`;
-    tbody.appendChild(tr);
-  }
-  function dataRow(label, vhrRate, vhrAmt, curRate, curAmt) {
-    const diff    = vhrAmt - curAmt;
-    const diffCls = diff < 0 ? 'positive' : diff > 0 ? 'negative' : '';
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${label}</td>
-      <td style="text-align:right;">${vhrRate}</td>
-      <td style="text-align:right;">${formatCurrency(vhrAmt)}</td>
-      <td style="text-align:right;">${curRate}</td>
-      <td style="text-align:right;">${formatCurrency(curAmt)}</td>
-      <td style="text-align:right;" class="${diffCls}">${formatCurrency(diff)}</td>`;
-    tbody.appendChild(tr);
-  }
-  function subtotalRow(label, vhrAmt, curAmt) {
-    const diff    = vhrAmt - curAmt;
-    const diffCls = diff < 0 ? 'positive' : diff > 0 ? 'negative' : '';
-    const tr = document.createElement('tr');
-    tr.className = 'totals-row';
-    tr.innerHTML = `
-      <td colspan="2">${label}</td>
-      <td style="text-align:right;">${formatCurrency(vhrAmt)}</td>
-      <td></td>
-      <td style="text-align:right;">${formatCurrency(curAmt)}</td>
-      <td style="text-align:right;" class="${diffCls}">${formatCurrency(diff)}</td>`;
-    tbody.appendChild(tr);
-  }
+  // ── Workers' Compensation rows (with inline SUTA by state match) ──
+  const sutaMap = {};
+  (r.suta_lines || []).forEach(sl => { sutaMap[sl.state] = sl; });
+  const seenSutaStates = new Set();
 
-  // Workers' Comp section
-  sectionRow('Workers\' Compensation');
-  let vhrWCSum = 0, curWCSum = 0;
+  const wcBody = document.getElementById('analysis-wc-body');
+  wcBody.innerHTML = '';
+  let sumGws = 0, sumWcSavings = 0, sumCurAdmin = 0, sumVhrAdmin = 0;
   if (wcLines.length === 0) {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td colspan="6" style="text-align:center;color:#a0aec0;">—</td>`;
-    tbody.appendChild(tr);
+    wcBody.innerHTML = `<tr><td colspan="13" style="text-align:center;color:#a0aec0;">—</td></tr>`;
   } else {
     wcLines.forEach(line => {
+      const wses    = Math.round((line.ftes || 0) + 0.75 * (line.ptes || 0));
       const gw      = line.annual_gw || 0;
-      const rate    = line.manual_rate || 0;
+      const vhrRate = line.manual_rate || 0;
       const curRate = line.current_client_rate || 0;
-      const eff     = proposedMod === 0 ? 0 : rate * proposedMod;
-      const curEff  = proposedMod === 0 ? 0 : curRate * proposedMod;
-      const vhrBill = eff * gw / 100;
-      const curBill = curEff * gw / 100;
-      vhrWCSum += vhrBill;
-      curWCSum += curBill;
-      dataRow(
-        `${line.state || '—'} ${line.wc_code || '—'}`,
-        eff    ? eff.toFixed(4)    : '—',
-        vhrBill,
-        curEff ? curEff.toFixed(4) : '—',
-        curBill
-      );
+      const savings = (curRate - vhrRate) * proposedMod * gw / 100;
+      sumGws       += gw;
+      sumWcSavings += savings;
+
+      // Admin: compute per row from rates × this row's GWs/WSEs
+      let curAdminRow = 0, vhrAdminRow = 0;
+      if (adminMethod === 1) {
+        curAdminRow = (curAdminRateRaw / 100) * gw;
+        vhrAdminRow = (adminRateRaw    / 100) * gw;
+      } else if (adminMethod === 2) {
+        curAdminRow = curAdminRateRaw * wses * payPeriods;
+        vhrAdminRow = adminRateRaw    * wses * payPeriods;
+      } else if (adminMethod === 3) {
+        curAdminRow = curAdminRateRaw * wses * 12;
+        vhrAdminRow = adminRateRaw    * wses * 12;
+      }
+      const adminSavRow = curAdminRow - vhrAdminRow;
+      sumCurAdmin += curAdminRow;
+      sumVhrAdmin += vhrAdminRow;
+
+      // SUTA: look up by state, show only on the first WC row per state
+      const sl = sutaMap[line.state];
+      let curSutaTxt = '—', vhrSutaTxt = '—', sutaSavTxt = '—', sutaSavCls = '';
+      if (sl && !seenSutaStates.has(line.state)) {
+        seenSutaStates.add(line.state);
+        const curAmt = sl.prior_cost     || 0;
+        const vhrAmt = sl.suta_bill      || 0;
+        const savAmt = sl.client_savings || 0;
+        curSutaTxt = curAmt ? formatDollars(curAmt) : '—';
+        vhrSutaTxt = vhrAmt ? formatDollars(vhrAmt) : '—';
+        sutaSavTxt = formatDollars(savAmt);
+        sutaSavCls = savCls(savAmt);
+      }
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${line.state || '—'}</td>
+        <td>${line.wc_code || '—'}</td>
+        <td style="text-align:right;">${wses || '—'}</td>
+        <td style="text-align:right;">${gw ? formatDollars(gw) : '—'}</td>
+        <td style="text-align:right;">${curRate ? curRate.toFixed(4) : '—'}</td>
+        <td style="text-align:right;">${vhrRate ? vhrRate.toFixed(4) : '—'}</td>
+        <td style="text-align:right;" class="${savCls(savings)}">${gw ? formatDollars(savings) : '—'}</td>
+        <td style="text-align:right;">${gw ? formatDollars(curAdminRow) : '—'}</td>
+        <td style="text-align:right;">${gw ? formatDollars(vhrAdminRow) : '—'}</td>
+        <td style="text-align:right;" class="${savCls(adminSavRow)}">${gw ? formatDollars(adminSavRow) : '—'}</td>
+        <td style="text-align:right;">${curSutaTxt}</td>
+        <td style="text-align:right;">${vhrSutaTxt}</td>
+        <td style="text-align:right;" class="${sutaSavCls}">${sutaSavTxt}</td>`;
+      wcBody.appendChild(tr);
     });
   }
-  subtotalRow('WC Total', vhrWCSum, curWCSum);
 
-  // SUTA section
-  if (sutaLines.length > 0) {
-    sectionRow('SUTA');
-    const sutaMap = {};
-    (r.suta_lines || []).forEach(l => { sutaMap[l.state] = l; });
-    sutaLines.forEach(line => {
-      const sl       = sutaMap[line.state];
-      const vhrAmt   = sl ? sl.suta_bill  : 0;
-      const curAmt   = sl ? sl.prior_cost : 0;
-      dataRow(
-        line.state,
-        formatPct(line.billing_rate),
-        vhrAmt,
-        formatPct(line.current_client_rate),
-        curAmt
-      );
-    });
-    const curSutaSum = (r.suta_lines || []).reduce((s, l) => s + (l.prior_cost || 0), 0);
-    subtotalRow('SUTA Total', to.suta_billed || 0, curSutaSum);
-  }
+  // ── Administrative Fee totals (accumulated from per-row) ──
+  const curAdminFee  = sumCurAdmin;
+  const vhrAdminFee  = sumVhrAdmin;
+  const adminSavings = curAdminFee - vhrAdminFee;
 
-  // Admin Fee section
-  sectionRow('Admin Fee');
-  const vhrAdminFee = ao.admin_margin || 0;
-  let curAdminFee = 0;
-  if (adminMethod === 1) {
-    curAdminFee = (curAdminRateRaw / 100) * totalGWs;
-  } else if (adminMethod === 2) {
-    curAdminFee = curAdminRateRaw * totalWses * payPeriods;
-  } else if (adminMethod === 3) {
-    curAdminFee = curAdminRateRaw * totalWses * 12;
-  }
-  const methodLabel = adminMethod === 1 ? '% GWs' : adminMethod === 2 ? 'per check' : 'PEPM';
-  const vhrRateStr  = adminMethod === 1
-    ? adminRateRaw.toFixed(2) + '%'
-    : '$' + adminRateRaw.toFixed(2);
-  const curRateStr  = adminMethod === 1
-    ? curAdminRateRaw.toFixed(2) + '%'
-    : '$' + curAdminRateRaw.toFixed(2);
-  dataRow(`Admin (${methodLabel})`, vhrRateStr, vhrAdminFee, curRateStr, curAdminFee);
+  // ── SUTA totals (from r.suta_lines, not from per-row display) ──
+  const sutaResultLines = r.suta_lines || [];
+  let sumCurrentSuta = 0, sumVhrSuta = 0, sumSutaSavings = 0;
+  sutaResultLines.forEach(sl => {
+    sumCurrentSuta  += sl.prior_cost     || 0;
+    sumVhrSuta      += sl.suta_bill      || 0;
+    sumSutaSavings  += sl.client_savings || 0;
+  });
 
-  // Grand total
-  const grandVHR = vhrWCSum + (to.suta_billed || 0) + vhrAdminFee;
-  const grandCur = curWCSum + curAdminFee;
-  subtotalRow('Grand Total', grandVHR, grandCur);
+  // ── Totals row ──
+  const hasData = sumGws > 0 || totalGWs > 0 || sutaResultLines.length > 0;
+
+  const wcSavEl = document.getElementById('a-wc-savings');
+  wcSavEl.textContent = sumGws ? formatDollars(sumWcSavings) : '—';
+  wcSavEl.className   = sumGws ? savCls(sumWcSavings) : '';
+
+  const adminSavEl = document.getElementById('a-admin-savings');
+  adminSavEl.textContent = sumGws ? formatDollars(adminSavings) : '—';
+  adminSavEl.className   = sumGws ? savCls(adminSavings) : '';
+
+  const sutaSavEl = document.getElementById('a-suta-savings');
+  sutaSavEl.textContent = sutaResultLines.length ? formatDollars(sumSutaSavings) : '—';
+  sutaSavEl.className   = sutaResultLines.length ? savCls(sumSutaSavings) : '';
+
+  // ── Grand total ──
+  const grandSavings = sumWcSavings + adminSavings + sumSutaSavings;
+  const grandEl = document.getElementById('a-grand-total-savings');
+  grandEl.textContent = hasData ? formatDollars(grandSavings) : '—';
+  grandEl.className   = hasData ? savCls(grandSavings) : '';
 }
 
 /* ── Loss Analysis ───────────────────────────────────────────────────────── */
@@ -2662,14 +2739,14 @@ function populateForm(client) {
     client.wc_losses.forEach(loss => addWCLossRow(loss));
   }
 
-  // Pricing
-  const method = client.admin_method || 1;
-  selectAdminMethod(method);
-  const rateDisplay = method === 1
-    ? ((client.admin_rate || 0) * 100).toFixed(4)
-    : (client.admin_rate || 0);
-  setField('admin_rate', rateDisplay);
-  setField('current_admin_rate', client.current_admin_rate || 0);
+  // Pricing — populate all per-method rate fields then select active method
+  setField('admin_rate',          ((client.admin_rate   || 0) * 100).toFixed(4));
+  setField('admin_rate_2',        client.admin_rate_2   || 0);
+  setField('admin_rate_3',        client.admin_rate_3   || 0);
+  setField('current_admin_rate',  client.current_admin_rate   || 0);
+  setField('current_admin_rate_2', client.current_admin_rate_2 || 0);
+  setField('current_admin_rate_3', client.current_admin_rate_3 || 0);
+  selectAdminMethod(client.admin_method || 1);
 
   setField('implementation_fee',       client.implementation_fee);
   setField('epli_fee',                 client.epli_fee);
@@ -2713,7 +2790,7 @@ document.getElementById('btn-save').addEventListener('click', async () => {
 /* ── Card Lock ───────────────────────────────────────────────────────────── */
 function applyCardLock(card, locked) {
   card.dataset.locked = locked ? 'true' : 'false';
-  card.querySelectorAll('input, select, textarea, button:not(.card-lock-btn)').forEach(el => {
+  card.querySelectorAll('input, select, textarea, button:not(.card-lock-btn):not(.btn-add-row)').forEach(el => {
     el.disabled = locked;
   });
   const btn = card.querySelector('.card-lock-btn');
@@ -2750,6 +2827,7 @@ function collectCardLockStates() {
 /* ── Init ────────────────────────────────────────────────────────────────── */
 async function init() {
   await loadSutaMinRates();
+  try { systemConfig = await apiGet('/config'); } catch (e) { /* non-fatal */ }
   if (clientId) {
     try {
       const client = await apiGet('/clients/' + clientId);

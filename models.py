@@ -162,8 +162,12 @@ class Client(Base):
 
     # Final Pricing
     admin_method = Column(Integer, default=1)  # 1 | 2 | 3
-    admin_rate = Column(Float, default=0.0)
-    current_admin_rate = Column(Float, default=0.0)
+    admin_rate = Column(Float, default=0.0)          # method 1 vested
+    admin_rate_2 = Column(Float, default=0.0)        # method 2 vested
+    admin_rate_3 = Column(Float, default=0.0)        # method 3 vested
+    current_admin_rate = Column(Float, default=0.0)  # method 1 current
+    current_admin_rate_2 = Column(Float, default=0.0)
+    current_admin_rate_3 = Column(Float, default=0.0)
 
     # Commission
     internal_commission_pct = Column(Float, default=0.0)

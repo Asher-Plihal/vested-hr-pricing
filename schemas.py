@@ -223,7 +223,11 @@ class ClientUpdate(BaseModel):
     gaps_in_coverage: Optional[bool] = None
     admin_method: Optional[int] = None
     admin_rate: Optional[float] = None
+    admin_rate_2: Optional[float] = None
+    admin_rate_3: Optional[float] = None
     current_admin_rate: Optional[float] = None
+    current_admin_rate_2: Optional[float] = None
+    current_admin_rate_3: Optional[float] = None
     internal_commission_pct: Optional[float] = None
     external_commission_pct: Optional[float] = None
     broker_wc_commission_pct: Optional[float] = None
@@ -312,7 +316,11 @@ class ClientOut(BaseModel):
     gaps_in_coverage: Optional[bool]
     admin_method: Optional[int]
     admin_rate: Optional[float]
+    admin_rate_2: Optional[float]
+    admin_rate_3: Optional[float]
     current_admin_rate: Optional[float]
+    current_admin_rate_2: Optional[float]
+    current_admin_rate_3: Optional[float]
     internal_commission_pct: Optional[float]
     external_commission_pct: Optional[float]
     broker_wc_commission_pct: Optional[float]
