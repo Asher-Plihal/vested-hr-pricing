@@ -178,6 +178,9 @@ class Client(Base):
     # FUTA turnover input
     w2s_generated = Column(Float, default=0.0)
 
+    # UI state — JSON dict of card-id → locked boolean
+    card_lock_states = Column(Text, nullable=True)
+
 
 class WCLine(Base):
     __tablename__ = "wc_lines"

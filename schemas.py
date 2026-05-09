@@ -229,6 +229,7 @@ class ClientUpdate(BaseModel):
     include_tlm: Optional[bool] = None
     include_epli: Optional[bool] = None
     w2s_generated: Optional[float] = None
+    card_lock_states: Optional[str] = None
     wc_lines: Optional[list[WCLineIn]] = None
     suta_lines: Optional[list[SutaLineIn]] = None
     wc_losses: Optional[list[WCLossIn]] = None
@@ -317,6 +318,7 @@ class ClientOut(BaseModel):
     include_tlm: Optional[bool]
     include_epli: Optional[bool]
     w2s_generated: Optional[float]
+    card_lock_states: Optional[str] = None
     wc_lines: list[WCLineOut] = []
     suta_lines: list[SutaLineOut] = []
     wc_losses: list[WCLossOut] = []

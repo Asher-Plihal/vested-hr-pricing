@@ -449,7 +449,7 @@
   <div id="panel-general" class="tab-panel active">
 
     <!-- General Information -->
-    <div class="card" data-locked="true">
+    <div class="card" data-card-id="general-info" data-locked="true">
       <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
         <span>General Information</span>
         <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
@@ -680,7 +680,7 @@
     </div><!-- /card general info -->
 
     <!-- Compliance Questionnaire -->
-    <div class="card" data-locked="true">
+    <div class="card" data-card-id="compliance" data-locked="true">
       <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
         <span>Compliance Questions <span class="req-section-badge y">Required for estimate</span></span>
         <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
@@ -754,7 +754,7 @@
   <div id="panel-benefits" class="tab-panel">
 
     <!-- Medical Questions -->
-    <div class="card" data-locked="true">
+    <div class="card" data-card-id="medical" data-locked="true">
       <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
         <span>Medical Questions <span class="req-section-badge y">Required for estimate</span></span>
         <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
@@ -831,7 +831,7 @@
     </div><!-- /card medical -->
 
     <!-- Ancillary Benefits -->
-    <div class="card" id="ancillary-card" data-locked="true">
+    <div class="card" id="ancillary-card" data-card-id="ancillary" data-locked="true">
       <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
         <span>Ancillary Benefit Questions <span class="req-section-badge g">Required for final approval</span></span>
         <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
@@ -873,7 +873,7 @@
   ══════════════════════════════════════════ -->
   <div id="panel-admin" class="tab-panel">
 
-    <div class="card" data-locked="true">
+    <div class="card" data-card-id="payroll" data-locked="true">
       <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
         <span>Payroll Information</span>
         <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
@@ -959,7 +959,7 @@
       </div>
     </div>
 
-    <div class="card" data-locked="true">
+    <div class="card" data-card-id="admin-fee" data-locked="true">
       <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
         <span>Admin Fee <span class="req-section-badge y">Required for estimate</span></span>
         <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
@@ -986,7 +986,7 @@
 
     </div>
 
-    <div class="card" data-locked="true">
+    <div class="card" data-card-id="additional-fees" data-locked="true">
       <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
         <span>Additional Fees</span>
         <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
@@ -1004,7 +1004,7 @@
       </div>
     </div>
 
-    <div class="card" data-locked="true">
+    <div class="card" data-card-id="commissions" data-locked="true">
       <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
         <span>Commissions</span>
         <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
@@ -1031,7 +1031,7 @@
   ══════════════════════════════════════════ -->
   <div id="panel-taxes" class="tab-panel">
 
-    <div class="card" data-locked="true">
+    <div class="card" data-card-id="suta" data-locked="true">
       <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
         <span>SUTA <span class="req-section-badge y">Required for estimate</span></span>
         <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
@@ -1091,7 +1091,7 @@
     <div id="wc-sections-wrapper">
 
       <!-- WC Codes -->
-      <div class="card" data-locked="true" style="padding:20px 14px;">
+      <div class="card" data-card-id="wc-codes" data-locked="true" style="padding:20px 14px;">
         <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
           <span>Workers' Compensation Codes</span>
           <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
@@ -1148,7 +1148,7 @@
       </div><!-- /card wc codes -->
 
       <!-- WC Losses -->
-      <div class="card" data-locked="true">
+      <div class="card" data-card-id="wc-losses" data-locked="true">
         <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
           <span>Workers' Compensation Losses <span class="req-section-badge g">Required for final approval</span></span>
           <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
@@ -1198,7 +1198,7 @@
       </div><!-- /card wc losses -->
 
       <!-- WC Questions -->
-      <div class="card" data-locked="true">
+      <div class="card" data-card-id="wc-questions" data-locked="true">
         <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
           <span>Workers' Comp Questions <span class="req-section-badge y">Required for estimate</span></span>
           <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
@@ -2060,6 +2060,7 @@ function collectClientPayload() {
     external_commission_pct:   external / 100,
     broker_wc_commission_pct:  brokerWC / 100,
     w2s_generated:             getNumVal('w2s_generated'),
+    card_lock_states:          collectCardLockStates(),
   };
 
   return {
@@ -2650,6 +2651,24 @@ function toggleCardLock(btn) {
   applyCardLock(card, !locked);
 }
 
+function restoreCardLockStates(json) {
+  let states = {};
+  if (json) { try { states = JSON.parse(json); } catch (_) {} }
+  document.querySelectorAll('.card[data-card-id]').forEach(card => {
+    const id = card.dataset.cardId;
+    const locked = id in states ? states[id] : true;
+    applyCardLock(card, locked);
+  });
+}
+
+function collectCardLockStates() {
+  const states = {};
+  document.querySelectorAll('.card[data-card-id]').forEach(card => {
+    states[card.dataset.cardId] = card.dataset.locked !== 'false';
+  });
+  return JSON.stringify(states);
+}
+
 /* ── Init ────────────────────────────────────────────────────────────────── */
 async function init() {
   await loadSutaMinRates();
@@ -2659,19 +2678,20 @@ async function init() {
       isPopulating = true;
       populateForm(client);
       isPopulating = false;
+      restoreCardLockStates(client.card_lock_states);
     } catch (e) {
       isPopulating = false;
       showToast('Failed to load client: ' + e.message, 'error');
       addWCCodeRow();
+      document.querySelectorAll('.card[data-card-id]').forEach(c => applyCardLock(c, false));
     }
   } else {
     addWCCodeRow();
+    document.querySelectorAll('.card[data-card-id]').forEach(c => applyCardLock(c, false));
   }
 }
 
-init().then(() => {
-  document.querySelectorAll('.card[data-locked]').forEach(card => applyCardLock(card, true));
-});
+init();
 </script>
 </body>
 </html>

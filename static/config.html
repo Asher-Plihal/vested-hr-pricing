@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VestedHR — System Configuration</title>
   <link rel="stylesheet" href="/static/style.css" />
+  <style>
+    .card-lock-btn {
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0 0 0 8px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+  </style>
 </head>
 <body>
 
@@ -70,8 +81,11 @@
 
   <!-- ── PANEL: Federal Tax ───────────────────────────────────────────────── -->
   <div class="tab-panel" id="panel-federal">
-    <div class="card">
-      <div class="card-title">Taxes</div>
+    <div class="card" data-card-id="taxes" data-locked="true">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Taxes</span>
+        <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+      </div>
       <hr class="divider" />
       <div class="field-grid" style="grid-template-columns: repeat(4, 1fr);">
         <div class="field-group">
@@ -120,8 +134,11 @@
 
   <!-- ── PANEL: Workers' Comp ─────────────────────────────────────────────── -->
   <div class="tab-panel active" id="panel-wc">
-    <div class="card">
-      <div class="card-title">Workers' Compensation</div>
+    <div class="card" data-card-id="wc" data-locked="true">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Workers' Compensation</span>
+        <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+      </div>
       <hr class="divider" />
 
       <p class="section-subhead">Pricing Factors</p>
@@ -184,8 +201,11 @@
 
   <!-- ── PANEL: Admin ─────────────────────────────────────────────────────── -->
   <div class="tab-panel" id="panel-admin">
-    <div class="card">
-      <div class="card-title">Admin</div>
+    <div class="card" data-card-id="admin" data-locked="true">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Admin</span>
+        <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+      </div>
       <hr class="divider" />
 
       <p class="section-subhead">Business Consultant Commission</p>
@@ -205,8 +225,11 @@
 
   <!-- ── PANEL: Additional Fees ───────────────────────────────────────────── -->
   <div class="tab-panel" id="panel-fees">
-    <div class="card">
-      <div class="card-title">Additional Fees</div>
+    <div class="card" data-card-id="fees" data-locked="true">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Additional Fees</span>
+        <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+      </div>
       <hr class="divider" />
 
       <p class="section-subhead">Payroll Fees</p>
@@ -524,6 +547,39 @@ async function loadConfig() {
 }
 
 loadConfig();
+
+/* ── Card Lock (localStorage-persisted) ─────────────────────────────────────── */
+const LOCK_KEY = 'vhr-config-locks';
+
+function applyCardLock(card, locked) {
+  card.dataset.locked = locked ? 'true' : 'false';
+  card.querySelectorAll('input, select, textarea, button:not(.card-lock-btn)').forEach(el => {
+    el.disabled = locked;
+  });
+  const btn = card.querySelector('.card-lock-btn');
+  if (btn) {
+    btn.textContent = locked ? '🔒' : '🔓';
+    btn.title = locked ? 'Unlock to edit' : 'Lock';
+  }
+}
+
+function toggleCardLock(btn) {
+  const card = btn.closest('.card');
+  const locked = card.dataset.locked !== 'false';
+  applyCardLock(card, !locked);
+  const states = JSON.parse(localStorage.getItem(LOCK_KEY) || '{}');
+  states[card.dataset.cardId] = !locked;
+  localStorage.setItem(LOCK_KEY, JSON.stringify(states));
+}
+
+(function initConfigLocks() {
+  const states = JSON.parse(localStorage.getItem(LOCK_KEY) || '{}');
+  document.querySelectorAll('.card[data-card-id]').forEach(card => {
+    const id = card.dataset.cardId;
+    const locked = id in states ? states[id] : true;
+    applyCardLock(card, locked);
+  });
+})();
 
 </script>
 </body>
