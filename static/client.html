@@ -1733,8 +1733,10 @@ const CLIENT_REPORTING_STATES = new Set([
 
 async function loadSutaMinRates() {
   try {
-    const cfg = await apiGet('/config');
-    // Config doesn't return SUTA rates directly — display only.
+    const rates = await apiGet('/suta-rates');
+    rates.forEach(r => {
+      if (r.state && r.vhr_min_rate != null) sutaMinRates[r.state] = r.vhr_min_rate;
+    });
   } catch (e) { /* silent */ }
 }
 
