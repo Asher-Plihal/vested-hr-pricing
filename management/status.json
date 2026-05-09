@@ -1,10 +1,4 @@
 {
-  "fix-commission-calculations": {
-    "status": "pending",
-    "priority": 1,
-    "blocked_by": null,
-    "note": "Three known bugs: (1) consultant rates hardcoded at 25%/20% in summary.py instead of reading from SystemConfig. (2) broker_wc_commission_pct has no dollar calculation — display-only %. (3) No conditional consultant rate logic when a broker is on the deal. Full brief in todo.md."
-  },
   "update-pricing-math": {
     "status": "pending",
     "priority": 2,
@@ -34,17 +28,5 @@
     "priority": 5,
     "blocked_by": "VHR staff — need actual plan PEPM data and rate tier band confirmation",
     "note": "calc/benefits.py does not exist. No benefits fields in SystemConfig or CalculateRequest. Benefit-RateTierBands sheet exists in Excel template. Math is in pricing_math.md. Do not start until VHR provides data."
-  },
-  "auth-roles": {
-    "status": "deferred",
-    "priority": 6,
-    "blocked_by": null,
-    "note": "Phase 3. No users table, no login, no role-gating. Full brief in old todo if needed."
-  },
-  "doc-proposal-tasks": {
-    "status": "deferred",
-    "priority": 7,
-    "blocked_by": null,
-    "note": "Phase 3. Two parts: (1) Generate a print-friendly proposal document from a finalized client quote — GET /clients/{id}/proposal returns styled HTML with deal summary, WC lines, SUTA lines, admin fee, commission. (2) Task generation and management — when a quote reaches 'in_review', auto-create approval tasks assigned to VHR staff (Justin: pricing sign-off, John: WC sign-off, Nate: benefits sign-off). Tasks need a DB table, status transitions, and a task list UI. Full brief to be written when Phase 3 starts."
   }
 }

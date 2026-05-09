@@ -4,6 +4,18 @@ Most recent entry at the top. Add an entry when a task completes. This is where 
 
 ---
 
+### 2026-05-08 — Fix Commission Calculations (`fix-commission-calculations`)
+
+Fixed three bugs in `calc/summary.py` and `routers/calculate.py`:
+
+1. **Consultant rates from config** — `consultant_upfront` and `consultant_ongoing` were hardcoded at 25%/20%. Now read `consultant_commission_upfront` / `consultant_commission_ongoing` from `SystemConfig` via `ancillary_full` in the router.
+2. **Conditional rates when broker present** — added logic: if `external_commission_pct > 0`, consultant upfront drops to 0% and ongoing drops to 10%.
+3. **Broker WC dollar amount** — `broker_wc_commission_pct` was display-only. Now computes `broker_wc_commission = wc_profit × broker_wc_pct`, subtracts it from `wc_profit` before rolling up `total_profit_loss`, and exposes the dollar amount in the `commissions` response dict.
+
+No DB or schema changes. `calc/commission.py` untouched.
+
+---
+
 ### 2026-05-08 — Fix: SUTA GWs always $0
 
 `collectSutaLines()` in `static/client.html` hardcoded `gws: 0` and `total_wses: 0` for every SUTA row. Fixed by aggregating `annual_gw`, `ftes`, and `ptes` from WC lines that match each SUTA state (WSEs = ftes + 0.75 × ptes). Part of the `update-pricing-math` task — other items in that task still require VHR verification.
