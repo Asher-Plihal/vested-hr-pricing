@@ -1747,23 +1747,31 @@ function addWCCodeRow(data) {
 
 let wcRemoveMode = false;
 
-function toggleWCRemoveMode() {
-  wcRemoveMode = !wcRemoveMode;
-  const btn = document.getElementById('btn-remove-wc-rows');
+function enterWCRemoveMode() {
+  wcRemoveMode = true;
+  document.getElementById('btn-remove-wc-rows').textContent = 'Remove Selected';
+  document.getElementById('btn-remove-wc-rows').style.background = '#fee2e2';
+  document.getElementById('btn-add-wc-code').textContent = 'Cancel';
+  document.getElementById('wc-codes-body').classList.add('remove-mode');
+}
+
+function exitWCRemoveMode(doRemove) {
+  wcRemoveMode = false;
   const tbody = document.getElementById('wc-codes-body');
-  if (wcRemoveMode) {
-    btn.textContent = 'Remove Selected';
-    btn.style.background = '#fee2e2';
-    tbody.classList.add('remove-mode');
-  } else {
+  if (doRemove) {
     tbody.querySelectorAll('tr.wc-row-selected').forEach(r => r.remove());
-    tbody.classList.remove('remove-mode');
-    btn.textContent = '− Remove Row';
-    btn.style.background = '';
-    updateWCTotals();
-    scheduleCalculate();
-    scheduleAutoSave();
+  } else {
+    tbody.querySelectorAll('tr.wc-row-selected').forEach(r => r.classList.remove('wc-row-selected'));
   }
+  tbody.classList.remove('remove-mode');
+  document.getElementById('btn-remove-wc-rows').textContent = '− Remove Row';
+  document.getElementById('btn-remove-wc-rows').style.background = '';
+  document.getElementById('btn-add-wc-code').textContent = '+ Add Row';
+  if (doRemove) { updateWCTotals(); scheduleCalculate(); scheduleAutoSave(); }
+}
+
+function toggleWCRemoveMode() {
+  wcRemoveMode ? exitWCRemoveMode(true) : enterWCRemoveMode();
 }
 
 function updateWCTotals() {
@@ -1779,7 +1787,9 @@ function updateWCTotals() {
   document.getElementById('wc-total-pte').textContent = totalPTE;
 }
 
-document.getElementById('btn-add-wc-code').addEventListener('click', () => addWCCodeRow());
+document.getElementById('btn-add-wc-code').addEventListener('click', () => {
+  wcRemoveMode ? exitWCRemoveMode(false) : addWCCodeRow();
+});
 document.getElementById('btn-remove-wc-rows').addEventListener('click', toggleWCRemoveMode);
 
 /* ── SUTA Table ──────────────────────────────────────────────────────────── */
