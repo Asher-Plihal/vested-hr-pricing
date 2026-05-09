@@ -5,12 +5,5 @@
     "blocked_by": "VHR staff",
     "note": "4 questions need VHR answers before the app's calculations and display can be finalized. See questions.md for the full text of each question.",
     "brief": "Get VHR answers to the 4 open questions in management/questions.md. Each answer has a direct code consequence:\n\n1. WC fees (shared_claim_fee, min_wc_fee_per_week, safety_claim_fee) — wire into billing math or remove the fields.\n2. Missouri SUTA — confirm billing formula is same as other VHR-reporting states, or adjust.\n3. Broker commission base — confirm broker_admin_pct and broker_wc_pct apply independently (current behavior), or fix if wrong.\n4. Proposal FICA/FUTA — add or remove those line items from the Proposal section of the Deal Summary.\n\nOnce answers are in hand, make the corresponding code changes and update pricing_math.md.\n\nTo close: remove 'update-pricing-math' from management/status.json and add a one-line summary to management/updates.md."
-  },
-  "benefits-tab": {
-    "status": "blocked",
-    "priority": 5,
-    "blocked_by": "VHR staff — need actual plan PEPM data and rate tier band confirmation",
-    "note": "calc/benefits.py does not exist. No benefits fields in SystemConfig or CalculateRequest. Benefit-RateTierBands sheet exists in Excel template. Math is in pricing_math.md. Do not start until VHR provides data.",
-    "brief": "Build the Benefits tab in static/client.html. Do NOT start until VHR provides plan PEPM data and confirms the rate tier band table.\n\nWhen unblocked: create calc/benefits.py with Medical and Ancillary formulas from the Benefits section of C:\\workspaces\\business\\vested-hr\\plan_drafts\\pricing_math.md. Add benefit fields to models.py, schemas.py (ClientUpdate, CalculateRequest), and wire into routers/calculate.py and calc/summary.py. The Benefit-RateTierBands table (Band 6–28, multipliers 0.79–1.60) exists in the Excel template. Band 13 = 1.00 baseline. Utilization Load = 3% applied to medical only (confirm with VHR).\n\nOpen questions to get VHR answers before building:\n- Is Bp (base medical PEPM) the employee contribution, employer cost, or full premium?\n- Is Utilization Load on medical only or also ancillary?\n- Does Benefits Admin Fee PEPM apply when client brings own carrier?\n- Are Bands 1–5 not offered, or is Band 6 the minimum?\n\nCommit: feat: benefits tab — medical and ancillary pricing\n\nTo close: remove 'benefits-tab' from management/status.json and add a one-line summary to management/updates.md."
   }
 }
