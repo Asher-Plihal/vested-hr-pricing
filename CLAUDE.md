@@ -72,7 +72,7 @@ WSE → Workers' Comp → FICA → FUTA → SUTA → Admin Fee → Commission �
 
 Non-obvious choices. Do not undo without asking.
 
-- **FUTA Approach B only**: `W × wage_base × rate × turnover_pct`. `w2s_generated` is a required client input. Approach A not used.
+- **FUTA Approach B only**: `W × wage_base × rate × turnover_pct`. Client inputs a direct decimal `futa_turnover_rate` (can exceed 1.0 when W-2s outnumber average headcount). Approach A not used.
 - **WC rate auto-lookup**: `calc/workers_comp.py` queries `wc_rates` by `state+code` concat key. Falls back to `WCLine.manual_rate` if not found or db=None. Rate field in `client.html` is readonly and auto-populated.
 - **SUTA client-reporting states**: ~22 states where the client files under their own account (`client_reporting=True`): AK, CT, DE, IA, KS, KY, MA, ME, MI, MN, MS, MT, NE, NV, OH, PA, RI, SC, SD, TN, VT, WA. CA, NY, NJ are VHR-reporting with real rates.
 - **Config autosaves**: All system config fields save 600ms after any change. No Save button.
@@ -93,15 +93,16 @@ Non-obvious choices. Do not undo without asking.
 
 | Doc | Purpose |
 |---|---|
-| `management/status.json` | Active tasks only — `pending`, `in-progress`, `blocked`, `deferred`. Completed tasks are deleted. |
-| `management/todo.md` | Full brief per active task. Removed when task completes. |
+| `management/status.json` | Active tasks only — `pending`, `in-progress`, `blocked`, `deferred`. Full brief lives in the `brief` field of each entry. Completed tasks are deleted. |
 | `management/updates.md` | Permanent changelog. Completed task context lives here. |
+| `management/questions.md` | Open questions for VHR staff. Each has a direct code consequence when answered. |
+| `management/notes.md` | Context and decisions that are true now but may change with further VHR input. |
 
-Completed tasks are never left in `status.json` or `todo.md` — they are deleted and a summary entry is added to `updates.md` instead. Read `updates.md` to know what's been done. Read `status.json` to know what's left.
+Completed tasks are never left in `status.json` — they are deleted and a summary entry is added to `updates.md` instead. Read `updates.md` to know what's been done. Read `status.json` to know what's left.
 
 ### Agent workflow
 1. Read `management/updates.md` — know what's already done
 2. Read `management/status.json` — pick a `pending` task, set it to `in-progress`
-3. Read its full brief in `management/todo.md`
+3. Read the `brief` field of that task for full instructions
 4. Do the work, commit
-5. Delete the task from `status.json` and `todo.md`. Add a summary entry to `management/updates.md`. Commit.
+5. Delete the task from `status.json`. Add a summary entry to `management/updates.md`. Commit.
