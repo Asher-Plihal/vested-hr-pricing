@@ -951,7 +951,7 @@ table.clients-table {
   border-bottom: none;
 }
 .subheader-client .subheader-inner {
-  max-width: 1200px;
+  max-width: 1000px;
   padding: 22px 24px 0;
 }
 .subheader-client .tab-nav {
@@ -960,7 +960,7 @@ table.clients-table {
 
 /* ── Client page — page wrapper (960px, narrower than default 1400px) ─────── */
 .page-content-client {
-  max-width: 1200px;
+  max-width: 1000px;
 }
 
 /* ── Dashboard — empty state ─────────────────────────────────────────────── */
