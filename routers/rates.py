@@ -52,11 +52,12 @@ def _lookup_wc_row_and_guideline(state: str, code: str, db: Session, independent
     rate_row = db.query(WCRate).filter(WCRate.concat == concat_key).first()
     guideline_row = db.query(WCGuideline).filter(WCGuideline.concat == concat_key).first()
 
-    if rate_row is None and state not in ib_states:
-        # NCCI fallback: try "Other" + code
+    if state not in ib_states:
         fallback_key = "Other" + code
-        rate_row = db.query(WCRate).filter(WCRate.concat == fallback_key).first()
-        guideline_row = db.query(WCGuideline).filter(WCGuideline.concat == fallback_key).first()
+        if rate_row is None:
+            rate_row = db.query(WCRate).filter(WCRate.concat == fallback_key).first()
+        if guideline_row is None:
+            guideline_row = db.query(WCGuideline).filter(WCGuideline.concat == fallback_key).first()
 
     return rate_row, guideline_row
 
