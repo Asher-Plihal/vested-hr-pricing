@@ -63,12 +63,9 @@ def run_calculate(body: CalculateRequest, db: Session = Depends(get_db)):
         pay_periods_map=pay_periods_map,
     )
 
-    implementation_fee = body.implementation_fee
-    epli_fee = body.epli_fee
-    tlm_fee = body.tlm_fee
-    wire_ach_fee = body.wire_ach_fee
-    total_ancillary = implementation_fee + epli_fee + tlm_fee + wire_ach_fee
-    total_with_ancillary = admin_result["total_admin_fee"] + total_ancillary
+    pay_periods_per_year = pay_periods_map.get(body.payroll_frequency, 26)
+    tlm_rate = cfg_row.tlm_rate or 0.0
+    wire_ach_rate = cfg_row.wire_ach_rate or 0.0
 
     commission_result = calculate_commission(
         admin_margin=admin_result["total_admin_fee"],
@@ -82,10 +79,11 @@ def run_calculate(body: CalculateRequest, db: Session = Depends(get_db)):
     )
 
     ancillary_full = {
-        "implementation_fee": implementation_fee,
-        "epli_fee": epli_fee,
-        "tlm_fee": tlm_fee,
-        "wire_ach_fee": wire_ach_fee,
+        "implementation_fee": body.implementation_fee,
+        "epli_fee": body.epli_fee,
+        "tlm_rate": tlm_rate,
+        "wire_ach_rate": wire_ach_rate,
+        "pay_periods_per_year": pay_periods_per_year,
         "broker_wc_commission_pct": body.broker_wc_commission_pct,
         "external_commission_pct": body.external_commission_pct,
         "consultant_commission_upfront": cfg_row.consultant_commission_upfront,

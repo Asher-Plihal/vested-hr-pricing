@@ -42,6 +42,10 @@ class SystemConfig(Base):
     admin_commission_pool_pct = Column(Float, default=0.40)      # total pool split between broker + consultant
     consultant_min_ongoing_pct = Column(Float, default=0.10)     # consultant floor when broker is on the deal
 
+    # Ancillary service rates — constant defaults applied to all clients
+    tlm_rate     = Column(Float, default=0.0)   # $/WSE/month × 12
+    wire_ach_rate = Column(Float, default=0.0)  # $/pay period × pay_periods
+
     futa_approach = Column(String, default="B")
 
     # Additional Fees — Payroll
@@ -179,7 +183,6 @@ class Client(Base):
     # Ancillary fees
     implementation_fee = Column(Float, default=0.0)
     epli_fee = Column(Float, default=0.0)
-    include_tlm = Column(Boolean, default=False)
     include_epli = Column(Boolean, default=False)
 
     # FUTA turnover input

@@ -27,12 +27,12 @@ function showToast(message, type = 'success') {
  * @returns {string}
  */
 function formatCurrency(value) {
-  if (value == null || isNaN(value)) return '$0.00';
+  if (value == null || isNaN(value)) return '$0';
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   }).format(value);
 }
 

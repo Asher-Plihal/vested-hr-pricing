@@ -43,6 +43,8 @@ class SystemConfigOut(BaseModel):
     fee_wc_alternate_employer_endorsement: float
     fee_reactivation: float
     fee_late_payroll_submission: float
+    tlm_rate: float
+    wire_ach_rate: float
 
     model_config = {"from_attributes": True}
 
@@ -84,6 +86,8 @@ class SystemConfigUpdate(BaseModel):
     fee_wc_alternate_employer_endorsement: Optional[float] = None
     fee_reactivation: Optional[float] = None
     fee_late_payroll_submission: Optional[float] = None
+    tlm_rate: Optional[float] = None
+    wire_ach_rate: Optional[float] = None
 
 
 # ── Sub-models ────────────────────────────────────────────────────────────────
@@ -237,7 +241,6 @@ class ClientUpdate(BaseModel):
     broker_wc_commission_pct: Optional[float] = None
     implementation_fee: Optional[float] = None
     epli_fee: Optional[float] = None
-    include_tlm: Optional[bool] = None
     include_epli: Optional[bool] = None
     w2s_generated: Optional[float] = None
     card_lock_states: Optional[str] = None
@@ -330,7 +333,6 @@ class ClientOut(BaseModel):
     broker_wc_commission_pct: Optional[float]
     implementation_fee: Optional[float]
     epli_fee: Optional[float]
-    include_tlm: Optional[bool]
     include_epli: Optional[bool]
     w2s_generated: Optional[float]
     card_lock_states: Optional[str] = None
@@ -380,5 +382,3 @@ class CalculateRequest(BaseModel):
     broker_wc_commission_pct: float = 0.0
     implementation_fee: float = 0.0
     epli_fee: float = 0.0
-    tlm_fee: float = 0.0
-    wire_ach_fee: float = 0.0

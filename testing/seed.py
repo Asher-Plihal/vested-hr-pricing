@@ -39,11 +39,18 @@ _MIGRATIONS = [
     ("independent_bureau_states",             "ALTER TABLE system_config ADD COLUMN independent_bureau_states TEXT DEFAULT 'CA,DE,PA,MI,NJ,TX'"),
     ("admin_commission_pool_pct",             "ALTER TABLE system_config ADD COLUMN admin_commission_pool_pct REAL DEFAULT 0.40"),
     ("consultant_min_ongoing_pct",            "ALTER TABLE system_config ADD COLUMN consultant_min_ongoing_pct REAL DEFAULT 0.10"),
+    ("tlm_rate",                              "ALTER TABLE system_config ADD COLUMN tlm_rate REAL DEFAULT 0.0"),
+    ("wire_ach_rate",                         "ALTER TABLE system_config ADD COLUMN wire_ach_rate REAL DEFAULT 0.0"),
 ]
 
 # Also handle clients table migrations
 _CLIENT_MIGRATIONS = [
     ("current_admin_rate", "ALTER TABLE clients ADD COLUMN current_admin_rate REAL DEFAULT 0.0"),
+    ("wire_ach_fee",       "ALTER TABLE clients ADD COLUMN wire_ach_fee REAL DEFAULT 0.0"),
+    ("setup_fee",          "ALTER TABLE clients ADD COLUMN setup_fee REAL DEFAULT 0.0"),
+    ("tlm_fee",            "ALTER TABLE clients ADD COLUMN tlm_fee REAL DEFAULT 0.0"),
+    ("include_wire",       "ALTER TABLE clients ADD COLUMN include_wire INTEGER DEFAULT 0"),
+    ("setup_fee_waived",   "ALTER TABLE clients ADD COLUMN setup_fee_waived INTEGER DEFAULT 0"),
 ]
 
 # WC lines table migrations
