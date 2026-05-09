@@ -35,6 +35,10 @@ class SystemConfig(Base):
     # Sunz carrier charge — currently 0 in practice, reserved
     wc_policy_adjustment = Column(Float, default=0.0)
 
+    # Business Consultant commissions — system-level defaults shown on config page
+    consultant_commission_upfront = Column(Float, default=0.25)
+    consultant_commission_ongoing = Column(Float, default=0.20)
+
     futa_approach = Column(String, default="B")
 
 
@@ -72,7 +76,13 @@ class Client(Base):
     contact_cell = Column(String)
     contact_email = Column(String)
     states_operating = Column(Text)  # JSON array as text
+    locations = Column(Text)         # JSON array: [{address, employees}]
     description_of_operations = Column(Text)
+    consultant_name_split = Column(String)
+    referral_partner_business = Column(String)
+    referral_partner_name = Column(String)
+    county = Column(String)
+
 
     # Compliance Questionnaire
     eeoc_violations = Column(Boolean, default=False)
@@ -108,6 +118,9 @@ class Client(Base):
     pay_cycle_start = Column(String)
     pay_cycle_end = Column(String)
     pay_date = Column(String)
+    effective_date = Column(String)
+    method_of_payment = Column(String)
+    requested_payroll_delivery = Column(String)
 
     # Workers' Compensation
     wc_carve_out = Column(Boolean, default=False)
@@ -122,6 +135,7 @@ class Client(Base):
     # Final Pricing
     admin_method = Column(Integer, default=1)  # 1 | 2 | 3
     admin_rate = Column(Float, default=0.0)
+    current_admin_rate = Column(Float, default=0.0)
 
     # Commission
     internal_commission_pct = Column(Float, default=0.0)
@@ -145,6 +159,8 @@ class WCLine(Base):
     client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
     state = Column(String)
     wc_code = Column(String)
+    wc_description = Column(String)
+    hazard_group = Column(String)
     annual_gw = Column(Float, default=0.0)
     ftes = Column(Float, default=0.0)
     ptes = Column(Float, default=0.0)

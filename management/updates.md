@@ -4,6 +4,45 @@ Most recent entry at the top. Add an entry when a task completes. This is where 
 
 ---
 
+### 2026-05-08 — UI restructure: Workers' Comp Questions, Admin tab, Commissions
+
+**Ad-hoc session — no task ID**
+
+**Workers' Comp Questions (`client.html`):**
+- Reformatted from 2-column `q-grid` to single-column `compliance-rows` layout (matches Compliance Questions style)
+- All 24 question labels rewritten to match the exact VHR underwriting question text
+- Explanation fields changed from `<input type="text">` to `<textarea rows="3">`
+- Removed "Company Drivers" and "CDL Drivers" rows (not in the 24-question list)
+- All Yes/No dropdowns across Compliance and WC Questions sections: removed blank "—" option, default set to No
+
+**WC Losses section:**
+- "Is this a new company?" → "New company?" / note: "Loss History Affidavit required."
+- "Any gaps in coverage?" → "Gaps in coverage?" / note: "LHA required for gap period."
+
+**Tab structure:**
+- "Payroll" tab renamed to "Admin" and moved to 3rd position (General → Workers' Comp → Admin → Benefits → Pricing)
+- Admin tab payroll fields restructured to match prototype layout: Payroll Frequency | Method of Payment, Payroll Cycle Start DAY | Payroll Cycle End DAY, Pay DAY, Effective Date | Requested Payroll Delivery Method
+- Method of Payment options updated: Direct Wire, Reverse Wire, ACH (Approval Required)
+- Requested Payroll Delivery options updated: Electronic / Paperless, Delivery via Courier / FedEx
+
+**Admin Fee section moved to Admin tab:**
+- Redesigned from dropdown to 3 clickable selection boxes: Percentage of GWs, Per Check Fee, Per WSE per Month
+- Added "Vested Rate" and "Current Rate" fields (labels update based on selected method)
+- `current_admin_rate` added to `models.py` and `schemas.py`
+
+**Additional Fees and Commissions moved from Pricing tab to Admin tab.**
+- EPLI label updated to include "(Cannot be less than $0.50 per week)" note
+- W-2s Generated (turnover proxy) moved from Commissions to the SUTA section on Pricing tab
+
+**Commissions section simplified:**
+- Just 2 inputs: Broker/Referral Partner WC % and Broker/Referral Partner Admin %
+- `internal_commission_pct` kept as a hidden field so the calc pipeline still works
+- Defaults will be pulled from system config (not yet wired)
+
+**Pricing tab** now contains only SUTA and Deal Summary.
+
+---
+
 ### 2026-05-08 — SUTA date_updated column added
 
 **Task:** ad-hoc fix

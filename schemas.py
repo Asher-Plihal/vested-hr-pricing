@@ -20,6 +20,8 @@ class SystemConfigOut(BaseModel):
     mcp_states: str
     pay_periods_json: str
     wc_policy_adjustment: float
+    consultant_commission_upfront: float
+    consultant_commission_ongoing: float
     futa_approach: str
 
     model_config = {"from_attributes": True}
@@ -39,6 +41,8 @@ class SystemConfigUpdate(BaseModel):
     mcp_states: Optional[str] = None
     pay_periods_json: Optional[str] = None
     wc_policy_adjustment: Optional[float] = None
+    consultant_commission_upfront: Optional[float] = None
+    consultant_commission_ongoing: Optional[float] = None
     futa_approach: Optional[str] = None
 
 
@@ -47,6 +51,8 @@ class SystemConfigUpdate(BaseModel):
 class WCLineIn(BaseModel):
     state: Optional[str] = None
     wc_code: Optional[str] = None
+    wc_description: Optional[str] = None
+    hazard_group: Optional[str] = None
     annual_gw: float = 0.0
     ftes: float = 0.0
     ptes: float = 0.0
@@ -136,7 +142,12 @@ class ClientUpdate(BaseModel):
     contact_cell: Optional[str] = None
     contact_email: Optional[str] = None
     states_operating: Optional[str] = None
+    locations: Optional[str] = None
     description_of_operations: Optional[str] = None
+    consultant_name_split: Optional[str] = None
+    referral_partner_business: Optional[str] = None
+    referral_partner_name: Optional[str] = None
+    county: Optional[str] = None
     eeoc_violations: Optional[bool] = None
     eeoc_explanation: Optional[str] = None
     active_claims: Optional[bool] = None
@@ -164,6 +175,9 @@ class ClientUpdate(BaseModel):
     pay_cycle_start: Optional[str] = None
     pay_cycle_end: Optional[str] = None
     pay_date: Optional[str] = None
+    effective_date: Optional[str] = None
+    method_of_payment: Optional[str] = None
+    requested_payroll_delivery: Optional[str] = None
     wc_carve_out: Optional[bool] = None
     proposed_mod: Optional[float] = None
     shared_claim_fee: Optional[float] = None
@@ -172,6 +186,7 @@ class ClientUpdate(BaseModel):
     gaps_in_coverage: Optional[bool] = None
     admin_method: Optional[int] = None
     admin_rate: Optional[float] = None
+    current_admin_rate: Optional[float] = None
     internal_commission_pct: Optional[float] = None
     external_commission_pct: Optional[float] = None
     broker_wc_commission_pct: Optional[float] = None
@@ -215,7 +230,12 @@ class ClientOut(BaseModel):
     contact_cell: Optional[str]
     contact_email: Optional[str]
     states_operating: Optional[str]
+    locations: Optional[str]
     description_of_operations: Optional[str]
+    consultant_name_split: Optional[str]
+    referral_partner_business: Optional[str]
+    referral_partner_name: Optional[str]
+    county: Optional[str]
     eeoc_violations: Optional[bool]
     eeoc_explanation: Optional[str]
     active_claims: Optional[bool]
@@ -243,6 +263,9 @@ class ClientOut(BaseModel):
     pay_cycle_start: Optional[str]
     pay_cycle_end: Optional[str]
     pay_date: Optional[str]
+    effective_date: Optional[str]
+    method_of_payment: Optional[str]
+    requested_payroll_delivery: Optional[str]
     wc_carve_out: Optional[bool]
     proposed_mod: Optional[float]
     shared_claim_fee: Optional[float]
@@ -251,6 +274,7 @@ class ClientOut(BaseModel):
     gaps_in_coverage: Optional[bool]
     admin_method: Optional[int]
     admin_rate: Optional[float]
+    current_admin_rate: Optional[float]
     internal_commission_pct: Optional[float]
     external_commission_pct: Optional[float]
     broker_wc_commission_pct: Optional[float]

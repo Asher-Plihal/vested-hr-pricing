@@ -88,6 +88,58 @@
     .compliance-rows .q-row:nth-child(odd) { background: #fafbfc; }
     .compliance-rows .q-row:nth-child(even) { background: #fff; }
 
+    /* Admin Fee method boxes */
+    .admin-method-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .admin-method-box {
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 18px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #4a5568;
+      user-select: none;
+    }
+    .admin-method-box:hover { border-color: #4a90d9; background: #f0f7ff; color: #1e3154; }
+    .admin-method-box.selected { border-color: #1e3154; background: #eef4fb; color: #1e3154; }
+
+    /* Commission note + info rows */
+    .commission-note {
+      background: #fffbea;
+      border: 1px solid #f6e05e;
+      border-radius: 6px;
+      padding: 12px 14px;
+      font-size: 0.82rem;
+      color: #744210;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+    .commission-info-rows {
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 4px;
+    }
+    .commission-info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+    }
+    .commission-info-row:nth-child(odd) { background: #fafbfc; }
+    .commission-info-row:nth-child(even) { background: #fff; }
+    .commission-info-label { color: #2d3748; }
+    .commission-info-value { font-weight: 600; color: #1e3154; }
+    .comm-input { width: 100px; text-align: right; padding: 4px 6px; font-size: 0.82rem; }
+
     /* Medical rows */
     .med-row {
       display: flex;
@@ -199,6 +251,28 @@
     }
     .btn-add-row:hover { background: #f7edd5; }
 
+    /* Location rows */
+    .location-row {
+      display: grid;
+      grid-template-columns: 1fr 140px auto;
+      gap: 8px;
+      align-items: center;
+    }
+    .location-row input { width: 100%; }
+    .location-row .btn-remove-loc {
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid #e2e8f0;
+      background: transparent;
+      color: #a0aec0;
+      font-size: 0.72rem;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      line-height: 1.4;
+    }
+    .location-row .btn-remove-loc:hover { color: #dc2626; border-color: #fecaca; background: #fff5f5; }
+
     /* Tab action buttons (prototype style) */
     .tab-action-btn {
       display: inline-flex;
@@ -261,6 +335,25 @@
       color: #1e3154;
       border-color: #e2e8f0;
     }
+
+    /* WC codes table — compact, no horizontal scroll */
+    #wc-codes-table th {
+      white-space: normal;
+      text-align: center;
+      vertical-align: bottom;
+      padding: 5px 4px;
+      line-height: 1.25;
+    }
+    #wc-codes-table td {
+      padding: 5px 4px;
+    }
+    #wc-codes-table tfoot td {
+      padding: 6px 4px;
+    }
+    #wc-codes-table td select[name^="wc_state_"] {
+      width: auto !important;
+      min-width: 0 !important;
+    }
   </style>
 </head>
 <body>
@@ -305,9 +398,9 @@
     </div>
     <nav class="tab-nav">
       <button class="tab-btn active" data-tab="general">General</button>
-      <button class="tab-btn" data-tab="benefits">Benefits</button>
-      <button class="tab-btn" data-tab="payroll">Payroll</button>
       <button class="tab-btn" data-tab="wc">Workers' Comp</button>
+      <button class="tab-btn" data-tab="admin">Admin</button>
+      <button class="tab-btn" data-tab="benefits">Benefits</button>
       <button class="tab-btn" data-tab="pricing">Pricing</button>
       <div class="tab-nav-spacer"></div>
       <div class="tab-nav-actions">
@@ -343,12 +436,27 @@
       <div class="form-grid">
 
         <div class="form-group">
-          <label class="req-y" for="consultant_name">Business Consultant / Broker Name</label>
+          <label class="req-y" for="consultant_name">VHR Business Consultant (Lead)</label>
           <input type="text" id="consultant_name" name="consultant_name" />
         </div>
         <div class="form-group">
           <label class="req-y" for="date">Date</label>
           <input type="date" id="date" name="date" />
+        </div>
+
+        <div class="form-group">
+          <label for="consultant_name_split">VHR Business Consultant (Split)</label>
+          <input type="text" id="consultant_name_split" name="consultant_name_split" />
+        </div>
+        <div class="form-group"></div>
+
+        <div class="form-group">
+          <label for="referral_partner_business">Referral Partner's Business Name</label>
+          <input type="text" id="referral_partner_business" name="referral_partner_business" />
+        </div>
+        <div class="form-group">
+          <label for="referral_partner_name">Referral Partner's Name</label>
+          <input type="text" id="referral_partner_name" name="referral_partner_name" />
         </div>
 
         <div class="form-group">
@@ -394,6 +502,12 @@
             <input type="text" id="zip" name="zip" maxlength="10" />
           </div>
         </div>
+
+        <div class="form-group">
+          <label for="county">County</label>
+          <input type="text" id="county" name="county" />
+        </div>
+        <div class="form-group"></div>
 
         <div class="form-group">
           <label class="req-y" for="fein">FEIN</label>
@@ -472,6 +586,11 @@
         </div>
 
         <div class="form-group full">
+          <label class="req-y" for="description_of_operations">Description of Operations</label>
+          <textarea id="description_of_operations" name="description_of_operations" rows="4"></textarea>
+        </div>
+
+        <div class="form-group full">
           <label class="req-y">States Operating In</label>
           <div class="state-picker" id="state-picker">
             <button type="button" class="state-pill" data-abbr="AL">AL</button>
@@ -530,8 +649,9 @@
         </div>
 
         <div class="form-group full">
-          <label class="req-y" for="description_of_operations">Description of Operations</label>
-          <textarea id="description_of_operations" name="description_of_operations" rows="4"></textarea>
+          <label>Locations</label>
+          <div id="locations-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px;"></div>
+          <button type="button" class="btn-add-row" id="btn-add-location">+ Add Location</button>
         </div>
 
       </div>
@@ -539,68 +659,62 @@
 
     <!-- Compliance Questionnaire -->
     <div class="card">
-      <div class="card-title">Compliance Questionnaire <span class="req-section-badge y">Required for estimate</span></div>
+      <div class="card-title">Compliance Questions <span class="req-section-badge y">Required for estimate</span></div>
       <hr class="card-divider" />
       <div class="compliance-rows" id="compliance-rows">
 
         <div class="q-row">
           <span class="q-label">EEOC Violations</span>
           <select class="q-select" name="eeoc_violations" onchange="toggleQExplain(this)">
-            <option value="">—</option>
-            <option value="false">No</option>
+            <option value="false" selected>No</option>
             <option value="true">Yes</option>
           </select>
-          <input type="text" class="q-explain" name="eeoc_explanation" placeholder="Explain…" style="display:none" />
+          <textarea class="q-explain" name="eeoc_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
         </div>
 
         <div class="q-row">
           <span class="q-label">Active Claims</span>
           <select class="q-select" name="active_claims" onchange="toggleQExplain(this)">
-            <option value="">—</option>
-            <option value="false">No</option>
+            <option value="false" selected>No</option>
             <option value="true">Yes</option>
           </select>
-          <input type="text" class="q-explain" name="active_claims_explanation" placeholder="Explain…" style="display:none" />
+          <textarea class="q-explain" name="active_claims_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
         </div>
 
         <div class="q-row">
           <span class="q-label">COBRA / Continuation</span>
           <select class="q-select" name="cobra_continuation" onchange="toggleQExplain(this)">
-            <option value="">—</option>
-            <option value="false">No</option>
+            <option value="false" selected>No</option>
             <option value="true">Yes</option>
           </select>
-          <input type="text" class="q-explain" name="cobra_explanation" placeholder="Explain…" style="display:none" />
+          <textarea class="q-explain" name="cobra_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
         </div>
 
         <div class="q-row">
           <span class="q-label">Past Layoffs</span>
           <select class="q-select" name="past_layoffs" onchange="toggleQExplain(this)">
-            <option value="">—</option>
-            <option value="false">No</option>
+            <option value="false" selected>No</option>
             <option value="true">Yes</option>
           </select>
-          <input type="text" class="q-explain" name="past_layoffs_explanation" placeholder="Explain…" style="display:none" />
+          <textarea class="q-explain" name="past_layoffs_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
         </div>
 
         <div class="q-row">
           <span class="q-label">Future Layoffs</span>
           <select class="q-select" name="future_layoffs" onchange="toggleQExplain(this)">
-            <option value="">—</option>
-            <option value="false">No</option>
+            <option value="false" selected>No</option>
             <option value="true">Yes</option>
           </select>
-          <input type="text" class="q-explain" name="future_layoffs_explanation" placeholder="Explain…" style="display:none" />
+          <textarea class="q-explain" name="future_layoffs_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
         </div>
 
         <div class="q-row">
           <span class="q-label">Leave of Absence</span>
           <select class="q-select" name="leave_of_absence" onchange="toggleQExplain(this)">
-            <option value="">—</option>
-            <option value="false">No</option>
+            <option value="false" selected>No</option>
             <option value="true">Yes</option>
           </select>
-          <input type="text" class="q-explain" name="leave_explanation" placeholder="Explain…" style="display:none" />
+          <textarea class="q-explain" name="leave_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
         </div>
 
       </div>
@@ -623,56 +737,49 @@
         <div class="med-row" data-med-field="medical_carve_out">
           <span class="med-label">Medical Carve-Out?</span>
           <select class="med-select" name="medical_carve_out" onchange="onMedCarveOut(this)">
-            <option value="">—</option>
-            <option value="false">No</option>
+            <option value="false" selected>No</option>
             <option value="true">Yes</option>
           </select>
         </div>
         <div class="med-row" data-med-field="enrolled_over_50">
           <span class="med-label">More than 50 enrolled?</span>
           <select class="med-select" name="enrolled_over_50">
-            <option value="">—</option>
-            <option value="false">No</option>
+            <option value="false" selected>No</option>
             <option value="true">Yes</option>
           </select>
         </div>
         <div class="med-row" data-med-field="enrolled_under_10">
           <span class="med-label">Under 10 enrolled?</span>
           <select class="med-select" name="enrolled_under_10">
-            <option value="">—</option>
-            <option value="false">No</option>
+            <option value="false" selected>No</option>
             <option value="true">Yes</option>
           </select>
         </div>
         <div class="med-row" data-med-field="level_funded_plan">
           <span class="med-label">Level-Funded Plan?</span>
           <select class="med-select" name="level_funded_plan">
-            <option value="">—</option>
-            <option value="false">No</option>
+            <option value="false" selected>No</option>
             <option value="true">Yes</option>
           </select>
         </div>
         <div class="med-row" data-med-field="currently_has_health_insurance">
           <span class="med-label">Currently Provide Health Insurance?</span>
           <select class="med-select" name="currently_has_health_insurance">
-            <option value="">—</option>
-            <option value="false">No</option>
+            <option value="false" selected>No</option>
             <option value="true">Yes</option>
           </select>
         </div>
         <div class="med-row" data-med-field="census_available">
           <span class="med-label">Employee Census Available?</span>
           <select class="med-select" name="census_available">
-            <option value="">—</option>
-            <option value="false">No</option>
+            <option value="false" selected>No</option>
             <option value="true">Yes</option>
           </select>
         </div>
         <div class="med-row" data-med-field="cobra_expected">
           <span class="med-label">COBRA / State Continuation Expected?</span>
           <select class="med-select" name="cobra_expected">
-            <option value="">—</option>
-            <option value="false">No</option>
+            <option value="false" selected>No</option>
             <option value="true">Yes</option>
           </select>
         </div>
@@ -689,16 +796,14 @@
         <div class="form-group">
           <label class="req-g" for="offers_ancillary_benefits">Currently offer ancillary benefits?</label>
           <select id="offers_ancillary_benefits" name="offers_ancillary_benefits">
-            <option value="">—</option>
-            <option value="false">No</option>
+            <option value="false" selected>No</option>
             <option value="true">Yes</option>
           </select>
         </div>
         <div class="form-group">
           <label class="req-g" for="wants_ancillary_benefits">Want to offer ancillary benefits?</label>
           <select id="wants_ancillary_benefits" name="wants_ancillary_benefits">
-            <option value="">—</option>
-            <option value="false">No</option>
+            <option value="false" selected>No</option>
             <option value="true">Yes</option>
           </select>
         </div>
@@ -718,9 +823,9 @@
 
 
   <!-- ══════════════════════════════════════════
-       TAB: PAYROLL
+       TAB: ADMIN
   ══════════════════════════════════════════ -->
-  <div id="panel-payroll" class="tab-panel">
+  <div id="panel-admin" class="tab-panel">
 
     <div class="card">
       <div class="card-title">Payroll Information</div>
@@ -738,8 +843,31 @@
           </select>
         </div>
         <div class="form-group">
-          <label class="req-g" for="pay_date">Pay Date</label>
-          <select id="pay_date" name="pay_date">
+          <label for="method_of_payment">Method of Payment</label>
+          <select id="method_of_payment" name="method_of_payment">
+            <option value="">— Select —</option>
+            <option value="direct_wire">Direct Wire</option>
+            <option value="reverse_wire">Reverse Wire</option>
+            <option value="ach">ACH (Approval Required)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="req-g" for="pay_cycle_start">Payroll Cycle Start DAY</label>
+          <select id="pay_cycle_start" name="pay_cycle_start">
+            <option value="">— Select —</option>
+            <option value="Sunday">Sunday</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="req-g" for="pay_cycle_end">Payroll Cycle End DAY</label>
+          <select id="pay_cycle_end" name="pay_cycle_end">
             <option value="">— Select —</option>
             <option value="Sunday">Sunday</option>
             <option value="Monday">Monday</option>
@@ -751,37 +879,93 @@
           </select>
         </div>
 
-        <div class="form-group full">
-          <label class="req-g">Pay Cycle (work period start → end)</label>
-          <div class="pay-cycle-row">
-            <select id="pay_cycle_start" name="pay_cycle_start" style="flex:1">
-              <option value="">— Start —</option>
-              <option value="Sunday">Sunday</option>
-              <option value="Monday">Monday</option>
-              <option value="Tuesday">Tuesday</option>
-              <option value="Wednesday">Wednesday</option>
-              <option value="Thursday">Thursday</option>
-              <option value="Friday">Friday</option>
-              <option value="Saturday">Saturday</option>
-            </select>
-            <span class="pay-cycle-arrow">→</span>
-            <select id="pay_cycle_end" name="pay_cycle_end" style="flex:1">
-              <option value="">— End —</option>
-              <option value="Sunday">Sunday</option>
-              <option value="Monday">Monday</option>
-              <option value="Tuesday">Tuesday</option>
-              <option value="Wednesday">Wednesday</option>
-              <option value="Thursday">Thursday</option>
-              <option value="Friday">Friday</option>
-              <option value="Saturday">Saturday</option>
-            </select>
-          </div>
+        <div class="form-group">
+          <label class="req-g" for="pay_date">Pay DAY</label>
+          <select id="pay_date" name="pay_date">
+            <option value="">— Select —</option>
+            <option value="Sunday">Sunday</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+          </select>
+        </div>
+        <div class="form-group"></div>
+
+        <div class="form-group">
+          <label for="effective_date">Effective Date (per CSA)</label>
+          <input type="date" id="effective_date" name="effective_date" />
+        </div>
+        <div class="form-group">
+          <label for="requested_payroll_delivery">Requested Payroll Delivery Method</label>
+          <select id="requested_payroll_delivery" name="requested_payroll_delivery">
+            <option value="">— Select —</option>
+            <option value="electronic">Electronic / Paperless</option>
+            <option value="courier">Delivery via Courier / FedEx</option>
+          </select>
         </div>
 
       </div>
     </div>
 
-  </div><!-- /panel-payroll -->
+    <div class="card">
+      <div class="card-title">Admin Fee <span class="req-section-badge y">Required for estimate</span></div>
+      <hr class="card-divider" />
+
+      <div class="admin-method-grid">
+        <div class="admin-method-box" data-method="1" onclick="selectAdminMethod(1)">Percentage of GWs</div>
+        <div class="admin-method-box" data-method="2" onclick="selectAdminMethod(2)">Per Check Fee</div>
+        <div class="admin-method-box" data-method="3" onclick="selectAdminMethod(3)">Per WSE per Month</div>
+      </div>
+      <input type="hidden" id="admin_method" name="admin_method" value="1" />
+
+      <div class="form-grid" id="admin-rate-fields">
+        <div class="form-group">
+          <label class="req-y" id="admin_rate_label" for="admin_rate">Vested Rate (%)</label>
+          <input type="number" id="admin_rate" name="admin_rate" step="0.01" min="0" value="0" />
+        </div>
+        <div class="form-group">
+          <label id="current_admin_rate_label" for="current_admin_rate">Current Rate (%)</label>
+          <input type="number" id="current_admin_rate" name="current_admin_rate" step="0.01" min="0" value="0" />
+        </div>
+      </div>
+
+    </div>
+
+    <div class="card">
+      <div class="card-title">Additional Fees</div>
+      <hr class="card-divider" />
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="req-y" for="implementation_fee">Implementation Fee ($)</label>
+          <input type="number" id="implementation_fee" name="implementation_fee" step="0.01" min="0" value="0" />
+        </div>
+        <div class="form-group">
+          <label class="req-y" for="epli_fee">EPLI ($) <span style="font-weight:400;color:#718096;font-size:0.78rem;">(Cannot be less than $0.50 per week)</span></label>
+          <input type="number" id="epli_fee" name="epli_fee" step="0.01" min="0" value="0" />
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Commissions</div>
+      <hr class="card-divider" />
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="broker_wc_commission_pct">Broker/Referral Partner WC (%)</label>
+          <input type="number" id="broker_wc_commission_pct" name="broker_wc_commission_pct" step="0.01" min="0" max="100" value="0" />
+        </div>
+        <div class="form-group">
+          <label for="external_commission_pct">Broker/Referral Partner Admin (%)</label>
+          <input type="number" id="external_commission_pct" name="external_commission_pct" step="0.01" min="0" max="100" value="0" />
+        </div>
+      </div>
+      <input type="hidden" id="internal_commission_pct" name="internal_commission_pct" value="0" />
+    </div>
+
+  </div><!-- /panel-admin -->
 
 
   <!-- ══════════════════════════════════════════
@@ -790,236 +974,52 @@
   <div id="panel-wc" class="tab-panel">
 
     <!-- WC Carve-Out -->
-    <div class="card">
-      <div class="card-title">Workers' Comp Carve-Out</div>
-      <hr class="card-divider" />
-      <div class="form-group" style="max-width:220px">
-        <label class="req-y" for="wc_carve_out_sel">Workers' Comp Carve-Out?</label>
-        <select id="wc_carve_out_sel" name="wc_carve_out" onchange="toggleWcCarveout(this)">
+    <div class="card" style="padding:10px 16px;">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <span style="font-size:0.85rem;font-weight:600;color:#2d3748;">Workers' Comp Carve-Out?</span>
+        <select id="wc_carve_out_sel" name="wc_carve_out" onchange="toggleWcCarveout(this)" style="width:auto;padding:3px 6px;font-size:0.8rem;height:auto;">
           <option value="">—</option>
           <option value="false">No</option>
           <option value="true">Yes</option>
         </select>
-      </div>
-      <div class="info-note warn" id="wc-carveout-note" style="display:none">
-        Workers' Comp section skipped — carve-out selected. WC Questionnaire, Losses, and Codes are hidden.
+        <span class="info-note warn" id="wc-carveout-note" style="display:none;margin:0;padding:4px 10px;">
+          Carve-out selected — WC Losses, Codes, and Questions are hidden.
+        </span>
       </div>
     </div>
 
     <!-- Sections hidden on carve-out -->
     <div id="wc-sections-wrapper">
 
-      <!-- WC Questionnaire -->
-      <div class="card">
-        <div class="card-title">Workers' Compensation Questionnaire <span class="req-section-badge y">Required for estimate</span></div>
-        <hr class="card-divider" />
-        <div class="q-grid" id="wc-q-grid">
-
-          <div class="q-row">
-            <span class="q-label">Aircraft / Watercraft</span>
-            <select class="q-select" name="wc_q_aircraft" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_aircraft_explanation" placeholder="Explain…" style="display:none" />
-          </div>
-          <div class="q-row">
-            <span class="q-label">Hazardous Materials</span>
-            <select class="q-select" name="wc_q_hazmat" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_hazmat_explanation" placeholder="Explain…" style="display:none" />
-          </div>
-          <div class="q-row">
-            <span class="q-label">Work Above 15 Feet</span>
-            <select class="q-select" name="wc_q_above15ft" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_above15ft_explanation" placeholder="Explain…" style="display:none" />
-          </div>
-          <div class="q-row">
-            <span class="q-label">Work Over Water</span>
-            <select class="q-select" name="wc_q_overwater" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_overwater_explanation" placeholder="Explain…" style="display:none" />
-          </div>
-          <div class="q-row">
-            <span class="q-label">Other Business Activities</span>
-            <select class="q-select" name="wc_q_other_biz" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_other_biz_explanation" placeholder="Explain…" style="display:none" />
-          </div>
-          <div class="q-row">
-            <span class="q-label">Use of Subcontractors</span>
-            <select class="q-select" name="wc_q_subcontractors" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_subcontractors_explanation" placeholder="Explain…" style="display:none" />
-          </div>
-          <div class="q-row">
-            <span class="q-label">Uninsured Subcontract Work</span>
-            <select class="q-select" name="wc_q_unsub" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_unsub_explanation" placeholder="Explain…" style="display:none" />
-          </div>
-          <div class="q-row">
-            <span class="q-label">Safety Program</span>
-            <select class="q-select" name="wc_q_safety" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_safety_explanation" placeholder="Describe…" style="display:none" />
-          </div>
-          <div class="q-row">
-            <span class="q-label">Group Transportation</span>
-            <select class="q-select" name="wc_q_transport" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_transport_explanation" placeholder="Explain…" style="display:none" />
-          </div>
-          <div class="q-row">
-            <span class="q-label">Employees Under 16 or Over 60</span>
-            <select class="q-select" name="wc_q_age_extremes" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_age_extremes_explanation" placeholder="Explain…" style="display:none" />
-          </div>
-          <div class="q-row">
-            <span class="q-label">Part-Time / Seasonal Employees</span>
-            <select class="q-select" name="wc_q_parttime" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_parttime_explanation" placeholder="# seasonal…" style="display:none" />
-          </div>
-          <div class="q-row">
-            <span class="q-label">Volunteer Labor</span>
-            <select class="q-select" name="wc_q_volunteer" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_volunteer_explanation" placeholder="Explain…" style="display:none" />
-          </div>
-          <div class="q-row">
-            <span class="q-label">Employees with Disabilities</span>
-            <select class="q-select" name="wc_q_disabilities" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_disabilities_explanation" placeholder="Explain…" style="display:none" />
-          </div>
-          <div class="q-row">
-            <span class="q-label">Out-of-State / Country Travel</span>
-            <select class="q-select" name="wc_q_outofstate" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_outofstate_explanation" placeholder="Destinations…" style="display:none" />
-          </div>
-          <div class="q-row">
-            <span class="q-label">Athletic Teams Sponsored</span>
-            <select class="q-select" name="wc_q_athletic" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_athletic_explanation" placeholder="Explain…" style="display:none" />
-          </div>
-          <div class="q-row">
-            <span class="q-label">Post-Offer Physicals</span>
-            <select class="q-select" name="wc_q_physicals" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_physicals_explanation" placeholder="Explain…" style="display:none" />
-          </div>
-          <div class="q-row">
-            <span class="q-label">Turnover &gt; 30%</span>
-            <select class="q-select" name="wc_q_turnover" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_turnover_explanation" placeholder="Explain…" style="display:none" />
-          </div>
-          <div class="q-row">
-            <span class="q-label">Coverage Declined / Cancelled</span>
-            <select class="q-select" name="wc_q_declined" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_declined_explanation" placeholder="Explain…" style="display:none" />
-          </div>
-          <div class="q-row">
-            <span class="q-label">Health Plans Provided</span>
-            <select class="q-select" name="wc_q_health_plans" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_health_plans_explanation" placeholder="Plan type…" style="display:none" />
-          </div>
-          <div class="q-row">
-            <span class="q-label">Labor Interchange</span>
-            <select class="q-select" name="wc_q_labor_int" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_labor_int_explanation" placeholder="Explain…" style="display:none" />
-          </div>
-          <div class="q-row">
-            <span class="q-label">Leased Employees</span>
-            <select class="q-select" name="wc_q_leased" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_leased_explanation" placeholder="Explain…" style="display:none" />
-          </div>
-          <div class="q-row">
-            <span class="q-label">Remote Employees</span>
-            <select class="q-select" name="wc_q_remote" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_remote_explanation" placeholder="# remote, states…" style="display:none" />
-          </div>
-          <div class="q-row">
-            <span class="q-label">Tax Liens / Bankruptcy</span>
-            <select class="q-select" name="wc_q_liens" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_liens_explanation" placeholder="Explain…" style="display:none" />
-          </div>
-          <div class="q-row">
-            <span class="q-label">Unpaid WC Premium Debt</span>
-            <select class="q-select" name="wc_q_unpaid" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_unpaid_explanation" placeholder="Explain…" style="display:none" />
-          </div>
-          <div class="q-row">
-            <span class="q-label">Company Drivers</span>
-            <select class="q-select" name="wc_q_drivers" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_drivers_explanation" placeholder="Explain…" style="display:none" />
-          </div>
-          <div class="q-row">
-            <span class="q-label">CDL Drivers</span>
-            <select class="q-select" name="wc_q_cdl" onchange="toggleQExplain(this)"><option value="">—</option><option value="false">No</option><option value="true">Yes</option></select>
-            <input type="text" class="q-explain" name="wc_q_cdl_explanation" placeholder="Explain…" style="display:none" />
-          </div>
-
-        </div>
-      </div><!-- /card wc questionnaire -->
-
-      <!-- WC Losses -->
-      <div class="card">
-        <div class="card-title">Workers' Compensation Losses <span class="req-section-badge g">Required for final approval</span></div>
-        <hr class="card-divider" />
-
-        <div class="form-grid" style="max-width:600px;margin-bottom:16px">
-          <div class="form-group">
-            <label class="req-g" for="new_company_sel">New company?</label>
-            <select id="new_company_sel" name="new_company" onchange="toggleInlineNote(this, 'note-new-co')">
-              <option value="">—</option>
-              <option value="false">No</option>
-              <option value="true">Yes</option>
-            </select>
-            <div class="inline-note" id="note-new-co">Loss History Affidavit required</div>
-          </div>
-          <div class="form-group">
-            <label class="req-g" for="gaps_in_coverage_sel">Gaps in coverage?</label>
-            <select id="gaps_in_coverage_sel" name="gaps_in_coverage" onchange="toggleInlineNote(this, 'note-gaps')">
-              <option value="">—</option>
-              <option value="false">No</option>
-              <option value="true">Yes</option>
-            </select>
-            <div class="inline-note" id="note-gaps">LHA required for gap period</div>
-          </div>
-        </div>
-
-        <div style="overflow-x:auto;">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Coverage Period Start</th>
-                <th>Coverage Period End</th>
-                <th>Total Losses Incurred</th>
-                <th># of Claims</th>
-                <th># Months in Policy</th>
-                <th># Open Claims</th>
-              </tr>
-            </thead>
-            <tbody id="wc-losses-body"></tbody>
-          </table>
-        </div>
-
-      </div><!-- /card wc losses -->
-
       <!-- WC Codes -->
-      <div class="card">
+      <div class="card" style="padding:20px 14px;">
         <div class="card-title">Workers' Compensation Codes</div>
         <hr class="card-divider" />
 
         <div style="overflow-x:auto;">
-          <table class="data-table" id="wc-codes-table">
+          <table class="data-table" id="wc-codes-table" style="font-size:0.8rem;">
             <thead>
               <tr>
                 <th class="req-y">State</th>
-                <th class="req-y">WC Code</th>
-                <th class="req-y">Annual Payroll ($)</th>
-                <th class="req-y"># FT EE</th>
-                <th class="req-y"># PT EE</th>
-                <th>Manual Rate (per $100)</th>
-                <th style="width:36px;"></th>
+                <th class="req-y">WC<br>Code</th>
+                <th>WC<br>Description</th>
+                <th style="width:40px;">Hazard<br>Group</th>
+                <th class="req-y">Annual<br>Payroll ($)</th>
+                <th class="req-y">#<br>FT EEs</th>
+                <th class="req-y">#<br>PT EEs</th>
+                <th>Current<br>Rate</th>
+                <th>Our<br>Rate</th>
+                <th style="width:24px;"></th>
               </tr>
             </thead>
             <tbody id="wc-codes-body"></tbody>
             <tfoot>
               <tr class="totals-row">
-                <td colspan="2">Totals</td>
-                <td id="wc-total-payroll">$0.00</td>
-                <td id="wc-total-fte">0</td>
-                <td id="wc-total-pte">0</td>
-                <td></td>
-                <td></td>
+                <td colspan="4" style="text-align:right;padding-right:8px;">Totals</td>
+                <td id="wc-total-payroll" style="padding-left:5px;font-size:0.78rem;">$0</td>
+                <td id="wc-total-fte" style="text-align:center;">0</td>
+                <td id="wc-total-pte" style="text-align:center;">0</td>
+                <td colspan="3"></td>
               </tr>
             </tfoot>
           </table>
@@ -1044,6 +1044,183 @@
 
       </div><!-- /card wc codes -->
 
+      <!-- WC Losses -->
+      <div class="card">
+        <div class="card-title">Workers' Compensation Losses <span class="req-section-badge g">Required for final approval</span></div>
+        <hr class="card-divider" />
+
+        <div class="form-grid" style="margin-bottom:16px">
+          <div class="form-group">
+            <label class="req-g" for="new_company_sel">New company?</label>
+            <select id="new_company_sel" name="new_company" onchange="toggleInlineNote(this, 'note-new-co')">
+              <option value="">—</option>
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </select>
+            <div class="inline-note" id="note-new-co">Loss History Affidavit required.</div>
+          </div>
+          <div class="form-group">
+            <label class="req-g" for="gaps_in_coverage_sel">Gaps in coverage?</label>
+            <select id="gaps_in_coverage_sel" name="gaps_in_coverage" onchange="toggleInlineNote(this, 'note-gaps')">
+              <option value="">—</option>
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </select>
+            <div class="inline-note" id="note-gaps">LHA required for gap period.</div>
+          </div>
+        </div>
+
+        <div style="overflow-x:auto;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Period Start</th>
+                <th>Period End</th>
+                <th>Total Losses</th>
+                <th># of Claims</th>
+                <th># Months in Policy</th>
+                <th># Open Claims</th>
+                <th style="width:28px;"></th>
+              </tr>
+            </thead>
+            <tbody id="wc-losses-body"></tbody>
+          </table>
+        </div>
+
+        <button class="btn-add-row" type="button" id="btn-add-wc-loss">+ Add Row</button>
+
+      </div><!-- /card wc losses -->
+
+      <!-- WC Questions -->
+      <div class="card">
+        <div class="card-title">Workers' Comp Questions <span class="req-section-badge y">Required for estimate</span></div>
+        <hr class="card-divider" />
+        <div class="compliance-rows" id="wc-q-grid">
+
+          <div class="q-row">
+            <span class="q-label">Does applicant own, operate or lease aircraft / watercraft?</span>
+            <select class="q-select" name="wc_q_aircraft" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_aircraft_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Do / have past, present or discontinued operations involve(d) storing, treating, discharging, applying, disposing, or transporting of hazardous material? (e.g. landfills, wastes, fuel tanks, etc.)</span>
+            <select class="q-select" name="wc_q_hazmat" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_hazmat_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Any work performed underground or above 15 feet? If yes, list max height and equipment used.</span>
+            <select class="q-select" name="wc_q_above15ft" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_above15ft_explanation" placeholder="Max height, equipment…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Any work performed on barges, vessels, docks, bridges over water?</span>
+            <select class="q-select" name="wc_q_overwater" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_overwater_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Is applicant engaged in any other type of business? If so, name and describe other businesses.</span>
+            <select class="q-select" name="wc_q_other_biz" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_other_biz_explanation" placeholder="Name and describe…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Are sub-contractors and/or independent contractors used? If yes provide a copy of sub-agreement. Identify % of work subcontracted out and what specific work is subcontracted out.</span>
+            <select class="q-select" name="wc_q_subcontractors" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_subcontractors_explanation" placeholder="% subcontracted, type of work…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Any work subcontracted without certificates of insurance?</span>
+            <select class="q-select" name="wc_q_unsub" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_unsub_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Is a formal safety program in operation? If yes provide a copy of manual.</span>
+            <select class="q-select" name="wc_q_safety" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_safety_explanation" placeholder="Describe program…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Any group transportation provided?</span>
+            <select class="q-select" name="wc_q_transport" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_transport_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Any employees under 16 or over 60 years of age?</span>
+            <select class="q-select" name="wc_q_age_extremes" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_age_extremes_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Any part time or seasonal employees?</span>
+            <select class="q-select" name="wc_q_parttime" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_parttime_explanation" placeholder="# seasonal, type of work…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Is there any volunteer or donated labor?</span>
+            <select class="q-select" name="wc_q_volunteer" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_volunteer_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Any employees with physical handicaps?</span>
+            <select class="q-select" name="wc_q_disabilities" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_disabilities_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Do employees travel out of state or out of the country? If so, scope of travel?</span>
+            <select class="q-select" name="wc_q_outofstate" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_outofstate_explanation" placeholder="States / countries, frequency…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Are athletic teams sponsored?</span>
+            <select class="q-select" name="wc_q_athletic" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_athletic_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Are physicals required after offers of employment are made?</span>
+            <select class="q-select" name="wc_q_physicals" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_physicals_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Does turnover exceed 30% annually?</span>
+            <select class="q-select" name="wc_q_turnover" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_turnover_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Any prior coverage declined / cancelled / non-renewed (last 3 years)?</span>
+            <select class="q-select" name="wc_q_declined" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_declined_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Are employee health plans provided?</span>
+            <select class="q-select" name="wc_q_health_plans" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_health_plans_explanation" placeholder="Plan type…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Is there a labor interchange with any other business / subsidiary?</span>
+            <select class="q-select" name="wc_q_labor_int" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_labor_int_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Do you lease employees to or from other employers?</span>
+            <select class="q-select" name="wc_q_leased" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_leased_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Do any employees predominantly work at home?</span>
+            <select class="q-select" name="wc_q_remote" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_remote_explanation" placeholder="# remote, states…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Any tax liens or bankruptcy within the last five (5) years?</span>
+            <select class="q-select" name="wc_q_liens" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_liens_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Is there any current or anticipated debt for unpaid premiums owed to any previous workers' compensation provider?</span>
+            <select class="q-select" name="wc_q_unpaid" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_unpaid_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+
+        </div>
+      </div><!-- /card wc questions -->
+
     </div><!-- /wc-sections-wrapper -->
 
   </div><!-- /panel-wc -->
@@ -1054,42 +1231,16 @@
   ══════════════════════════════════════════ -->
   <div id="panel-pricing" class="tab-panel">
 
-    <!-- Final Pricing Inputs -->
-    <div class="card">
-      <div class="card-title">Admin Fee <span class="req-section-badge y">Required for estimate</span></div>
-      <hr class="card-divider" />
-      <div class="form-grid">
-
-        <div class="form-group">
-          <label class="req-y" for="admin_method">Admin Method</label>
-          <select id="admin_method" name="admin_method">
-            <option value="1">1 — % of Gross Wages</option>
-            <option value="2">2 — Per Check</option>
-            <option value="3">3 — Per WSE per Month</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="req-y" for="admin_rate" id="admin_rate_label">Rate (%)</label>
-          <input type="number" id="admin_rate" name="admin_rate" step="0.01" min="0" value="0" />
-        </div>
-
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Workers' Comp (Pricing)</div>
-      <hr class="card-divider" />
-      <div class="form-grid">
-        <div class="form-group">
-          <label class="req-y" for="pricing_proposed_mod">Proposed WC Mod (0 = carve-out)</label>
-          <input type="number" id="pricing_proposed_mod" name="pricing_proposed_mod" step="0.01" min="0" value="1.00" />
-        </div>
-      </div>
-    </div>
-
     <div class="card">
       <div class="card-title">SUTA <span class="req-section-badge y">Required for estimate</span></div>
       <hr class="card-divider" />
+      <div class="form-grid" style="margin-bottom:16px">
+        <div class="form-group">
+          <label for="w2s_generated">W-2s Generated Last Year (turnover proxy)</label>
+          <input type="number" id="w2s_generated" name="w2s_generated" step="1" min="0" value="0" />
+        </div>
+        <div class="form-group"></div>
+      </div>
       <div style="overflow-x:auto;">
         <table class="data-table" id="suta-table">
           <thead>
@@ -1106,44 +1257,6 @@
       </div>
       <div style="margin-top:12px;">
         <button class="btn-add-row" type="button" id="btn-add-suta">+ Add State</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Additional Fees</div>
-      <hr class="card-divider" />
-      <div class="form-grid">
-        <div class="form-group">
-          <label class="req-y" for="implementation_fee">Implementation Fee ($)</label>
-          <input type="number" id="implementation_fee" name="implementation_fee" step="0.01" min="0" value="0" />
-        </div>
-        <div class="form-group">
-          <label class="req-y" for="epli_fee">EPLI ($)</label>
-          <input type="number" id="epli_fee" name="epli_fee" step="0.01" min="0" value="0" />
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Commissions</div>
-      <hr class="card-divider" />
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="broker_wc_commission_pct">Broker Commission on WC (%)</label>
-          <input type="number" id="broker_wc_commission_pct" name="broker_wc_commission_pct" step="0.01" min="0" max="100" value="0" />
-        </div>
-        <div class="form-group">
-          <label for="internal_commission_pct">Internal Commission (%)</label>
-          <input type="number" id="internal_commission_pct" name="internal_commission_pct" step="0.01" min="0" max="100" value="0" />
-        </div>
-        <div class="form-group">
-          <label for="external_commission_pct">External / Broker Commission on Admin (%)</label>
-          <input type="number" id="external_commission_pct" name="external_commission_pct" step="0.01" min="0" max="100" value="0" />
-        </div>
-        <div class="form-group">
-          <label for="w2s_generated">W-2s Generated Last Year (turnover proxy)</label>
-          <input type="number" id="w2s_generated" name="w2s_generated" step="1" min="0" value="0" />
-        </div>
       </div>
     </div>
 
@@ -1240,7 +1353,7 @@ document.getElementById('state-picker').addEventListener('click', function(e) {
 function toggleQExplain(sel) {
   const explain = sel.parentElement.querySelector('.q-explain');
   if (!explain) return;
-  explain.style.display = sel.value === 'true' ? 'inline-block' : 'none';
+  explain.style.display = sel.value === 'true' ? 'block' : 'none';
 }
 
 /* ── Toggle inline note ──────────────────────────────────────────────────── */
@@ -1273,23 +1386,23 @@ function toggleWcCarveout(sel) {
 }
 
 /* ── WC Losses Table ─────────────────────────────────────────────────────── */
-function buildInitialLossRows() {
+function addWCLossRow(data) {
   const tbody = document.getElementById('wc-losses-body');
-  tbody.innerHTML = '';
-  for (let i = 0; i < 5; i++) {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td><input type="date" name="loss_start_${i}" /></td>
-      <td><input type="date" name="loss_end_${i}" /></td>
-      <td><input type="number" name="loss_total_${i}" step="0.01" min="0" placeholder="0.00" /></td>
-      <td><input type="number" name="loss_claims_${i}" step="1" min="0" placeholder="0" /></td>
-      <td><input type="number" name="loss_months_${i}" step="1" min="0" placeholder="0" /></td>
-      <td><input type="number" name="loss_open_${i}" step="1" min="0" placeholder="0" /></td>
-    `;
-    tbody.appendChild(tr);
-  }
+  const i = tbody.rows.length;
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input type="date" name="loss_start_${i}" value="${data?.coverage_period_start || ''}" /></td>
+    <td><input type="date" name="loss_end_${i}" value="${data?.coverage_period_end || ''}" /></td>
+    <td><input type="number" name="loss_total_${i}" step="0.01" min="0" placeholder="0.00" value="${data?.total_losses_incurred || ''}" /></td>
+    <td><input type="number" name="loss_claims_${i}" step="1" min="0" placeholder="0" value="${data?.num_claims || ''}" /></td>
+    <td><input type="number" name="loss_months_${i}" step="1" min="0" placeholder="0" value="${data?.months_in_policy || ''}" /></td>
+    <td><input type="number" name="loss_open_${i}" step="1" min="0" placeholder="0" value="${data?.open_claims || ''}" /></td>
+    <td><button type="button" class="btn-ghost" style="padding:2px 6px;font-size:0.75rem;color:#dc2626;border-color:#fecaca;" onclick="this.closest('tr').remove()">×</button></td>
+  `;
+  tbody.appendChild(tr);
 }
-buildInitialLossRows();
+addWCLossRow();
+document.getElementById('btn-add-wc-loss').addEventListener('click', () => addWCLossRow());
 
 /* ── WC Codes Table ──────────────────────────────────────────────────────── */
 const STATE_ABBRS = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY','DC'];
@@ -1304,26 +1417,31 @@ function addWCCodeRow(data) {
   ).join('');
   tr.innerHTML = `
     <td>
-      <select name="wc_state_${idx}" style="width:70px;font-size:0.82rem;padding:5px 6px">
+      <select name="wc_state_${idx}" style="width:auto;min-width:0;font-size:0.8rem;padding:4px 4px">
         <option value="">—</option>${stateOpts}
       </select>
     </td>
-    <td><input type="text" name="wc_code_${idx}" placeholder="8810" style="width:70px;" value="${data?.wc_code || ''}" /></td>
-    <td><input type="number" name="wc_payroll_${idx}" step="0.01" min="0" placeholder="0.00" value="${data?.annual_gw || ''}" /></td>
-    <td><input type="number" name="wc_fte_${idx}" step="1" min="0" placeholder="0" style="width:60px;" value="${data?.ftes || ''}" /></td>
-    <td><input type="number" name="wc_pte_${idx}" step="1" min="0" placeholder="0" style="width:60px;" value="${data?.ptes || ''}" /></td>
-    <td><input type="number" name="wc_rate_${idx}" step="0.0001" min="0" placeholder="auto from WC table" value="${data?.manual_rate || ''}" readonly style="background:#f5f5f5;cursor:not-allowed;" /></td>
-    <td><button type="button" class="btn-ghost" style="padding:3px 8px;font-size:0.75rem;color:#dc2626;border-color:#fecaca;" onclick="removeWCRow(this)">×</button></td>
+    <td><input type="text" name="wc_code_${idx}" placeholder="8810" style="width:42px;" value="${data?.wc_code || ''}" /></td>
+    <td><input type="text" name="wc_desc_${idx}" placeholder="—" style="width:240px;background:#f5f5f5;cursor:not-allowed;" value="${data?.wc_description || ''}" readonly /></td>
+    <td style="text-align:center;"><input type="text" name="wc_hazard_${idx}" placeholder="—" style="width:32px;text-align:center;background:#f5f5f5;cursor:not-allowed;" value="${data?.hazard_group || ''}" readonly /></td>
+    <td><input type="number" name="wc_payroll_${idx}" step="0.01" min="0" placeholder="0.00" style="width:90px;" value="${data?.annual_gw || ''}" /></td>
+    <td><input type="number" name="wc_fte_${idx}" step="1" min="0" placeholder="0" style="width:38px;" value="${data?.ftes || ''}" /></td>
+    <td><input type="number" name="wc_pte_${idx}" step="1" min="0" placeholder="0" style="width:38px;" value="${data?.ptes || ''}" /></td>
+    <td><input type="number" name="wc_cur_rate_${idx}" step="0.0001" min="0" placeholder="0.0000" style="width:56px;" value="${data?.current_client_rate || ''}" /></td>
+    <td><input type="number" name="wc_rate_${idx}" step="0.0001" min="0" placeholder="—" value="${data?.manual_rate || ''}" readonly style="width:50px;background:#f5f5f5;cursor:not-allowed;" /></td>
+    <td><button type="button" class="btn-ghost" style="padding:2px 5px;font-size:0.75rem;color:#dc2626;border-color:#fecaca;" onclick="removeWCRow(this)">×</button></td>
   `;
   tr.querySelectorAll('input, select').forEach(inp => {
     inp.addEventListener('input', () => { updateWCTotals(); scheduleCalculate(); });
     inp.addEventListener('change', () => { updateWCTotals(); scheduleCalculate(); });
   });
 
-  // Auto-populate rate from WC table when state or code changes
-  const stateSelect = tr.querySelector(`select[name="wc_state_${idx}"]`);
-  const codeInput   = tr.querySelector(`input[name="wc_code_${idx}"]`);
-  const rateInput   = tr.querySelector(`input[name="wc_rate_${idx}"]`);
+  // Auto-populate rate and description from WC table when state or code changes
+  const stateSelect  = tr.querySelector(`select[name="wc_state_${idx}"]`);
+  const codeInput    = tr.querySelector(`input[name="wc_code_${idx}"]`);
+  const descInput    = tr.querySelector(`input[name="wc_desc_${idx}"]`);
+  const hazardInput  = tr.querySelector(`input[name="wc_hazard_${idx}"]`);
+  const rateInput    = tr.querySelector(`input[name="wc_rate_${idx}"]`);
 
   async function lookupWCRate() {
     const s = stateSelect.value;
@@ -1331,9 +1449,13 @@ function addWCCodeRow(data) {
     if (!s || !c) return;
     try {
       const data = await apiGet(`/wc-rate?state=${encodeURIComponent(s)}&code=${encodeURIComponent(c)}`);
-      rateInput.value = data.rate;
+      rateInput.value  = data.rate;
+      descInput.value  = data.description || '';
+      hazardInput.value = data.hazard_group || '';
     } catch (_) {
-      rateInput.value = '';
+      rateInput.value   = '';
+      descInput.value   = '';
+      hazardInput.value = '';
       rateInput.placeholder = '— not found';
     }
     updateWCTotals();
@@ -1361,7 +1483,7 @@ function updateWCTotals() {
     totalFTE     += parseFloat(tr.querySelector('input[name^="wc_fte_"]')?.value || 0) || 0;
     totalPTE     += parseFloat(tr.querySelector('input[name^="wc_pte_"]')?.value || 0) || 0;
   });
-  document.getElementById('wc-total-payroll').textContent = formatCurrency(totalPayroll);
+  document.getElementById('wc-total-payroll').textContent = '$' + Math.round(totalPayroll).toLocaleString();
   document.getElementById('wc-total-fte').textContent = totalFTE;
   document.getElementById('wc-total-pte').textContent = totalPTE;
 }
@@ -1418,16 +1540,52 @@ function removeSutaRow(btn) {
 
 document.getElementById('btn-add-suta').addEventListener('click', () => addSutaRow());
 
-/* ── Admin Method Label ──────────────────────────────────────────────────── */
-const adminMethodSel = document.getElementById('admin_method');
-const adminRateLabel = document.getElementById('admin_rate_label');
-adminMethodSel.addEventListener('change', () => {
-  const v = adminMethodSel.value;
-  if (v === '1') adminRateLabel.textContent = 'Rate (%)';
-  else if (v === '2') adminRateLabel.textContent = 'Rate ($ per check)';
-  else if (v === '3') adminRateLabel.textContent = 'Rate ($ PEPM)';
+/* ── Locations ───────────────────────────────────────────────────────────── */
+function addLocationRow(data) {
+  const list = document.getElementById('locations-list');
+  const row = document.createElement('div');
+  row.className = 'location-row';
+  row.innerHTML = `
+    <input type="text" placeholder="Address" class="loc-address" value="${(data?.address || '').replace(/"/g, '&quot;')}" />
+    <input type="number" placeholder="# Employees" class="loc-employees" min="0" step="1" value="${data?.employees ?? ''}" />
+    <button type="button" class="btn-remove-loc" onclick="this.closest('.location-row').remove()">×</button>
+  `;
+  list.appendChild(row);
+}
+
+function getLocations() {
+  const rows = document.querySelectorAll('.location-row');
+  const locs = [];
+  rows.forEach(row => {
+    const address = row.querySelector('.loc-address').value.trim();
+    const emp = row.querySelector('.loc-employees').value;
+    if (address || emp) {
+      locs.push({ address, employees: emp === '' ? null : parseInt(emp, 10) });
+    }
+  });
+  return JSON.stringify(locs);
+}
+
+document.getElementById('btn-add-location').addEventListener('click', () => addLocationRow());
+
+/* ── Admin Method Selection ──────────────────────────────────────────────── */
+const adminMethodLabels = {
+  1: ['Vested Rate (%)',          'Current Rate (%)'],
+  2: ['Vested Rate ($ per check)','Current Rate ($ per check)'],
+  3: ['Vested Rate ($ per WSE/mo)','Current Rate ($ per WSE/mo)'],
+};
+function selectAdminMethod(method) {
+  document.querySelectorAll('.admin-method-box').forEach(b => b.classList.remove('selected'));
+  const box = document.querySelector(`.admin-method-box[data-method="${method}"]`);
+  if (box) box.classList.add('selected');
+  document.getElementById('admin_method').value = method;
+  const [vLabel, cLabel] = adminMethodLabels[method] || adminMethodLabels[1];
+  document.getElementById('admin_rate_label').textContent = vLabel;
+  document.getElementById('current_admin_rate_label').textContent = cLabel;
   scheduleCalculate();
-});
+}
+selectAdminMethod(1);
+
 
 /* ── Pricing mod sync ────────────────────────────────────────────────────── */
 const pricingMod = document.getElementById('pricing_proposed_mod');
@@ -1491,13 +1649,16 @@ function collectWCLines() {
   const lines = [];
   const tbody = document.getElementById('wc-codes-body');
   tbody.querySelectorAll('tr').forEach(tr => {
-    const state      = tr.querySelector('select[name^="wc_state_"]')?.value?.trim() || null;
-    const wc_code    = tr.querySelector('input[name^="wc_code_"]')?.value?.trim() || null;
-    const annual_gw  = parseFloat(tr.querySelector('input[name^="wc_payroll_"]')?.value) || 0;
-    const ftes       = parseFloat(tr.querySelector('input[name^="wc_fte_"]')?.value) || 0;
-    const ptes       = parseFloat(tr.querySelector('input[name^="wc_pte_"]')?.value) || 0;
-    const manual_rate = parseFloat(tr.querySelector('input[name^="wc_rate_"]')?.value) || 0;
-    lines.push({ state, wc_code, annual_gw, ftes, ptes, manual_rate, current_client_rate: 0 });
+    const state               = tr.querySelector('select[name^="wc_state_"]')?.value?.trim() || null;
+    const wc_code             = tr.querySelector('input[name^="wc_code_"]')?.value?.trim() || null;
+    const wc_description      = tr.querySelector('input[name^="wc_desc_"]')?.value?.trim() || null;
+    const hazard_group        = tr.querySelector('input[name^="wc_hazard_"]')?.value?.trim() || null;
+    const annual_gw           = parseFloat(tr.querySelector('input[name^="wc_payroll_"]')?.value) || 0;
+    const ftes                = parseFloat(tr.querySelector('input[name^="wc_fte_"]')?.value) || 0;
+    const ptes                = parseFloat(tr.querySelector('input[name^="wc_pte_"]')?.value) || 0;
+    const current_client_rate = parseFloat(tr.querySelector('input[name^="wc_cur_rate_"]')?.value) || 0;
+    const manual_rate         = parseFloat(tr.querySelector('input[name^="wc_rate_"]')?.value) || 0;
+    lines.push({ state, wc_code, wc_description, hazard_group, annual_gw, ftes, ptes, current_client_rate, manual_rate });
   });
   return lines;
 }
@@ -1525,13 +1686,13 @@ function collectSutaLines() {
 
 function collectWCLosses() {
   const losses = [];
-  for (let i = 0; i < 5; i++) {
-    const start  = document.querySelector(`input[name="loss_start_${i}"]`)?.value || null;
-    const end    = document.querySelector(`input[name="loss_end_${i}"]`)?.value || null;
-    const total  = parseFloat(document.querySelector(`input[name="loss_total_${i}"]`)?.value) || 0;
-    const claims = parseInt(document.querySelector(`input[name="loss_claims_${i}"]`)?.value) || 0;
-    const months = parseInt(document.querySelector(`input[name="loss_months_${i}"]`)?.value) || 0;
-    const open   = parseInt(document.querySelector(`input[name="loss_open_${i}"]`)?.value) || 0;
+  document.getElementById('wc-losses-body').querySelectorAll('tr').forEach(tr => {
+    const start  = tr.querySelector('input[name^="loss_start_"]')?.value || null;
+    const end    = tr.querySelector('input[name^="loss_end_"]')?.value || null;
+    const total  = parseFloat(tr.querySelector('input[name^="loss_total_"]')?.value) || 0;
+    const claims = parseInt(tr.querySelector('input[name^="loss_claims_"]')?.value) || 0;
+    const months = parseInt(tr.querySelector('input[name^="loss_months_"]')?.value) || 0;
+    const open   = parseInt(tr.querySelector('input[name^="loss_open_"]')?.value) || 0;
     losses.push({
       coverage_period_start: start,
       coverage_period_end:   end,
@@ -1540,7 +1701,7 @@ function collectWCLosses() {
       months_in_policy: months,
       open_claims:  open,
     });
-  }
+  });
   return losses;
 }
 
@@ -1556,12 +1717,16 @@ function collectClientPayload() {
   const client = {
     legal_name:             getVal('legal_name'),
     consultant_name:        getVal('consultant_name'),
+    consultant_name_split:  getVal('consultant_name_split'),
     date:                   getVal('date'),
     dba:                    getVal('dba'),
+    referral_partner_business: getVal('referral_partner_business'),
+    referral_partner_name:  getVal('referral_partner_name'),
     main_address:           getVal('main_address'),
     city:                   getVal('city'),
     state:                  getVal('state'),
     zip:                    getVal('zip'),
+    county:                 getVal('county'),
     fein:                   getVal('fein'),
     website:                getVal('website'),
     org_structure:          getVal('org_structure'),
@@ -1579,6 +1744,7 @@ function collectClientPayload() {
     contact_cell:           getVal('contact_cell'),
     contact_email:          getVal('contact_email'),
     states_operating:       getSelectedStatePills(),
+    locations:              getLocations(),
     description_of_operations: getVal('description_of_operations'),
 
     // Compliance (select-based)
@@ -1611,10 +1777,13 @@ function collectClientPayload() {
     new_contribution_strategy:     getVal('new_contribution_strategy'),
 
     // Payroll
-    payroll_frequency: getVal('payroll_frequency'),
-    pay_cycle_start:   getVal('pay_cycle_start'),
-    pay_cycle_end:     getVal('pay_cycle_end'),
-    pay_date:          getVal('pay_date'),
+    payroll_frequency:          getVal('payroll_frequency'),
+    pay_cycle_start:            getVal('pay_cycle_start'),
+    pay_cycle_end:              getVal('pay_cycle_end'),
+    pay_date:                   getVal('pay_date'),
+    method_of_payment:          getVal('method_of_payment'),
+    requested_payroll_delivery: getVal('requested_payroll_delivery'),
+    effective_date:             getVal('effective_date'),
 
     // WC
     wc_carve_out:        getSelectBool('wc_carve_out'),
@@ -1707,6 +1876,7 @@ function renderSummary(r) {
   setDS('s-broker-admin-pct', formatPct(co.broker_admin_pct));
   setDS('s-admin-net-ongoing', formatCurrency(co.admin_net_ongoing));
   setDS('s-admin-net-year1',   formatCurrency(co.admin_net_year1));
+
 }
 
 function setDS(id, val) {
@@ -1743,9 +1913,12 @@ function populateForm(client) {
   document.title = 'VestedHR — ' + (client.legal_name || 'New Client');
 
   // General
-  ['consultant_name','date','legal_name','dba','main_address','city','state','zip',
+  ['consultant_name','consultant_name_split','date','legal_name','dba',
+   'referral_partner_business','referral_partner_name',
+   'main_address','city','state','zip','county',
    'fein','website','org_structure','naics','sic','years_in_business','num_locations',
-   'main_phone','owner_name','owner_phone','owner_email','owner_cell',
+   'main_phone',
+   'owner_name','owner_phone','owner_email','owner_cell',
    'contact_name','contact_phone','contact_cell','contact_email',
    'description_of_operations'].forEach(f => setField(f, client[f]));
 
@@ -1762,6 +1935,14 @@ function populateForm(client) {
     } catch(e) {}
   }
 
+  // Locations
+  if (client.locations) {
+    try {
+      const locs = JSON.parse(client.locations);
+      locs.forEach(loc => addLocationRow(loc));
+    } catch(e) {}
+  }
+
   // Compliance
   [
     ['eeoc_violations', 'eeoc_explanation'],
@@ -1772,10 +1953,10 @@ function populateForm(client) {
     ['leave_of_absence','leave_explanation'],
   ].forEach(([field, explField]) => {
     setSelectBoolByName(field, client[field]);
-    const explEl = document.querySelector(`input[name="${explField}"]`);
+    const explEl = document.querySelector(`[name="${explField}"]`);
     if (explEl && client[explField]) {
       explEl.value = client[explField];
-      if (client[field] === true) explEl.style.display = 'inline-block';
+      if (client[field] === true) explEl.style.display = 'block';
     }
   });
 
@@ -1793,7 +1974,8 @@ function populateForm(client) {
   setField('new_contribution_strategy',     client.new_contribution_strategy);
 
   // Payroll
-  ['payroll_frequency','pay_cycle_start','pay_cycle_end','pay_date'].forEach(f => setField(f, client[f]));
+  ['payroll_frequency','pay_cycle_start','pay_cycle_end','pay_date',
+   'method_of_payment','requested_payroll_delivery','effective_date'].forEach(f => setField(f, client[f]));
 
   // WC carve-out
   if (client.wc_carve_out != null) {
@@ -1832,38 +2014,25 @@ function populateForm(client) {
 
   // WC Losses
   if (client.wc_losses && client.wc_losses.length) {
-    const tbody = document.getElementById('wc-losses-body');
-    tbody.innerHTML = '';
-    for (let i = 0; i < 5; i++) {
-      const loss = client.wc_losses[i];
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td><input type="date" name="loss_start_${i}" value="${loss?.coverage_period_start || ''}" /></td>
-        <td><input type="date" name="loss_end_${i}" value="${loss?.coverage_period_end || ''}" /></td>
-        <td><input type="number" name="loss_total_${i}" step="0.01" min="0" value="${loss?.total_losses_incurred || ''}" /></td>
-        <td><input type="number" name="loss_claims_${i}" step="1" min="0" value="${loss?.num_claims || ''}" /></td>
-        <td><input type="number" name="loss_months_${i}" step="1" min="0" value="${loss?.months_in_policy || ''}" /></td>
-        <td><input type="number" name="loss_open_${i}" step="1" min="0" value="${loss?.open_claims || ''}" /></td>
-      `;
-      tbody.appendChild(tr);
-    }
+    document.getElementById('wc-losses-body').innerHTML = '';
+    client.wc_losses.forEach(loss => addWCLossRow(loss));
   }
 
   // Pricing
   const method = client.admin_method || 1;
-  setField('admin_method', method);
-  adminMethodSel.dispatchEvent(new Event('change'));
+  selectAdminMethod(method);
   const rateDisplay = method === 1
     ? ((client.admin_rate || 0) * 100).toFixed(4)
     : (client.admin_rate || 0);
   setField('admin_rate', rateDisplay);
+  setField('current_admin_rate', client.current_admin_rate || 0);
 
   setField('implementation_fee',       client.implementation_fee);
   setField('epli_fee',                 client.epli_fee);
-  setField('broker_wc_commission_pct', ((client.broker_wc_commission_pct || 0) * 100).toFixed(4));
-  setField('internal_commission_pct',  ((client.internal_commission_pct || 0) * 100).toFixed(4));
-  setField('external_commission_pct',  ((client.external_commission_pct || 0) * 100).toFixed(4));
-  setField('w2s_generated',            client.w2s_generated);
+  setField('broker_wc_commission_pct',  ((client.broker_wc_commission_pct || 0) * 100).toFixed(4));
+  setField('internal_commission_pct',   ((client.internal_commission_pct || 0) * 100).toFixed(4));
+  setField('external_commission_pct',   ((client.external_commission_pct || 0) * 100).toFixed(4));
+  setField('w2s_generated', client.w2s_generated);
 
   scheduleCalculate();
 }
