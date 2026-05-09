@@ -1,11 +1,4 @@
 {
-  "update-pricing-math": {
-    "status": "pending",
-    "priority": 2,
-    "blocked_by": null,
-    "note": "4 open questions need VHR verification before proposal/analysis views can be trusted for client-facing output.",
-    "brief": "Review and document open formulas in C:\\workspaces\\business\\vested-hr\\plan_drafts\\pricing_math.md. Four items need VHR verification:\n\n1. Proposal total — current implementation sums WC Billed + SUTA Billed + FICA + FUTA + Admin Fee + EPLI + Implementation Fee. Confirm with VHR: does the proposal show gross client cost (all passthroughs) or net VHR-billed items only? Should TLM and Wire/ACH appear in the proposal total?\n\n2. Loss Analysis formulas — current implementation: Loss Rate = Total Losses ÷ Total Annual Payroll × 100; Annualized Losses = (Total Losses ÷ Months in Policy) × 12. Confirm: is total_gws the right denominator for Loss Rate, or should it be payroll for covered states only? What loss ratio threshold flags a client as high-risk? Are loss periods calendar years or policy years?\n\n3. Admin fee comparison method — when comparing VHR admin vs. current provider rate, the tool applies the same billing method to current_admin_rate. Confirm with VHR: is it valid to compare a '% of GWs' VHR rate against a 'per check' current provider rate this way?\n\n4. WC additional fees not wired into billing — shared_claim_fee and min_wc_fee_per_week are collected in the client form but not used in any billing or cost formula. Confirm with VHR where these appear in the final client bill.\n\nThis is a documentation/verification task — do not change calc code. Update pricing_math.md with confirmed answers.\n\nCommit: docs: update pricing math — loss analysis formulas, proposal total, open questions\n\nTo close: remove 'update-pricing-math' from management/status.json and add a one-line summary to management/updates.md."
-  },
   "benefits-tab": {
     "status": "blocked",
     "priority": 5,
