@@ -57,10 +57,9 @@
   <div class="subheader-inner">
     <div class="subheader-title">System Configuration</div>
     <nav class="tab-nav">
-      <button class="tab-btn active" data-tab="federal">Federal Tax</button>
-      <button class="tab-btn" data-tab="wc">Workers' Comp</button>
-      <button class="tab-btn" data-tab="suta">SUTA</button>
+      <button class="tab-btn active" data-tab="wc">Workers' Comp</button>
       <button class="tab-btn" data-tab="admin">Admin</button>
+      <button class="tab-btn" data-tab="federal">Taxes</button>
       <button class="tab-btn" data-tab="fees">Additional Fees</button>
     </nav>
   </div>
@@ -70,23 +69,30 @@
 <div class="page-content-config">
 
   <!-- ── PANEL: Federal Tax ───────────────────────────────────────────────── -->
-  <div class="tab-panel active" id="panel-federal">
+  <div class="tab-panel" id="panel-federal">
     <div class="card">
-      <div class="card-title">Federal Tax</div>
+      <div class="card-title">Taxes</div>
       <hr class="divider" />
-      <div class="field-grid">
+      <div class="field-grid" style="grid-template-columns: repeat(4, 1fr);">
         <div class="field-group">
           <label class="field-label">FICA SS Rate</label>
           <input type="number" id="ss_rate" step="0.001" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">FICA SS Wage Cap ($)</label>
+          <input type="number" id="ss_wage_base" step="100" />
         </div>
         <div class="field-group">
           <label class="field-label">FICA Medicare Rate</label>
           <input type="number" id="medicare_rate" step="0.001" />
         </div>
         <div class="field-group">
-          <label class="field-label">FICA SS Wage Cap ($)</label>
-          <input type="number" id="ss_wage_base" step="100" />
+          <label class="field-label">FICA Rate (Total)</label>
+          <input type="number" id="fica_total_rate" step="0.001" readonly
+                 style="background:var(--surface-2,#f5f5f5); color:var(--text-2,#666); cursor:default;" />
         </div>
+      </div>
+      <div class="field-grid" style="margin-top:20px;">
         <div class="field-group">
           <label class="field-label">FUTA Rate</label>
           <input type="number" id="futa_rate" step="0.001" />
@@ -96,11 +102,24 @@
           <input type="number" id="futa_wage_base" step="100" />
         </div>
       </div>
+
+      <div class="csv-section">
+        <div class="csv-row">
+          <span class="csv-label">SUTA Rates</span>
+          <div class="csv-btns">
+            <button class="csv-btn csv-btn-dl" type="button" id="suta-rates-dl">Download CSV</button>
+            <button class="csv-btn csv-btn-ul" type="button" id="suta-rates-ul">Upload CSV</button>
+            <input type="file" id="suta-rates-file" accept=".csv" style="display:none" />
+          </div>
+        </div>
+        <div class="csv-columns">Columns: State Name, State, Threshold (Wage Base), VHR Min Rate, Client Reporting (Y/N), Our Cost Rate, Date Updated</div>
+      </div>
+
     </div>
   </div>
 
   <!-- ── PANEL: Workers' Comp ─────────────────────────────────────────────── -->
-  <div class="tab-panel" id="panel-wc">
+  <div class="tab-panel active" id="panel-wc">
     <div class="card">
       <div class="card-title">Workers' Compensation</div>
       <hr class="divider" />
@@ -117,7 +136,8 @@
         </div>
         <div class="field-group">
           <label class="field-label">Combined Cost Factor</label>
-          <input type="number" id="combined_cost_factor" step="0.01" />
+          <input type="number" id="combined_cost_factor" step="0.01" readonly
+                 style="background:var(--surface-2,#f5f5f5); color:var(--text-2,#666); cursor:default;" />
         </div>
         <div class="field-group">
           <label class="field-label">PTE Weight</label>
@@ -129,11 +149,11 @@
       <div class="field-grid single">
         <div class="field-group">
           <label class="field-label">Monopolistic States (comma-separated, 2-letter)</label>
-          <textarea id="monopolistic_states"></textarea>
+          <input type="text" id="monopolistic_states" />
         </div>
         <div class="field-group">
           <label class="field-label">MCP States (manual class pricing — slower binding)</label>
-          <textarea id="mcp_states"></textarea>
+          <input type="text" id="mcp_states" />
         </div>
       </div>
 
@@ -162,57 +182,21 @@
     </div>
   </div>
 
-  <!-- ── PANEL: SUTA ──────────────────────────────────────────────────────── -->
-  <div class="tab-panel" id="panel-suta">
-    <div class="card">
-      <div class="card-title">SUTA</div>
-      <hr class="divider" />
-      <div class="field-grid">
-        <div class="field-group">
-          <label class="field-label">Default Turnover % (decimal, e.g. 0.10)</label>
-          <input type="number" id="suta_default_turnover" step="0.01" />
-        </div>
-      </div>
-
-      <div class="csv-section">
-        <div class="csv-row">
-          <span class="csv-label">SUTA Rates</span>
-          <div class="csv-btns">
-            <button class="csv-btn csv-btn-dl" type="button" id="suta-rates-dl">Download CSV</button>
-            <button class="csv-btn csv-btn-ul" type="button" id="suta-rates-ul">Upload CSV</button>
-            <input type="file" id="suta-rates-file" accept=".csv" style="display:none" />
-          </div>
-        </div>
-        <div class="csv-columns">Columns: State Name, State, Threshold (Wage Base), VHR Min Rate, Client Reporting (Y/N), Our Cost Rate, Date Updated</div>
-      </div>
-
-    </div>
-  </div>
-
   <!-- ── PANEL: Admin ─────────────────────────────────────────────────────── -->
   <div class="tab-panel" id="panel-admin">
     <div class="card">
       <div class="card-title">Admin</div>
       <hr class="divider" />
 
-      <p class="section-subhead">Pay Frequency → Annual Period Count</p>
-      <table class="pp-table">
-        <thead>
-          <tr><th>Pay Frequency</th><th>Periods per Year</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>Weekly</td><td><input type="number" id="pp_weekly" step="1" /></td></tr>
-          <tr><td>Bi-Weekly</td><td><input type="number" id="pp_biweekly" step="1" /></td></tr>
-          <tr><td>Semi-Monthly</td><td><input type="number" id="pp_semimonthly" step="1" /></td></tr>
-          <tr><td>Monthly</td><td><input type="number" id="pp_monthly" step="1" /></td></tr>
-        </tbody>
-      </table>
-
-      <p class="section-subhead" style="margin-top:26px;">Other</p>
+      <p class="section-subhead">Business Consultant Commission</p>
       <div class="field-grid">
         <div class="field-group">
-          <label class="field-label">WC Policy Adjustment / Sunz (decimal)</label>
-          <input type="number" id="wc_policy_adjustment" step="0.0001" />
+          <label class="field-label">Upfront (%)</label>
+          <input type="number" id="consultant_commission_upfront" step="0.01" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Ongoing (%)</label>
+          <input type="number" id="consultant_commission_ongoing" step="0.01" />
         </div>
       </div>
 
@@ -224,10 +208,96 @@
     <div class="card">
       <div class="card-title">Additional Fees</div>
       <hr class="divider" />
-      <div class="info-note">
-        TLM, EPLI, Wire/ACH, and Setup fees have no system-level defaults — they are entered
-        directly on the client record. No configuration is required here.
+
+      <p class="section-subhead">Payroll Fees</p>
+      <div class="field-grid">
+        <div class="field-group">
+          <label class="field-label">Min. Admin Fee (per pay cycle)</label>
+          <input type="number" id="fee_min_admin_per_cycle" step="0.01" min="0" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Out-of-Cycle / Interim Payroll (per pay cycle)</label>
+          <input type="number" id="fee_out_of_cycle_payroll" step="0.01" min="0" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Returned Check / ACH / Stop Payment Fee</label>
+          <input type="number" id="fee_returned_check" step="0.01" min="0" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Late Payroll Submission / Approval</label>
+          <input type="number" id="fee_late_payroll_submission" step="0.01" min="0" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Reactivation Fee (one-time)</label>
+          <input type="number" id="fee_reactivation" step="0.01" min="0" />
+        </div>
       </div>
+      <div style="margin-top:14px;">
+        <label class="field-label" style="display:block; margin-bottom:6px;">Delivery Fee (per pay cycle / location)</label>
+        <div style="display:flex; gap:12px; max-width:340px;">
+          <div class="field-group" style="flex:1; margin:0;">
+            <label class="field-label" style="color:var(--text-2,#718096); font-size:0.75rem;">Min</label>
+            <input type="number" id="fee_delivery_min" step="0.01" min="0" />
+          </div>
+          <div class="field-group" style="flex:1; margin:0;">
+            <label class="field-label" style="color:var(--text-2,#718096); font-size:0.75rem;">Max</label>
+            <input type="number" id="fee_delivery_max" step="0.01" min="0" />
+          </div>
+        </div>
+      </div>
+
+      <p class="section-subhead">Timekeeping</p>
+      <div class="field-grid">
+        <div class="field-group">
+          <label class="field-label">Timekeeping Implementation Fee (one-time)</label>
+          <input type="number" id="fee_timekeeping_implementation" step="0.01" min="0" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Timekeeping Fee (per employee / month)</label>
+          <input type="number" id="fee_timekeeping_monthly_per_ee" step="0.01" min="0" />
+        </div>
+      </div>
+
+      <p class="section-subhead">HR Technology</p>
+      <div class="field-grid">
+        <div class="field-group">
+          <label class="field-label">Applicant Tracking Implementation (one-time)</label>
+          <input type="number" id="fee_applicant_tracking_implementation" step="0.01" min="0" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Online LMS Implementation (one-time)</label>
+          <input type="number" id="fee_online_lms_implementation" step="0.01" min="0" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Online LMS Courses (per employee / month)</label>
+          <input type="number" id="fee_online_lms_per_ee_monthly" step="0.01" min="0" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">MVR Reports (per report)</label>
+          <input type="number" id="fee_mvr_report" step="0.01" min="0" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">E-Verify Services (per employee)</label>
+          <input type="number" id="fee_everify_per_ee" step="0.01" min="0" />
+        </div>
+      </div>
+
+      <p class="section-subhead">Workers' Compensation Fees</p>
+      <div class="field-grid">
+        <div class="field-group">
+          <label class="field-label">Approved Waiver of Subrogation</label>
+          <input type="number" id="fee_wc_waiver_subrogation" step="0.01" min="0" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Late Reporting of WC Incident (&gt;48 hrs)</label>
+          <input type="number" id="fee_wc_late_reporting" step="0.01" min="0" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Alternate Employer's Endorsement Fee</label>
+          <input type="number" id="fee_wc_alternate_employer_endorsement" step="0.01" min="0" />
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -253,39 +323,56 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 });
 
 /* ── Populate fields from config ────────────────────────────────────────────── */
+function updateCombinedCostFactor() {
+  const fixed = parseFloat(document.getElementById('fixed_cost_factor').value) || 0;
+  const loss  = parseFloat(document.getElementById('loss_fund_factor').value)  || 0;
+  document.getElementById('combined_cost_factor').value = parseFloat((fixed + loss).toFixed(6));
+}
+
+function updateFicaTotal() {
+  const ss  = parseFloat(document.getElementById('ss_rate').value)       || 0;
+  const med = parseFloat(document.getElementById('medicare_rate').value) || 0;
+  document.getElementById('fica_total_rate').value = parseFloat((ss + med).toFixed(6));
+}
+
 function populateFederal(cfg) {
   document.getElementById('ss_rate').value        = cfg.ss_rate        ?? '';
   document.getElementById('medicare_rate').value  = cfg.medicare_rate  ?? '';
   document.getElementById('ss_wage_base').value   = cfg.ss_wage_base   ?? '';
   document.getElementById('futa_rate').value      = cfg.futa_rate      ?? '';
   document.getElementById('futa_wage_base').value = cfg.futa_wage_base ?? '';
+  updateFicaTotal();
 }
 
 function populateWC(cfg) {
   document.getElementById('fixed_cost_factor').value    = cfg.fixed_cost_factor    ?? '';
   document.getElementById('loss_fund_factor').value     = cfg.loss_fund_factor     ?? '';
-  document.getElementById('combined_cost_factor').value = cfg.combined_cost_factor ?? '';
   document.getElementById('pte_weight').value           = cfg.pte_weight           ?? '';
   document.getElementById('monopolistic_states').value  = cfg.monopolistic_states  ?? '';
   document.getElementById('mcp_states').value           = cfg.mcp_states           ?? '';
+  updateCombinedCostFactor();
 }
 
 function populateAdmin(cfg) {
-  let pp = { weekly: 52, biweekly: 26, semimonthly: 24, monthly: 12 };
-  try { pp = JSON.parse(cfg.pay_periods_json); } catch (e) {}
-  document.getElementById('pp_weekly').value          = pp.weekly      ?? 52;
-  document.getElementById('pp_biweekly').value        = pp.biweekly    ?? 26;
-  document.getElementById('pp_semimonthly').value     = pp.semimonthly ?? 24;
-  document.getElementById('pp_monthly').value         = pp.monthly     ?? 12;
-  document.getElementById('wc_policy_adjustment').value = cfg.wc_policy_adjustment ?? '';
+  document.getElementById('consultant_commission_upfront').value = cfg.consultant_commission_upfront != null ? (cfg.consultant_commission_upfront * 100).toFixed(2) : '';
+  document.getElementById('consultant_commission_ongoing').value  = cfg.consultant_commission_ongoing  != null ? (cfg.consultant_commission_ongoing  * 100).toFixed(2) : '';
 }
 
-function populateSuta(cfg) {
-  // suta_default_turnover is not yet a schema field — use a local key for now
-  // When the field is added to SystemConfig, wire it here
-  const turnover = cfg.suta_default_turnover ?? 0.10;
-  document.getElementById('suta_default_turnover').value = turnover;
+function populateFees(cfg) {
+  const feeFields = [
+    'fee_min_admin_per_cycle', 'fee_delivery_min', 'fee_delivery_max',
+    'fee_out_of_cycle_payroll', 'fee_returned_check', 'fee_late_payroll_submission',
+    'fee_reactivation', 'fee_timekeeping_implementation', 'fee_timekeeping_monthly_per_ee',
+    'fee_applicant_tracking_implementation', 'fee_online_lms_implementation',
+    'fee_online_lms_per_ee_monthly', 'fee_mvr_report', 'fee_everify_per_ee',
+    'fee_wc_waiver_subrogation', 'fee_wc_late_reporting', 'fee_wc_alternate_employer_endorsement',
+  ];
+  feeFields.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = cfg[id] != null ? cfg[id] : '';
+  });
 }
+
 
 /* ── Collect fields for save ────────────────────────────────────────────────── */
 function collectFederal() {
@@ -310,24 +397,29 @@ function collectWC() {
 }
 
 function collectAdmin() {
-  const pp = {
-    weekly:      parseInt(document.getElementById('pp_weekly').value)      || 52,
-    biweekly:    parseInt(document.getElementById('pp_biweekly').value)    || 26,
-    semimonthly: parseInt(document.getElementById('pp_semimonthly').value) || 24,
-    monthly:     parseInt(document.getElementById('pp_monthly').value)     || 12,
-  };
   return {
-    pay_periods_json:     JSON.stringify(pp),
-    wc_policy_adjustment: parseFloat(document.getElementById('wc_policy_adjustment').value) || null,
+    consultant_commission_upfront: parseFloat(document.getElementById('consultant_commission_upfront').value) / 100 || null,
+    consultant_commission_ongoing:  parseFloat(document.getElementById('consultant_commission_ongoing').value)  / 100 || null,
   };
 }
 
-function collectSuta() {
-  // When suta_default_turnover is added to SystemConfig schema, include it here
-  return {
-    suta_default_turnover: parseFloat(document.getElementById('suta_default_turnover').value) || null,
-  };
+function collectFees() {
+  const feeFields = [
+    'fee_min_admin_per_cycle', 'fee_delivery_min', 'fee_delivery_max',
+    'fee_out_of_cycle_payroll', 'fee_returned_check', 'fee_late_payroll_submission',
+    'fee_reactivation', 'fee_timekeeping_implementation', 'fee_timekeeping_monthly_per_ee',
+    'fee_applicant_tracking_implementation', 'fee_online_lms_implementation',
+    'fee_online_lms_per_ee_monthly', 'fee_mvr_report', 'fee_everify_per_ee',
+    'fee_wc_waiver_subrogation', 'fee_wc_late_reporting', 'fee_wc_alternate_employer_endorsement',
+  ];
+  const out = {};
+  feeFields.forEach(id => {
+    const val = parseFloat(document.getElementById(id).value);
+    out[id] = isNaN(val) ? null : val;
+  });
+  return out;
 }
+
 
 /* ── Autosave ───────────────────────────────────────────────────────────────── */
 let autosaveTimer = null;
@@ -340,7 +432,7 @@ function scheduleAutosave() {
 async function doAutosave() {
   if (!currentConfig) return;
   // Merge all fields from all tabs into currentConfig before PUT
-  Object.assign(currentConfig, collectFederal(), collectWC(), collectAdmin(), collectSuta());
+  Object.assign(currentConfig, collectFederal(), collectWC(), collectAdmin(), collectFees());
   const payload = Object.assign({}, currentConfig);
   delete payload.id;
   try {
@@ -352,13 +444,24 @@ async function doAutosave() {
   }
 }
 
+/* ── Keep computed fields in sync ──────────────────────────────────────────── */
+document.getElementById('fixed_cost_factor').addEventListener('input', updateCombinedCostFactor);
+document.getElementById('loss_fund_factor').addEventListener('input', updateCombinedCostFactor);
+document.getElementById('ss_rate').addEventListener('input', updateFicaTotal);
+document.getElementById('medicare_rate').addEventListener('input', updateFicaTotal);
+
 /* ── Wire autosave on all input fields ─────────────────────────────────────── */
 const autosaveFields = [
   'ss_rate', 'medicare_rate', 'ss_wage_base', 'futa_rate', 'futa_wage_base',
   'fixed_cost_factor', 'loss_fund_factor', 'combined_cost_factor', 'pte_weight',
   'monopolistic_states', 'mcp_states',
-  'suta_default_turnover',
-  'pp_weekly', 'pp_biweekly', 'pp_semimonthly', 'pp_monthly', 'wc_policy_adjustment',
+  'consultant_commission_upfront', 'consultant_commission_ongoing',
+  'fee_min_admin_per_cycle', 'fee_delivery_min', 'fee_delivery_max',
+  'fee_out_of_cycle_payroll', 'fee_returned_check', 'fee_late_payroll_submission',
+  'fee_reactivation', 'fee_timekeeping_implementation', 'fee_timekeeping_monthly_per_ee',
+  'fee_applicant_tracking_implementation', 'fee_online_lms_implementation',
+  'fee_online_lms_per_ee_monthly', 'fee_mvr_report', 'fee_everify_per_ee',
+  'fee_wc_waiver_subrogation', 'fee_wc_late_reporting', 'fee_wc_alternate_employer_endorsement',
 ];
 autosaveFields.forEach(id => {
   const el = document.getElementById(id);
@@ -415,7 +518,7 @@ async function loadConfig() {
     populateFederal(cfg);
     populateWC(cfg);
     populateAdmin(cfg);
-    populateSuta(cfg);
+    populateFees(cfg);
   } catch (err) {
     showToast('Failed to load config: ' + err.message, 'error');
   }

@@ -140,17 +140,16 @@
     .commission-info-value { font-weight: 600; color: #1e3154; }
     .comm-input { width: 100px; text-align: right; padding: 4px 6px; font-size: 0.82rem; }
 
-    /* Medical rows */
-    .med-row {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 10px 0;
-      border-bottom: 1px solid #f0f2f6;
+    .q-note {
+      flex: 0 0 100%;
+      background: #fffbeb;
+      border: 1px solid #f59e0b;
+      border-radius: 4px;
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      color: #92400e;
+      display: none;
     }
-    .med-row:last-child { border-bottom: none; }
-    .med-label { flex: 1; font-size: 0.875rem; color: #2d3748; }
-    .med-select { width: 90px; flex-shrink: 0; }
 
     /* Info notes */
     .info-note {
@@ -354,6 +353,21 @@
       width: auto !important;
       min-width: 0 !important;
     }
+
+    /* Billing Analysis section headers */
+    .analysis-section-hdr td {
+      background: #eef1f7;
+      font-weight: 700;
+      font-size: 0.77rem;
+      color: #1e3154;
+      padding: 7px 10px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* Loss Analysis table */
+    #loss-analysis-table th,
+    #loss-analysis-table td { white-space: nowrap; }
   </style>
 </head>
 <body>
@@ -400,21 +414,15 @@
       <button class="tab-btn active" data-tab="general">General</button>
       <button class="tab-btn" data-tab="wc">Workers' Comp</button>
       <button class="tab-btn" data-tab="admin">Admin</button>
+      <button class="tab-btn" data-tab="taxes">Taxes</button>
       <button class="tab-btn" data-tab="benefits">Benefits</button>
-      <button class="tab-btn" data-tab="pricing">Pricing</button>
+      <button class="tab-btn" data-tab="proposal">Proposal</button>
+      <button class="tab-btn" data-tab="analysis">Analysis &amp; Summary</button>
       <div class="tab-nav-spacer"></div>
       <div class="tab-nav-actions">
-        <button class="tab-action-btn" id="btn-save" type="button">
+        <button class="tab-action-btn primary" id="btn-save" type="button">
           <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
           Save Quote
-        </button>
-        <button class="tab-action-btn" id="btn-open" type="button">
-          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-          Open Quote
-        </button>
-        <button class="tab-action-btn primary" id="btn-generate" type="button">
-          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-          Generate Doc
         </button>
       </div>
     </nav>
@@ -728,61 +736,76 @@
   ══════════════════════════════════════════ -->
   <div id="panel-benefits" class="tab-panel">
 
-    <!-- Medical Questionnaire -->
+    <!-- Medical Questions -->
     <div class="card">
-      <div class="card-title">Medical Questionnaire <span class="req-section-badge y">Required for estimate</span></div>
+      <div class="card-title">Medical Questions <span class="req-section-badge y">Required for estimate</span></div>
       <hr class="card-divider" />
 
-      <div id="medical-rows">
-        <div class="med-row" data-med-field="medical_carve_out">
-          <span class="med-label">Medical Carve-Out?</span>
-          <select class="med-select" name="medical_carve_out" onchange="onMedCarveOut(this)">
+      <div class="compliance-rows" id="medical-rows">
+
+        <div class="q-row" data-med-field="medical_carve_out">
+          <span class="q-label">Is this a medical carve-out?</span>
+          <select class="q-select" name="medical_carve_out" onchange="onMedCarveOut(this)">
             <option value="false" selected>No</option>
             <option value="true">Yes</option>
           </select>
+          <div class="q-note" id="med-note-carveout">Medical carve-out — remaining questions skipped.</div>
         </div>
-        <div class="med-row" data-med-field="enrolled_over_50">
-          <span class="med-label">More than 50 enrolled?</span>
-          <select class="med-select" name="enrolled_over_50">
+
+        <div class="q-row" data-med-field="enrolled_over_50">
+          <span class="q-label">More than 50 enrolled?</span>
+          <select class="q-select" name="enrolled_over_50" onchange="toggleMedNote(this,'true','med-note-over50')">
             <option value="false" selected>No</option>
             <option value="true">Yes</option>
           </select>
+          <div class="q-note" id="med-note-over50">Need a General Health Questionnaire (GHQ). Create a task to check off once GHQ is uploaded for Nate.</div>
         </div>
-        <div class="med-row" data-med-field="enrolled_under_10">
-          <span class="med-label">Under 10 enrolled?</span>
-          <select class="med-select" name="enrolled_under_10">
+
+        <div class="q-row" data-med-field="enrolled_under_10">
+          <span class="q-label">Under 10 enrolled?</span>
+          <select class="q-select" name="enrolled_under_10" onchange="toggleMedNote(this,'true','med-note-under10')">
             <option value="false" selected>No</option>
             <option value="true">Yes</option>
           </select>
+          <div class="q-note" id="med-note-under10">Need Patient Health Questionnaires (PHQs). If not already obtained, collect employee names and emails — Nate will send PHQs directly to employees to maintain HIPAA compliance. Create a task for the consultant to send this info to Nate.</div>
         </div>
-        <div class="med-row" data-med-field="level_funded_plan">
-          <span class="med-label">Level-Funded Plan?</span>
-          <select class="med-select" name="level_funded_plan">
+
+        <div class="q-row" data-med-field="level_funded_plan">
+          <span class="q-label">Level-Funded Plan?</span>
+          <select class="q-select" name="level_funded_plan" onchange="toggleMedNote(this,'true','med-note-levelfunded')">
             <option value="false" selected>No</option>
             <option value="true">Yes</option>
           </select>
+          <div class="q-note" id="med-note-levelfunded">Need monthly claims reports or medical invoices.</div>
         </div>
-        <div class="med-row" data-med-field="currently_has_health_insurance">
-          <span class="med-label">Currently Provide Health Insurance?</span>
-          <select class="med-select" name="currently_has_health_insurance">
+
+        <div class="q-row" data-med-field="currently_has_health_insurance">
+          <span class="q-label">Provide Health Insurance Currently?</span>
+          <select class="q-select" name="currently_has_health_insurance" onchange="toggleMedNote(this,'true','med-note-hasinsurance')">
             <option value="false" selected>No</option>
             <option value="true">Yes</option>
           </select>
+          <div class="q-note" id="med-note-hasinsurance">Create a task for the consultant to: fill out the census, collect SBCs of current plans, current plan rates, and renewal rates if available.</div>
         </div>
-        <div class="med-row" data-med-field="census_available">
-          <span class="med-label">Employee Census Available?</span>
-          <select class="med-select" name="census_available">
+
+        <div class="q-row" data-med-field="census_available">
+          <span class="q-label">Employee Census Available?</span>
+          <select class="q-select" name="census_available" onchange="toggleMedNote(this,'false','med-note-nocensus')">
             <option value="false" selected>No</option>
             <option value="true">Yes</option>
           </select>
+          <div class="q-note" id="med-note-nocensus">For a new group: need an employee census of those likely to take benefits — a survey can help determine this. If they currently have benefits, need the existing census or an invoice breakdown to build one.</div>
         </div>
-        <div class="med-row" data-med-field="cobra_expected">
-          <span class="med-label">COBRA / State Continuation Expected?</span>
-          <select class="med-select" name="cobra_expected">
+
+        <div class="q-row" data-med-field="cobra_expected">
+          <span class="q-label">COBRA / State Continuation Expected?</span>
+          <select class="q-select" name="cobra_expected" onchange="toggleQExplain(this)">
             <option value="false" selected>No</option>
             <option value="true">Yes</option>
           </select>
+          <textarea class="q-explain" name="cobra_expected_explanation" placeholder="Notes…" rows="3" style="display:none"></textarea>
         </div>
+
       </div>
 
     </div><!-- /card medical -->
@@ -808,11 +831,11 @@
           </select>
         </div>
         <div class="form-group">
-          <label class="req-g" for="current_contribution_strategy">Current contribution strategy</label>
+          <label class="req-g" for="current_contribution_strategy">Current contribution strategy <span style="font-weight:400;color:#718096;font-size:0.78rem;">(Fill out Exhibit D if able)</span></label>
           <input type="text" id="current_contribution_strategy" name="current_contribution_strategy" />
         </div>
         <div class="form-group">
-          <label class="req-g" for="new_contribution_strategy">New contribution strategy</label>
+          <label class="req-g" for="new_contribution_strategy">New contribution strategy <span style="font-weight:400;color:#718096;font-size:0.78rem;">(Fill out Exhibit D if able)</span></label>
           <input type="text" id="new_contribution_strategy" name="new_contribution_strategy" placeholder="e.g. Employee + dependent, 80/20…" />
         </div>
 
@@ -966,6 +989,44 @@
     </div>
 
   </div><!-- /panel-admin -->
+
+
+  <!-- ══════════════════════════════════════════
+       TAB: TAXES
+  ══════════════════════════════════════════ -->
+  <div id="panel-taxes" class="tab-panel">
+
+    <div class="card">
+      <div class="card-title">SUTA <span class="req-section-badge y">Required for estimate</span></div>
+      <hr class="card-divider" />
+      <div class="form-grid" style="margin-bottom:16px">
+        <div class="form-group">
+          <label for="w2s_generated">Client Turnover Rate</label>
+          <input type="number" id="w2s_generated" name="w2s_generated" step="0.01" min="0" value="0" />
+        </div>
+        <div class="form-group"></div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="data-table" id="suta-table">
+          <thead>
+            <tr>
+              <th>Client Reporting</th>
+              <th>State</th>
+              <th>VHR Min Rate</th>
+              <th>Rate (%)</th>
+              <th>Current Rate (%)</th>
+              <th style="width:36px;"></th>
+            </tr>
+          </thead>
+          <tbody id="suta-body"></tbody>
+        </table>
+      </div>
+      <div style="margin-top:12px;">
+        <button class="btn-add-row" type="button" id="btn-add-suta">+ Add State</button>
+      </div>
+    </div>
+
+  </div><!-- /panel-taxes -->
 
 
   <!-- ══════════════════════════════════════════
@@ -1229,35 +1290,142 @@
   <!-- ══════════════════════════════════════════
        TAB: PRICING
   ══════════════════════════════════════════ -->
-  <div id="panel-pricing" class="tab-panel">
+  <!-- ══════════════════════════════════════════
+       TAB: PROPOSAL
+  ══════════════════════════════════════════ -->
+  <div id="panel-proposal" class="tab-panel">
 
     <div class="card">
-      <div class="card-title">SUTA <span class="req-section-badge y">Required for estimate</span></div>
+      <div class="card-title">Proposal</div>
       <hr class="card-divider" />
-      <div class="form-grid" style="margin-bottom:16px">
-        <div class="form-group">
-          <label for="w2s_generated">W-2s Generated Last Year (turnover proxy)</label>
-          <input type="number" id="w2s_generated" name="w2s_generated" step="1" min="0" value="0" />
+
+      <div id="proposal-content">
+
+        <p class="section-subhead">Workers' Compensation</p>
+        <div style="overflow-x:auto;margin-bottom:20px;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>State</th>
+                <th>Code</th>
+                <th style="text-align:right;">Annual Payroll</th>
+                <th style="text-align:right;">Eff. Rate (per $100)</th>
+                <th style="text-align:right;">Annual Billing</th>
+              </tr>
+            </thead>
+            <tbody id="proposal-wc-body"></tbody>
+            <tfoot>
+              <tr class="totals-row">
+                <td colspan="4" style="text-align:right;">WC Total</td>
+                <td style="text-align:right;" id="p-wc-total">—</td>
+              </tr>
+            </tfoot>
+          </table>
         </div>
-        <div class="form-group"></div>
-      </div>
+
+        <p class="section-subhead">SUTA (State Unemployment)</p>
+        <div style="overflow-x:auto;margin-bottom:20px;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>State</th>
+                <th>Reporting</th>
+                <th style="text-align:right;">Billing Rate</th>
+              </tr>
+            </thead>
+            <tbody id="proposal-suta-body"></tbody>
+            <tfoot>
+              <tr class="totals-row">
+                <td colspan="2" style="text-align:right;">SUTA Total</td>
+                <td style="text-align:right;" id="p-suta-total">—</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <p class="section-subhead">Taxes, Admin &amp; Additional Fees</p>
+        <div class="deal-summary-grid">
+          <div class="ds-row"><span class="ds-label">FICA (SS + Medicare)</span><span class="ds-value" id="p-fica">—</span></div>
+          <div class="ds-row"><span class="ds-label">FUTA</span><span class="ds-value" id="p-futa">—</span></div>
+          <div class="ds-row"><span class="ds-label">Admin Fee</span><span class="ds-value" id="p-admin-fee">—</span></div>
+          <div class="ds-row" id="p-epli-row" style="display:none;"><span class="ds-label">EPLI</span><span class="ds-value" id="p-epli">—</span></div>
+          <div class="ds-row" id="p-impl-row" style="display:none;"><span class="ds-label">Implementation Fee</span><span class="ds-value" id="p-impl-fee">—</span></div>
+        </div>
+
+        <div class="ds-row total" style="margin-top:16px;">
+          <span class="ds-label">Total Annual Billing</span>
+          <span class="ds-value" id="p-total-billing">—</span>
+        </div>
+
+      </div><!-- /proposal-content -->
+    </div>
+
+    <div class="card">
+      <div class="card-title">Annual Billing Analysis</div>
+      <hr class="card-divider" />
+
+      <div id="analysis-content">
+        <div style="overflow-x:auto;">
+          <table class="data-table" id="analysis-table">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th style="text-align:right;">VHR Rate</th>
+                <th style="text-align:right;">VHR Amount</th>
+                <th style="text-align:right;">Current Rate</th>
+                <th style="text-align:right;">Current Amount</th>
+                <th style="text-align:right;">Difference</th>
+              </tr>
+            </thead>
+            <tbody id="analysis-body"></tbody>
+          </table>
+        </div>
+        <div class="info-note" style="margin-top:12px;">Difference = VHR Amount − Current Amount. Green = client saves with VHR. SUTA dollar amounts require taxable wage data — only rate comparison shown per state.</div>
+      </div><!-- /analysis-content -->
+
+    </div>
+
+  </div><!-- /panel-proposal -->
+
+
+  <!-- ══════════════════════════════════════════
+       TAB: ANALYSIS & SUMMARY
+  ══════════════════════════════════════════ -->
+  <div id="panel-analysis" class="tab-panel">
+
+    <div class="card">
+      <div class="card-title">Loss Analysis</div>
+      <hr class="card-divider" />
       <div style="overflow-x:auto;">
-        <table class="data-table" id="suta-table">
+        <table class="data-table" id="loss-analysis-table">
           <thead>
             <tr>
-              <th>State</th>
-              <th>VHR Min Rate</th>
-              <th>Requested Rate (%)</th>
-              <th>Turnover %</th>
-              <th style="width:36px;"></th>
+              <th>Coverage Period</th>
+              <th style="text-align:right;">Total Losses</th>
+              <th style="text-align:right;"># Claims</th>
+              <th style="text-align:right;">Months</th>
+              <th style="text-align:right;">Open Claims</th>
+              <th style="text-align:right;">Annualized Losses</th>
+              <th style="text-align:right;">Loss Rate</th>
             </tr>
           </thead>
-          <tbody id="suta-body"></tbody>
+          <tbody id="loss-analysis-body">
+            <tr><td colspan="7" style="text-align:center;color:#a0aec0;">—</td></tr>
+          </tbody>
+          <tfoot>
+            <tr class="totals-row">
+              <td>Totals</td>
+              <td style="text-align:right;" id="la-total-losses">—</td>
+              <td style="text-align:right;" id="la-total-claims">—</td>
+              <td style="text-align:right;" id="la-total-months">—</td>
+              <td style="text-align:right;" id="la-open-claims">—</td>
+              <td>—</td>
+              <td style="text-align:right;" id="la-avg-loss-rate">—</td>
+            </tr>
+          </tfoot>
         </table>
       </div>
-      <div style="margin-top:12px;">
-        <button class="btn-add-row" type="button" id="btn-add-suta">+ Add State</button>
-      </div>
+      <div class="info-note" style="margin-top:12px;">Loss Rate = Total Losses ÷ Total Annual Payroll × 100. Annualized Losses = (Total Losses ÷ Months) × 12.</div>
     </div>
 
     <!-- Deal Summary -->
@@ -1318,7 +1486,7 @@
       </div><!-- /summary-content -->
     </div><!-- /deal-summary-card -->
 
-  </div><!-- /panel-pricing -->
+  </div><!-- /panel-analysis -->
 
 </div><!-- /page-content -->
 
@@ -1363,10 +1531,15 @@ function toggleInlineNote(sel, noteId) {
   note.style.display = sel.value === 'true' ? 'block' : 'none';
 }
 
-/* ── Medical Carve-Out ───────────────────────────────────────────────────── */
+/* ── Medical Questions ───────────────────────────────────────────────────── */
+function toggleMedNote(sel, triggerValue, noteId) {
+  document.getElementById(noteId).style.display = sel.value === triggerValue ? 'block' : 'none';
+}
+
 function onMedCarveOut(sel) {
   const isCarveOut = sel.value === 'true';
-  document.querySelectorAll('#medical-rows .med-row:not([data-med-field="medical_carve_out"])').forEach(r => {
+  document.getElementById('med-note-carveout').style.display = isCarveOut ? 'block' : 'none';
+  document.querySelectorAll('#medical-rows .q-row:not([data-med-field="medical_carve_out"])').forEach(r => {
     r.style.display = isCarveOut ? 'none' : '';
   });
   document.getElementById('ancillary-card').style.display = isCarveOut ? 'none' : '';
@@ -1493,6 +1666,11 @@ document.getElementById('btn-add-wc-code').addEventListener('click', () => addWC
 /* ── SUTA Table ──────────────────────────────────────────────────────────── */
 let sutaMinRates = {};
 
+const CLIENT_REPORTING_STATES = new Set([
+  'AK','CT','DE','IA','KS','KY','MA','ME','MI','MN','MS','MT',
+  'NE','NV','OH','PA','RI','SC','SD','TN','VT','WA'
+]);
+
 async function loadSutaMinRates() {
   try {
     const cfg = await apiGet('/config');
@@ -1500,14 +1678,21 @@ async function loadSutaMinRates() {
   } catch (e) { /* silent */ }
 }
 
+function sutaClientReporting(state) {
+  if (!state) return '—';
+  return CLIENT_REPORTING_STATES.has(state) ? 'Y' : 'N';
+}
+
 function addSutaRow(data) {
   const tbody = document.getElementById('suta-body');
   const idx = tbody.rows.length;
   const state = data?.state || '';
   const minRate = (state && sutaMinRates[state]) ? formatPct(sutaMinRates[state]) : '—';
+  const clientRep = sutaClientReporting(state);
   const tr = document.createElement('tr');
   tr.dataset.sutaIdx = idx;
   tr.innerHTML = `
+    <td><input type="text" name="suta_client_rep_${idx}" readonly style="width:50px;background:#f7fafc;color:#718096;text-align:center;" value="${clientRep}" /></td>
     <td>
       <select name="suta_state_${idx}" style="width:90px;" onchange="onSutaStateChange(this)">
         <option value="">—</option>
@@ -1516,7 +1701,7 @@ function addSutaRow(data) {
     </td>
     <td><input type="text" name="suta_min_${idx}" readonly style="width:70px;background:#f7fafc;color:#718096;" value="${minRate}" /></td>
     <td><input type="number" name="suta_rate_${idx}" step="0.01" min="0" max="100" placeholder="0.00" style="width:90px;" value="${data?.billing_rate != null ? (data.billing_rate * 100).toFixed(2) : ''}" /></td>
-    <td><input type="number" name="suta_turnover_${idx}" step="0.1" min="0" max="100" placeholder="10" style="width:70px;" value="${data?.turnover_pct != null ? (data.turnover_pct * 100).toFixed(1) : '10'}" /></td>
+    <td><input type="number" name="suta_current_rate_${idx}" step="0.01" min="0" max="100" placeholder="0.00" style="width:90px;" value="${data?.current_client_rate != null ? (data.current_client_rate * 100).toFixed(2) : ''}" /></td>
     <td><button type="button" class="btn-ghost" style="padding:3px 8px;font-size:0.75rem;color:#dc2626;border-color:#fecaca;" onclick="removeSutaRow(this)">×</button></td>
   `;
   tr.querySelectorAll('input, select').forEach(el => {
@@ -1529,8 +1714,9 @@ function addSutaRow(data) {
 function onSutaStateChange(sel) {
   const tr = sel.closest('tr');
   const state = sel.value;
-  const minInput = tr.querySelector('input[name^="suta_min_"]');
-  minInput.value = (state && sutaMinRates[state]) ? formatPct(sutaMinRates[state]) : '—';
+  tr.querySelector('input[name^="suta_min_"]').value =
+    (state && sutaMinRates[state]) ? formatPct(sutaMinRates[state]) : '—';
+  tr.querySelector('input[name^="suta_client_rep_"]').value = sutaClientReporting(state);
 }
 
 function removeSutaRow(btn) {
@@ -1667,18 +1853,18 @@ function collectSutaLines() {
   const lines = [];
   const tbody = document.getElementById('suta-body');
   tbody.querySelectorAll('tr').forEach(tr => {
-    const state   = tr.querySelector('select[name^="suta_state_"]')?.value?.trim() || null;
-    const rateRaw = parseFloat(tr.querySelector('input[name^="suta_rate_"]')?.value) || 0;
-    const turnRaw = parseFloat(tr.querySelector('input[name^="suta_turnover_"]')?.value) || 10;
+    const state       = tr.querySelector('select[name^="suta_state_"]')?.value?.trim() || null;
+    const rateRaw     = parseFloat(tr.querySelector('input[name^="suta_rate_"]')?.value) || 0;
+    const currRateRaw = parseFloat(tr.querySelector('input[name^="suta_current_rate_"]')?.value) || 0;
     lines.push({
       state,
       gws: 0,
       total_wses: 0,
-      current_client_rate: 0,
+      current_client_rate: currRateRaw / 100,
       billing_rate: rateRaw / 100,
       cost_rate: 0,
       threshold: 0,
-      turnover_pct: turnRaw / 100,
+      turnover_pct: 0.1,
     });
   });
   return lines;
@@ -1877,6 +2063,9 @@ function renderSummary(r) {
   setDS('s-admin-net-ongoing', formatCurrency(co.admin_net_ongoing));
   setDS('s-admin-net-year1',   formatCurrency(co.admin_net_year1));
 
+  renderProposal(r);
+  renderBillingAnalysis(r);
+  renderLossAnalysis(ao.total_gws || 0);
 }
 
 function setDS(id, val) {
@@ -1889,6 +2078,279 @@ function setPnlDS(id, val) {
     el.textContent = formatCurrency(val);
     el.className = 'ds-value ' + pnlClass(val || 0);
   }
+}
+
+/* ── Proposal ────────────────────────────────────────────────────────────── */
+function renderProposal(r) {
+  const ao = r.admin_overview || {};
+  const wo = r.wc_overview    || {};
+  const to = r.taxes_overview || {};
+  const oi = r.other_items    || {};
+
+  const proposedMod = parseFloat(document.getElementById('pricing_proposed_mod')?.value) || 0;
+  const wcLines     = collectWCLines().filter(l => l.wc_code || l.annual_gw > 0);
+  const sutaLines   = collectSutaLines().filter(l => l.state);
+
+  // WC table
+  const wcBody = document.getElementById('proposal-wc-body');
+  wcBody.innerHTML = '';
+  if (wcLines.length === 0) {
+    wcBody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#a0aec0;">—</td></tr>`;
+  } else {
+    wcLines.forEach(line => {
+      const gw   = line.annual_gw || 0;
+      const rate = line.manual_rate || 0;
+      const eff  = proposedMod === 0 ? 0 : rate * proposedMod;
+      const bill = eff * gw / 100;
+      const tr   = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${line.state || '—'}</td>
+        <td>${line.wc_code || '—'}</td>
+        <td style="text-align:right;">${formatCurrency(gw)}</td>
+        <td style="text-align:right;">${eff ? eff.toFixed(4) : '—'}</td>
+        <td style="text-align:right;">${formatCurrency(bill)}</td>`;
+      wcBody.appendChild(tr);
+    });
+  }
+  document.getElementById('p-wc-total').textContent = wo.wc_billed != null ? formatCurrency(wo.wc_billed) : '—';
+
+  // SUTA table
+  const sutaBody = document.getElementById('proposal-suta-body');
+  sutaBody.innerHTML = '';
+  if (sutaLines.length === 0) {
+    sutaBody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:#a0aec0;">—</td></tr>`;
+  } else {
+    sutaLines.forEach(line => {
+      const rep = CLIENT_REPORTING_STATES.has(line.state) ? 'Client' : 'VHR';
+      const tr  = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${line.state}</td>
+        <td>${rep}</td>
+        <td style="text-align:right;">${formatPct(line.billing_rate)}</td>`;
+      sutaBody.appendChild(tr);
+    });
+  }
+  document.getElementById('p-suta-total').textContent = to.suta_billed != null ? formatCurrency(to.suta_billed) : '—';
+
+  // Taxes & fees
+  setDS('p-fica',      to.fica_total   != null ? formatCurrency(to.fica_total)   : '—');
+  setDS('p-futa',      to.futa_total   != null ? formatCurrency(to.futa_total)   : '—');
+  setDS('p-admin-fee', ao.admin_margin != null ? formatCurrency(ao.admin_margin) : '—');
+
+  const epli    = oi.epli || 0;
+  const implFee = oi.implementation_fee || 0;
+  document.getElementById('p-epli-row').style.display = epli    > 0 ? '' : 'none';
+  document.getElementById('p-impl-row').style.display = implFee > 0 ? '' : 'none';
+  setDS('p-epli',     formatCurrency(epli));
+  setDS('p-impl-fee', formatCurrency(implFee));
+
+  const hasCalcData = ao.admin_margin != null;
+  const total = hasCalcData
+    ? (wo.wc_billed || 0) + (to.suta_billed || 0) +
+      (to.fica_total || 0) + (to.futa_total || 0) +
+      (ao.admin_margin || 0) + epli + implFee
+    : null;
+  setDS('p-total-billing', total != null ? formatCurrency(total) : '—');
+}
+
+/* ── Annual Billing Analysis ─────────────────────────────────────────────── */
+function getAdminPayPeriods() {
+  const freq = document.getElementById('payroll_frequency')?.value || 'biweekly';
+  const map  = { weekly: 52, biweekly: 26, semimonthly: 24, monthly: 12 };
+  return map[freq] || 26;
+}
+
+function renderBillingAnalysis(r) {
+  const ao = r.admin_overview || {};
+  const wo = r.wc_overview    || {};
+  const to = r.taxes_overview || {};
+
+  const proposedMod     = parseFloat(document.getElementById('pricing_proposed_mod')?.value) || 0;
+  const wcLines         = collectWCLines().filter(l => l.wc_code || l.annual_gw > 0);
+  const sutaLines       = collectSutaLines().filter(l => l.state);
+  const adminMethod     = getIntVal('admin_method') || 1;
+  const adminRateRaw    = getNumVal('admin_rate')         || 0;
+  const curAdminRateRaw = getNumVal('current_admin_rate') || 0;
+  const totalGWs        = ao.total_gws  || 0;
+  const totalWses       = ao.total_wses || 0;
+  const payPeriods      = getAdminPayPeriods();
+
+  const tbody = document.getElementById('analysis-body');
+  tbody.innerHTML = '';
+
+  function sectionRow(label) {
+    const tr = document.createElement('tr');
+    tr.className = 'analysis-section-hdr';
+    tr.innerHTML = `<td colspan="6">${label}</td>`;
+    tbody.appendChild(tr);
+  }
+  function dataRow(label, vhrRate, vhrAmt, curRate, curAmt) {
+    const diff    = vhrAmt - curAmt;
+    const diffCls = diff < 0 ? 'positive' : diff > 0 ? 'negative' : '';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${label}</td>
+      <td style="text-align:right;">${vhrRate}</td>
+      <td style="text-align:right;">${formatCurrency(vhrAmt)}</td>
+      <td style="text-align:right;">${curRate}</td>
+      <td style="text-align:right;">${formatCurrency(curAmt)}</td>
+      <td style="text-align:right;" class="${diffCls}">${formatCurrency(diff)}</td>`;
+    tbody.appendChild(tr);
+  }
+  function subtotalRow(label, vhrAmt, curAmt) {
+    const diff    = vhrAmt - curAmt;
+    const diffCls = diff < 0 ? 'positive' : diff > 0 ? 'negative' : '';
+    const tr = document.createElement('tr');
+    tr.className = 'totals-row';
+    tr.innerHTML = `
+      <td colspan="2">${label}</td>
+      <td style="text-align:right;">${formatCurrency(vhrAmt)}</td>
+      <td></td>
+      <td style="text-align:right;">${formatCurrency(curAmt)}</td>
+      <td style="text-align:right;" class="${diffCls}">${formatCurrency(diff)}</td>`;
+    tbody.appendChild(tr);
+  }
+
+  // Workers' Comp section
+  sectionRow('Workers\' Compensation');
+  let vhrWCSum = 0, curWCSum = 0;
+  if (wcLines.length === 0) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td colspan="6" style="text-align:center;color:#a0aec0;">—</td>`;
+    tbody.appendChild(tr);
+  } else {
+    wcLines.forEach(line => {
+      const gw      = line.annual_gw || 0;
+      const rate    = line.manual_rate || 0;
+      const curRate = line.current_client_rate || 0;
+      const eff     = proposedMod === 0 ? 0 : rate * proposedMod;
+      const curEff  = proposedMod === 0 ? 0 : curRate * proposedMod;
+      const vhrBill = eff * gw / 100;
+      const curBill = curEff * gw / 100;
+      vhrWCSum += vhrBill;
+      curWCSum += curBill;
+      dataRow(
+        `${line.state || '—'} ${line.wc_code || '—'}`,
+        eff    ? eff.toFixed(4)    : '—',
+        vhrBill,
+        curEff ? curEff.toFixed(4) : '—',
+        curBill
+      );
+    });
+  }
+  subtotalRow('WC Total', vhrWCSum, curWCSum);
+
+  // SUTA section (rate comparison only — dollar amounts require server-side taxable wages)
+  if (sutaLines.length > 0) {
+    sectionRow('SUTA');
+    sutaLines.forEach(line => {
+      const diff    = line.billing_rate - line.current_client_rate;
+      const diffCls = diff < 0 ? 'positive' : diff > 0 ? 'negative' : '';
+      const diffStr = (diff >= 0 ? '+' : '') + (diff * 100).toFixed(2) + ' pts';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${line.state}</td>
+        <td style="text-align:right;">${formatPct(line.billing_rate)}</td>
+        <td style="text-align:right;">—</td>
+        <td style="text-align:right;">${formatPct(line.current_client_rate)}</td>
+        <td style="text-align:right;">—</td>
+        <td style="text-align:right;" class="${diffCls}">${diffStr}</td>`;
+      tbody.appendChild(tr);
+    });
+    const sutaTotalRow = document.createElement('tr');
+    sutaTotalRow.className = 'totals-row';
+    sutaTotalRow.innerHTML = `
+      <td colspan="2">SUTA Total (server-calc)</td>
+      <td style="text-align:right;">${formatCurrency(to.suta_billed)}</td>
+      <td colspan="2"></td>
+      <td style="text-align:right;">—</td>`;
+    tbody.appendChild(sutaTotalRow);
+  }
+
+  // Admin Fee section
+  sectionRow('Admin Fee');
+  const vhrAdminFee = ao.admin_margin || 0;
+  let curAdminFee = 0;
+  if (adminMethod === 1) {
+    curAdminFee = (curAdminRateRaw / 100) * totalGWs;
+  } else if (adminMethod === 2) {
+    curAdminFee = curAdminRateRaw * totalWses * payPeriods;
+  } else if (adminMethod === 3) {
+    curAdminFee = curAdminRateRaw * totalWses * 12;
+  }
+  const methodLabel = adminMethod === 1 ? '% GWs' : adminMethod === 2 ? 'per check' : 'PEPM';
+  const vhrRateStr  = adminMethod === 1
+    ? adminRateRaw.toFixed(2) + '%'
+    : '$' + adminRateRaw.toFixed(2);
+  const curRateStr  = adminMethod === 1
+    ? curAdminRateRaw.toFixed(2) + '%'
+    : '$' + curAdminRateRaw.toFixed(2);
+  dataRow(`Admin (${methodLabel})`, vhrRateStr, vhrAdminFee, curRateStr, curAdminFee);
+
+  // Grand total
+  const grandVHR = vhrWCSum + (to.suta_billed || 0) + vhrAdminFee;
+  const grandCur = curWCSum + curAdminFee;
+  subtotalRow('Grand Total', grandVHR, grandCur);
+}
+
+/* ── Loss Analysis ───────────────────────────────────────────────────────── */
+function renderLossAnalysis(totalGws) {
+  const losses = collectWCLosses().filter(
+    l => l.total_losses_incurred > 0 || l.num_claims > 0
+  );
+  const tbody = document.getElementById('loss-analysis-body');
+  tbody.innerHTML = '';
+
+  if (losses.length === 0) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td colspan="7" style="text-align:center;color:#a0aec0;">—</td>`;
+    tbody.appendChild(tr);
+    ['la-total-losses','la-total-claims','la-total-months','la-open-claims','la-avg-loss-rate']
+      .forEach(id => { document.getElementById(id).textContent = '—'; });
+    return;
+  }
+
+  function fmtDate(d) {
+    if (!d) return '—';
+    const p = d.split('-');
+    return p.length === 3 ? `${p[1]}/${p[2]}/${p[0]}` : d;
+  }
+
+  let sumLosses = 0, sumClaims = 0, sumMonths = 0, sumOpen = 0;
+  losses.forEach(l => {
+    const annualized = l.months_in_policy > 0
+      ? (l.total_losses_incurred / l.months_in_policy) * 12
+      : null;
+    const lossRate = totalGws > 0
+      ? (l.total_losses_incurred / totalGws) * 100
+      : null;
+    const period = (l.coverage_period_start || l.coverage_period_end)
+      ? `${fmtDate(l.coverage_period_start)} – ${fmtDate(l.coverage_period_end)}`
+      : '—';
+    sumLosses += l.total_losses_incurred;
+    sumClaims += l.num_claims;
+    sumMonths += l.months_in_policy;
+    sumOpen   += l.open_claims;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${period}</td>
+      <td style="text-align:right;">${formatCurrency(l.total_losses_incurred)}</td>
+      <td style="text-align:right;">${l.num_claims}</td>
+      <td style="text-align:right;">${l.months_in_policy || '—'}</td>
+      <td style="text-align:right;">${l.open_claims}</td>
+      <td style="text-align:right;">${annualized != null ? formatCurrency(annualized) : '—'}</td>
+      <td style="text-align:right;">${lossRate != null ? lossRate.toFixed(2) + '%' : '—'}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  const overallRate = totalGws > 0
+    ? (sumLosses / totalGws * 100).toFixed(2) + '%'
+    : '—';
+  document.getElementById('la-total-losses').textContent  = formatCurrency(sumLosses);
+  document.getElementById('la-total-claims').textContent  = sumClaims;
+  document.getElementById('la-total-months').textContent  = sumMonths;
+  document.getElementById('la-open-claims').textContent   = sumOpen;
+  document.getElementById('la-avg-loss-rate').textContent = overallRate;
 }
 
 /* ── Populate form from API ──────────────────────────────────────────────── */
@@ -1965,6 +2427,12 @@ function populateForm(client) {
    'currently_has_health_insurance','census_available','cobra_expected'].forEach(f => {
     setSelectBoolByName(f, client[f]);
   });
+  onMedCarveOut(document.querySelector('[name="medical_carve_out"]'));
+  toggleMedNote(document.querySelector('[name="enrolled_over_50"]'),    'true',  'med-note-over50');
+  toggleMedNote(document.querySelector('[name="enrolled_under_10"]'),   'true',  'med-note-under10');
+  toggleMedNote(document.querySelector('[name="level_funded_plan"]'),   'true',  'med-note-levelfunded');
+  toggleMedNote(document.querySelector('[name="currently_has_health_insurance"]'), 'true', 'med-note-hasinsurance');
+  toggleMedNote(document.querySelector('[name="census_available"]'),    'false', 'med-note-nocensus');
 
   // Ancillary
   ['offers_ancillary_benefits','wants_ancillary_benefits'].forEach(f => {
@@ -2037,6 +2505,7 @@ function populateForm(client) {
   scheduleCalculate();
 }
 
+
 /* ── Save Quote ──────────────────────────────────────────────────────────── */
 document.getElementById('btn-save').addEventListener('click', async () => {
   if (!clientId) { showToast('No client ID — open via dashboard', 'error'); return; }
@@ -2063,16 +2532,6 @@ document.getElementById('btn-save').addEventListener('click', async () => {
   } catch (e) {
     showToast('Save failed: ' + e.message, 'error');
   }
-});
-
-/* ── Open Quote (placeholder) ────────────────────────────────────────────── */
-document.getElementById('btn-open').addEventListener('click', () => {
-  showToast('Open quote…', 'info');
-});
-
-/* ── Generate Doc (placeholder) ─────────────────────────────────────────── */
-document.getElementById('btn-generate').addEventListener('click', () => {
-  showToast('Document generation coming soon', 'info');
 });
 
 /* ── Init ────────────────────────────────────────────────────────────────── */
