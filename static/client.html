@@ -1092,6 +1092,7 @@
           <div class="form-group">
             <label class="req-g" for="proposed_mod">WC Mod (0 = full carve-out)</label>
             <input type="number" id="proposed_mod" name="proposed_mod" step="0.01" min="0" value="1.00" />
+            <input type="hidden" id="pricing_proposed_mod" name="pricing_proposed_mod" value="1.00" />
           </div>
           <div class="form-group">
             <label for="shared_claim_fee">Shared Claim Fee ($)</label>
@@ -1495,6 +1496,8 @@
 /* ── State ──────────────────────────────────────────────────────────────── */
 const clientId = new URLSearchParams(window.location.search).get('id');
 let calcDebounceTimer = null;
+let autoSaveTimer = null;
+let isPopulating = false;
 
 /* ── Tab Navigation ─────────────────────────────────────────────────────── */
 document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -1515,6 +1518,7 @@ document.getElementById('state-picker').addEventListener('click', function(e) {
   const count = document.querySelectorAll('.state-pill.selected').length;
   document.getElementById('state-count').innerHTML =
     `<strong>${count}</strong> state${count !== 1 ? 's' : ''} selected`;
+  scheduleAutoSave();
 });
 
 /* ── Toggle explain input on Yes ─────────────────────────────────────────── */
@@ -1570,7 +1574,7 @@ function addWCLossRow(data) {
     <td><input type="number" name="loss_claims_${i}" step="1" min="0" placeholder="0" value="${data?.num_claims || ''}" /></td>
     <td><input type="number" name="loss_months_${i}" step="1" min="0" placeholder="0" value="${data?.months_in_policy || ''}" /></td>
     <td><input type="number" name="loss_open_${i}" step="1" min="0" placeholder="0" value="${data?.open_claims || ''}" /></td>
-    <td><button type="button" class="btn-ghost" style="padding:2px 6px;font-size:0.75rem;color:#dc2626;border-color:#fecaca;" onclick="this.closest('tr').remove()">×</button></td>
+    <td><button type="button" class="btn-ghost" style="padding:2px 6px;font-size:0.75rem;color:#dc2626;border-color:#fecaca;" onclick="this.closest('tr').remove(); scheduleAutoSave();">×</button></td>
   `;
   tbody.appendChild(tr);
 }
@@ -1646,6 +1650,7 @@ function removeWCRow(btn) {
   btn.closest('tr').remove();
   updateWCTotals();
   scheduleCalculate();
+  scheduleAutoSave();
 }
 
 function updateWCTotals() {
@@ -1722,6 +1727,7 @@ function onSutaStateChange(sel) {
 function removeSutaRow(btn) {
   btn.closest('tr').remove();
   scheduleCalculate();
+  scheduleAutoSave();
 }
 
 document.getElementById('btn-add-suta').addEventListener('click', () => addSutaRow());
@@ -1769,6 +1775,7 @@ function selectAdminMethod(method) {
   document.getElementById('admin_rate_label').textContent = vLabel;
   document.getElementById('current_admin_rate_label').textContent = cLabel;
   scheduleCalculate();
+  scheduleAutoSave();
 }
 selectAdminMethod(1);
 
@@ -1996,6 +2003,33 @@ function collectClientPayload() {
     suta_lines: collectSutaLines(),
   };
 }
+
+/* ── Autosave ────────────────────────────────────────────────────────────── */
+function scheduleAutoSave() {
+  if (!clientId || isPopulating) return;
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(doAutoSave, 600);
+}
+
+async function doAutoSave() {
+  if (!clientId) return;
+  const payload = collectClientPayload();
+  const saveBody = {
+    ...payload.client,
+    wc_lines:   payload.wc_lines,
+    suta_lines: payload.suta_lines,
+    wc_losses:  collectWCLosses(),
+  };
+  try {
+    await apiPut('/clients/' + clientId, saveBody);
+    showToast('Saved', 'success');
+  } catch (e) {
+    showToast('Autosave failed: ' + e.message, 'error');
+  }
+}
+
+document.addEventListener('input',  e => { if (e.isTrusted && e.target.closest('.tab-panel')) scheduleAutoSave(); });
+document.addEventListener('change', e => { if (e.isTrusted && e.target.closest('.tab-panel')) scheduleAutoSave(); });
 
 /* ── Calculate ───────────────────────────────────────────────────────────── */
 function scheduleCalculate() {
@@ -2540,8 +2574,11 @@ async function init() {
   if (clientId) {
     try {
       const client = await apiGet('/clients/' + clientId);
+      isPopulating = true;
       populateForm(client);
+      isPopulating = false;
     } catch (e) {
+      isPopulating = false;
       showToast('Failed to load client: ' + e.message, 'error');
       addWCCodeRow();
     }
