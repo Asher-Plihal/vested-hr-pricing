@@ -368,6 +368,17 @@
     /* Loss Analysis table */
     #loss-analysis-table th,
     #loss-analysis-table td { white-space: nowrap; }
+
+    /* Card lock button */
+    .card-lock-btn {
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0 0 0 8px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
   </style>
 </head>
 <body>
@@ -438,8 +449,11 @@
   <div id="panel-general" class="tab-panel active">
 
     <!-- General Information -->
-    <div class="card">
-      <div class="card-title">General Information</div>
+    <div class="card" data-locked="true">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>General Information</span>
+        <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+      </div>
       <hr class="card-divider" />
       <div class="form-grid">
 
@@ -666,8 +680,11 @@
     </div><!-- /card general info -->
 
     <!-- Compliance Questionnaire -->
-    <div class="card">
-      <div class="card-title">Compliance Questions <span class="req-section-badge y">Required for estimate</span></div>
+    <div class="card" data-locked="true">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Compliance Questions <span class="req-section-badge y">Required for estimate</span></span>
+        <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+      </div>
       <hr class="card-divider" />
       <div class="compliance-rows" id="compliance-rows">
 
@@ -737,8 +754,11 @@
   <div id="panel-benefits" class="tab-panel">
 
     <!-- Medical Questions -->
-    <div class="card">
-      <div class="card-title">Medical Questions <span class="req-section-badge y">Required for estimate</span></div>
+    <div class="card" data-locked="true">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Medical Questions <span class="req-section-badge y">Required for estimate</span></span>
+        <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+      </div>
       <hr class="card-divider" />
 
       <div class="compliance-rows" id="medical-rows">
@@ -811,8 +831,11 @@
     </div><!-- /card medical -->
 
     <!-- Ancillary Benefits -->
-    <div class="card" id="ancillary-card">
-      <div class="card-title">Ancillary Benefit Questions <span class="req-section-badge g">Required for final approval</span></div>
+    <div class="card" id="ancillary-card" data-locked="true">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Ancillary Benefit Questions <span class="req-section-badge g">Required for final approval</span></span>
+        <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+      </div>
       <hr class="card-divider" />
       <div class="form-grid">
 
@@ -850,8 +873,11 @@
   ══════════════════════════════════════════ -->
   <div id="panel-admin" class="tab-panel">
 
-    <div class="card">
-      <div class="card-title">Payroll Information</div>
+    <div class="card" data-locked="true">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Payroll Information</span>
+        <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+      </div>
       <hr class="card-divider" />
       <div class="form-grid">
 
@@ -933,8 +959,11 @@
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-title">Admin Fee <span class="req-section-badge y">Required for estimate</span></div>
+    <div class="card" data-locked="true">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Admin Fee <span class="req-section-badge y">Required for estimate</span></span>
+        <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+      </div>
       <hr class="card-divider" />
 
       <div class="admin-method-grid">
@@ -957,8 +986,11 @@
 
     </div>
 
-    <div class="card">
-      <div class="card-title">Additional Fees</div>
+    <div class="card" data-locked="true">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Additional Fees</span>
+        <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+      </div>
       <hr class="card-divider" />
       <div class="form-grid">
         <div class="form-group">
@@ -972,8 +1004,11 @@
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-title">Commissions</div>
+    <div class="card" data-locked="true">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Commissions</span>
+        <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+      </div>
       <hr class="card-divider" />
       <div class="form-grid">
         <div class="form-group">
@@ -996,8 +1031,11 @@
   ══════════════════════════════════════════ -->
   <div id="panel-taxes" class="tab-panel">
 
-    <div class="card">
-      <div class="card-title">SUTA <span class="req-section-badge y">Required for estimate</span></div>
+    <div class="card" data-locked="true">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>SUTA <span class="req-section-badge y">Required for estimate</span></span>
+        <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+      </div>
       <hr class="card-divider" />
       <div class="form-grid" style="margin-bottom:16px">
         <div class="form-group">
@@ -1053,8 +1091,11 @@
     <div id="wc-sections-wrapper">
 
       <!-- WC Codes -->
-      <div class="card" style="padding:20px 14px;">
-        <div class="card-title">Workers' Compensation Codes</div>
+      <div class="card" data-locked="true" style="padding:20px 14px;">
+        <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+          <span>Workers' Compensation Codes</span>
+          <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+        </div>
         <hr class="card-divider" />
 
         <div style="overflow-x:auto;">
@@ -1107,8 +1148,11 @@
       </div><!-- /card wc codes -->
 
       <!-- WC Losses -->
-      <div class="card">
-        <div class="card-title">Workers' Compensation Losses <span class="req-section-badge g">Required for final approval</span></div>
+      <div class="card" data-locked="true">
+        <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+          <span>Workers' Compensation Losses <span class="req-section-badge g">Required for final approval</span></span>
+          <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+        </div>
         <hr class="card-divider" />
 
         <div class="form-grid" style="margin-bottom:16px">
@@ -1154,8 +1198,11 @@
       </div><!-- /card wc losses -->
 
       <!-- WC Questions -->
-      <div class="card">
-        <div class="card-title">Workers' Comp Questions <span class="req-section-badge y">Required for estimate</span></div>
+      <div class="card" data-locked="true">
+        <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+          <span>Workers' Comp Questions <span class="req-section-badge y">Required for estimate</span></span>
+          <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+        </div>
         <hr class="card-divider" />
         <div class="compliance-rows" id="wc-q-grid">
 
@@ -1575,7 +1622,7 @@ function addWCLossRow(data) {
     <td><input type="number" name="loss_claims_${i}" step="1" min="0" placeholder="0" value="${data?.num_claims || ''}" /></td>
     <td><input type="number" name="loss_months_${i}" step="1" min="0" placeholder="0" value="${data?.months_in_policy || ''}" /></td>
     <td><input type="number" name="loss_open_${i}" step="1" min="0" placeholder="0" value="${data?.open_claims || ''}" /></td>
-    <td><button type="button" class="btn-ghost" style="padding:2px 6px;font-size:0.75rem;color:#dc2626;border-color:#fecaca;" onclick="this.closest('tr').remove(); scheduleAutoSave();">×</button></td>
+    <td><button type="button" class="btn-ghost" style="padding:2px 6px;font-size:0.75rem;color:#dc2626;border-color:#fecaca;" onclick="removeWCLossRow(this)">×</button></td>
   `;
   tbody.appendChild(tr);
 }
@@ -1648,6 +1695,7 @@ function addWCCodeRow(data) {
 }
 
 function removeWCRow(btn) {
+  if (!confirm('Delete this WC line?')) return;
   btn.closest('tr').remove();
   updateWCTotals();
   scheduleCalculate();
@@ -1726,9 +1774,21 @@ function onSutaStateChange(sel) {
 }
 
 function removeSutaRow(btn) {
+  if (!confirm('Delete this SUTA line?')) return;
   btn.closest('tr').remove();
   scheduleCalculate();
   scheduleAutoSave();
+}
+
+function removeWCLossRow(btn) {
+  if (!confirm('Delete this loss record?')) return;
+  btn.closest('tr').remove();
+  scheduleAutoSave();
+}
+
+function removeLocationRow(btn) {
+  if (!confirm('Delete this location?')) return;
+  btn.closest('.location-row').remove();
 }
 
 document.getElementById('btn-add-suta').addEventListener('click', () => addSutaRow());
@@ -1741,7 +1801,7 @@ function addLocationRow(data) {
   row.innerHTML = `
     <input type="text" placeholder="Address" class="loc-address" value="${(data?.address || '').replace(/"/g, '&quot;')}" />
     <input type="number" placeholder="# Employees" class="loc-employees" min="0" step="1" value="${data?.employees ?? ''}" />
-    <button type="button" class="btn-remove-loc" onclick="this.closest('.location-row').remove()">×</button>
+    <button type="button" class="btn-remove-loc" onclick="removeLocationRow(this)">×</button>
   `;
   list.appendChild(row);
 }
@@ -2571,6 +2631,25 @@ document.getElementById('btn-save').addEventListener('click', async () => {
   }
 });
 
+/* ── Card Lock ───────────────────────────────────────────────────────────── */
+function applyCardLock(card, locked) {
+  card.dataset.locked = locked ? 'true' : 'false';
+  card.querySelectorAll('input, select, textarea, button:not(.card-lock-btn)').forEach(el => {
+    el.disabled = locked;
+  });
+  const btn = card.querySelector('.card-lock-btn');
+  if (btn) {
+    btn.textContent = locked ? '🔒' : '🔓';
+    btn.title = locked ? 'Unlock to edit' : 'Lock';
+  }
+}
+
+function toggleCardLock(btn) {
+  const card = btn.closest('.card');
+  const locked = card.dataset.locked !== 'false';
+  applyCardLock(card, !locked);
+}
+
 /* ── Init ────────────────────────────────────────────────────────────────── */
 async function init() {
   await loadSutaMinRates();
@@ -2590,7 +2669,9 @@ async function init() {
   }
 }
 
-init();
+init().then(() => {
+  document.querySelectorAll('.card[data-locked]').forEach(card => applyCardLock(card, true));
+});
 </script>
 </body>
 </html>
