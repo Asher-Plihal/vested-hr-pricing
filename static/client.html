@@ -12,20 +12,18 @@
     .tab-nav { border-bottom: 2px solid #1a202c; }
     .page-content { max-width: 960px; }
 
-    /* WC codes table — tighter, fixed layout so description flexes */
-    #wc-codes-table { table-layout: fixed; }
-    #wc-codes-table th,
-    #wc-codes-table td { padding: 5px 4px; text-align: center; }
-    #wc-codes-table th:nth-child(3),
-    #wc-codes-table td:nth-child(3) { text-align: left; }
-    #wc-codes-table td input,
-    #wc-codes-table td select { min-width: 0; width: 100%; box-sizing: border-box; text-align: center; padding: 4px 3px; }
+    /* Shared table styles */
+    .tbl-fixed { table-layout: fixed; }
+    .tbl-fixed th, .tbl-fixed td { padding: 5px 4px; text-align: center; }
+    .tbl-fixed td input, .tbl-fixed td select { min-width: 0; width: 100%; box-sizing: border-box; text-align: center; padding: 4px 3px; }
+    /* Remove mode */
+    tbody.remove-mode tr { cursor: pointer; }
+    tbody.remove-mode tr:hover td { background: #fff1f1 !important; }
+    tbody.remove-mode td input, tbody.remove-mode td select { pointer-events: none; cursor: pointer; }
+    tbody tr.tbl-row-selected td { background: #fca5a5 !important; color: #7f1d1d; }
+    /* WC codes — description col left-aligned */
+    #wc-codes-table th:nth-child(3), #wc-codes-table td:nth-child(3) { text-align: left; }
     #wc-codes-table td:nth-child(3) input { text-align: left; }
-    #wc-codes-body.remove-mode tr { cursor: pointer; }
-    #wc-codes-body.remove-mode tr:hover td { background: #fff1f1 !important; }
-    #wc-codes-body.remove-mode td input,
-    #wc-codes-body.remove-mode td select { pointer-events: none; cursor: pointer; }
-    #wc-codes-body tr.wc-row-selected td { background: #fee2e2 !important; color: #991b1b; }
 
     /* State picker */
     .state-picker {
@@ -1060,22 +1058,22 @@
         <div class="form-group"></div>
       </div>
       <div style="overflow-x:auto;">
-        <table class="data-table" id="suta-table">
+        <table class="data-table tbl-fixed" id="suta-table">
           <thead>
             <tr>
-              <th>Client Reporting</th>
-              <th>State</th>
-              <th>VHR Min Rate</th>
-              <th>Rate (%)</th>
-              <th>Current Rate (%)</th>
-              <th style="width:36px;"></th>
+              <th style="width:62px;">Client<br>Reporting</th>
+              <th style="width:68px;">State</th>
+              <th style="width:80px;">VHR Min<br>Rate</th>
+              <th style="width:76px;">Rate (%)</th>
+              <th style="width:90px;">Current<br>Rate (%)</th>
             </tr>
           </thead>
           <tbody id="suta-body"></tbody>
         </table>
       </div>
-      <div style="margin-top:12px;">
-        <button class="btn-add-row" type="button" id="btn-add-suta">+ Add State</button>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:10px;">
+        <button class="btn-add-row" type="button" id="btn-add-suta" style="margin-top:0;">+ Add State</button>
+        <button class="btn-add-row" type="button" id="btn-remove-suta" style="margin-top:0;color:#dc2626;border-color:#fecaca;">− Remove Row</button>
       </div>
     </div>
 
@@ -1195,23 +1193,25 @@
         </div>
 
         <div style="overflow-x:auto;">
-          <table class="data-table">
+          <table class="data-table tbl-fixed" id="wc-losses-table">
             <thead>
               <tr>
-                <th>Period Start</th>
-                <th>Period End</th>
-                <th>Total Losses</th>
-                <th># of Claims</th>
-                <th># Months in Policy</th>
-                <th># Open Claims</th>
-                <th style="width:28px;"></th>
+                <th style="width:108px;">Period Start</th>
+                <th style="width:108px;">Period End</th>
+                <th style="width:96px;">Total Losses</th>
+                <th style="width:56px;"># Claims</th>
+                <th style="width:64px;">Months in<br>Policy</th>
+                <th style="width:60px;">Open<br>Claims</th>
               </tr>
             </thead>
             <tbody id="wc-losses-body"></tbody>
           </table>
         </div>
 
-        <button class="btn-add-row" type="button" id="btn-add-wc-loss">+ Add Row</button>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:10px;">
+          <button class="btn-add-row" type="button" id="btn-add-wc-loss" style="margin-top:0;">+ Add Row</button>
+          <button class="btn-add-row" type="button" id="btn-remove-wc-loss" style="margin-top:0;color:#dc2626;border-color:#fecaca;">− Remove Row</button>
+        </div>
 
       </div><!-- /card wc losses -->
 
@@ -1629,6 +1629,40 @@ function toggleWcCarveout(sel) {
 }
 
 /* ── WC Losses Table ─────────────────────────────────────────────────────── */
+/* ── Generic remove-mode factory ─────────────────────────────────────────── */
+function makeRemoveMode(tbodyId, addBtnId, removeBtnId, addBtnLabel, onRemove) {
+  let active = false;
+  function enter() {
+    active = true;
+    document.getElementById(removeBtnId).textContent = 'Remove Selected';
+    document.getElementById(removeBtnId).style.background = '#fee2e2';
+    document.getElementById(addBtnId).textContent = 'Cancel';
+    document.getElementById(tbodyId).classList.add('remove-mode');
+  }
+  function exit(doRemove) {
+    active = false;
+    const tbody = document.getElementById(tbodyId);
+    if (doRemove) {
+      tbody.querySelectorAll('tr.tbl-row-selected').forEach(r => r.remove());
+      if (onRemove) onRemove();
+    } else {
+      tbody.querySelectorAll('tr.tbl-row-selected').forEach(r => r.classList.remove('tbl-row-selected'));
+    }
+    tbody.classList.remove('remove-mode');
+    document.getElementById(removeBtnId).textContent = '− Remove Row';
+    document.getElementById(removeBtnId).style.background = '';
+    document.getElementById(addBtnId).textContent = addBtnLabel;
+  }
+  return { isActive: () => active, toggle: () => active ? exit(true) : enter(), cancel: () => exit(false) };
+}
+
+function addRowRemoveModeClick(tr, rm) {
+  tr.addEventListener('click', () => { if (rm.isActive()) tr.classList.toggle('tbl-row-selected'); });
+}
+
+const wcLossRM = makeRemoveMode('wc-losses-body', 'btn-add-wc-loss', 'btn-remove-wc-loss', '+ Add Row', scheduleAutoSave);
+document.getElementById('btn-remove-wc-loss').addEventListener('click', () => wcLossRM.toggle());
+
 function addWCLossRow(data) {
   const tbody = document.getElementById('wc-losses-body');
   const i = tbody.rows.length;
@@ -1640,12 +1674,14 @@ function addWCLossRow(data) {
     <td><input type="number" name="loss_claims_${i}" step="1" min="0" placeholder="0" value="${data?.num_claims || ''}" /></td>
     <td><input type="number" name="loss_months_${i}" step="1" min="0" placeholder="0" value="${data?.months_in_policy || ''}" /></td>
     <td><input type="number" name="loss_open_${i}" step="1" min="0" placeholder="0" value="${data?.open_claims || ''}" /></td>
-    <td><button type="button" class="btn-ghost" style="padding:2px 6px;font-size:0.75rem;color:#dc2626;border-color:#fecaca;" onclick="removeWCLossRow(this)">×</button></td>
   `;
+  addRowRemoveModeClick(tr, wcLossRM);
   tbody.appendChild(tr);
 }
 addWCLossRow();
-document.getElementById('btn-add-wc-loss').addEventListener('click', () => addWCLossRow());
+document.getElementById('btn-add-wc-loss').addEventListener('click', () => {
+  wcLossRM.isActive() ? wcLossRM.cancel() : addWCLossRow();
+});
 
 /* ── WC Codes Table ──────────────────────────────────────────────────────── */
 const STATE_ABBRS = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY','DC'];
@@ -1733,10 +1769,7 @@ function addWCCodeRow(data) {
   codeInput.addEventListener('blur',   lookupWCRate);
   codeInput.addEventListener('change', lookupWCRate);
 
-  tr.addEventListener('click', () => {
-    if (!wcRemoveMode) return;
-    tr.classList.toggle('wc-row-selected');
-  });
+  addRowRemoveModeClick(tr, wcCodesRM);
 
   tbody.appendChild(tr);
   updateWCTotals();
@@ -1747,34 +1780,7 @@ function addWCCodeRow(data) {
   }
 }
 
-let wcRemoveMode = false;
-
-function enterWCRemoveMode() {
-  wcRemoveMode = true;
-  document.getElementById('btn-remove-wc-rows').textContent = 'Remove Selected';
-  document.getElementById('btn-remove-wc-rows').style.background = '#fee2e2';
-  document.getElementById('btn-add-wc-code').textContent = 'Cancel';
-  document.getElementById('wc-codes-body').classList.add('remove-mode');
-}
-
-function exitWCRemoveMode(doRemove) {
-  wcRemoveMode = false;
-  const tbody = document.getElementById('wc-codes-body');
-  if (doRemove) {
-    tbody.querySelectorAll('tr.wc-row-selected').forEach(r => r.remove());
-  } else {
-    tbody.querySelectorAll('tr.wc-row-selected').forEach(r => r.classList.remove('wc-row-selected'));
-  }
-  tbody.classList.remove('remove-mode');
-  document.getElementById('btn-remove-wc-rows').textContent = '− Remove Row';
-  document.getElementById('btn-remove-wc-rows').style.background = '';
-  document.getElementById('btn-add-wc-code').textContent = '+ Add Row';
-  if (doRemove) { updateWCTotals(); scheduleCalculate(); scheduleAutoSave(); }
-}
-
-function toggleWCRemoveMode() {
-  wcRemoveMode ? exitWCRemoveMode(true) : enterWCRemoveMode();
-}
+const wcCodesRM = makeRemoveMode('wc-codes-body', 'btn-add-wc-code', 'btn-remove-wc-rows', '+ Add Row', () => { updateWCTotals(); scheduleCalculate(); scheduleAutoSave(); });
 
 function updateWCTotals() {
   const tbody = document.getElementById('wc-codes-body');
@@ -1790,9 +1796,9 @@ function updateWCTotals() {
 }
 
 document.getElementById('btn-add-wc-code').addEventListener('click', () => {
-  wcRemoveMode ? exitWCRemoveMode(false) : addWCCodeRow();
+  wcCodesRM.isActive() ? wcCodesRM.cancel() : addWCCodeRow();
 });
-document.getElementById('btn-remove-wc-rows').addEventListener('click', toggleWCRemoveMode);
+document.getElementById('btn-remove-wc-rows').addEventListener('click', () => wcCodesRM.toggle());
 
 /* ── SUTA Table ──────────────────────────────────────────────────────────── */
 let sutaMinRates = {};
@@ -1825,22 +1831,22 @@ function addSutaRow(data) {
   const tr = document.createElement('tr');
   tr.dataset.sutaIdx = idx;
   tr.innerHTML = `
-    <td><input type="text" name="suta_client_rep_${idx}" readonly style="width:50px;background:#f7fafc;color:#718096;text-align:center;" value="${clientRep}" /></td>
+    <td><input type="text" name="suta_client_rep_${idx}" readonly style="background:#f7fafc;color:#718096;" value="${clientRep}" /></td>
     <td>
-      <select name="suta_state_${idx}" style="width:90px;" onchange="onSutaStateChange(this)">
+      <select name="suta_state_${idx}" onchange="onSutaStateChange(this)">
         <option value="">—</option>
         ${STATE_ABBRS.map(s => `<option value="${s}"${s === state ? ' selected' : ''}>${s}</option>`).join('')}
       </select>
     </td>
-    <td><input type="text" name="suta_min_${idx}" readonly style="width:70px;background:#f7fafc;color:#718096;" value="${minRate}" /></td>
-    <td><input type="number" name="suta_rate_${idx}" step="0.01" min="0" max="100" placeholder="0.00" style="width:90px;" value="${data?.billing_rate != null ? (data.billing_rate * 100).toFixed(2) : ''}" /></td>
-    <td><input type="number" name="suta_current_rate_${idx}" step="0.01" min="0" max="100" placeholder="0.00" style="width:90px;" value="${data?.current_client_rate != null ? (data.current_client_rate * 100).toFixed(2) : ''}" /></td>
-    <td><button type="button" class="btn-ghost" style="padding:3px 8px;font-size:0.75rem;color:#dc2626;border-color:#fecaca;" onclick="removeSutaRow(this)">×</button></td>
+    <td><input type="text" name="suta_min_${idx}" readonly style="background:#f7fafc;color:#718096;" value="${minRate}" /></td>
+    <td><input type="number" name="suta_rate_${idx}" step="0.01" min="0" max="100" placeholder="0.00" value="${data?.billing_rate != null ? (data.billing_rate * 100).toFixed(2) : ''}" /></td>
+    <td><input type="number" name="suta_current_rate_${idx}" step="0.01" min="0" max="100" placeholder="0.00" value="${data?.current_client_rate != null ? (data.current_client_rate * 100).toFixed(2) : ''}" /></td>
   `;
   tr.querySelectorAll('input, select').forEach(el => {
     el.addEventListener('change', scheduleCalculate);
     el.addEventListener('input', scheduleCalculate);
   });
+  addRowRemoveModeClick(tr, sutaRM);
   tbody.appendChild(tr);
 }
 
@@ -1852,25 +1858,17 @@ function onSutaStateChange(sel) {
   tr.querySelector('input[name^="suta_client_rep_"]').value = sutaClientReporting(state);
 }
 
-function removeSutaRow(btn) {
-  if (!confirm('Delete this SUTA line?')) return;
-  btn.closest('tr').remove();
-  scheduleCalculate();
-  scheduleAutoSave();
-}
-
-function removeWCLossRow(btn) {
-  if (!confirm('Delete this loss record?')) return;
-  btn.closest('tr').remove();
-  scheduleAutoSave();
-}
 
 function removeLocationRow(btn) {
   if (!confirm('Delete this location?')) return;
   btn.closest('.location-row').remove();
 }
 
-document.getElementById('btn-add-suta').addEventListener('click', () => addSutaRow());
+document.getElementById('btn-add-suta').addEventListener('click', () => {
+  sutaRM.isActive() ? sutaRM.cancel() : addSutaRow();
+});
+const sutaRM = makeRemoveMode('suta-body', 'btn-add-suta', 'btn-remove-suta', '+ Add State', () => { scheduleCalculate(); scheduleAutoSave(); });
+document.getElementById('btn-remove-suta').addEventListener('click', () => sutaRM.toggle());
 
 /* ── Locations ───────────────────────────────────────────────────────────── */
 function addLocationRow(data) {
