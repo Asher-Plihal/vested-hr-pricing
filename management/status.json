@@ -3,25 +3,7 @@
     "status": "pending",
     "priority": 2,
     "blocked_by": null,
-    "note": "Surfaced while building Proposal/Analysis display cards. 6 items need VHR verification: (1) Proposal total billing formula — does it include FICA/FUTA passthroughs? (2) Loss Analysis formulas (loss rate, annualized losses) — confirm base and thresholds. (3) SUTA GWs bug — gws hardcoded to 0 in collectSutaLines(), SUTA billing always $0. (4) Admin fee comparison method assumption. (5) shared_claim_fee and min_wc_fee_per_week not wired into billing. (6) Proposal SUTA column missing amounts. Full brief in todo.md."
-  },
-  "calc-verification": {
-    "status": "pending",
-    "priority": 2,
-    "blocked_by": null,
-    "note": "Run POST /calculate with Hartman Industrial LLC, verify every output against pricing_math.md formulas, fix any bugs. WC rates now auto-looked up from DB. Full expected numbers in todo.md brief."
-  },
-  "wc-code-searchable-dropdowns": {
-    "status": "pending",
-    "priority": 3,
-    "blocked_by": null,
-    "note": "WC code input is still plain text. wc_rates table is now populated. Need GET /wc-codes?state=TX&q=clerical search endpoint in routers/rates.py + combobox UI replacing plain text input in addWCCodeRow() in client.html."
-  },
-  "search-bar": {
-    "status": "pending",
-    "priority": 4,
-    "blocked_by": null,
-    "note": "Wire the topnav search input on dashboard.html to filter the client list live. Pure frontend — no new endpoint. As user types, show a dropdown of matching client names below the search bar + filter the table rows. Clicking a dropdown result navigates to that client."
+    "note": "4 open questions need VHR verification: (1) Proposal total billing formula — does it include FICA/FUTA passthroughs? (2) Loss Analysis formulas (loss rate, annualized losses) — confirm base and thresholds. (3) Admin fee comparison method assumption. (4) shared_claim_fee and min_wc_fee_per_week not wired into billing. Items 3 and 6 from original list (SUTA GWs bug, Proposal SUTA column) are resolved. Full brief in todo.md."
   },
   "benefits-tab": {
     "status": "blocked",

@@ -4,6 +4,28 @@ Most recent entry at the top. Add an entry when a task completes. This is where 
 
 ---
 
+### 2026-05-08 — Calculation Verification (`calc-verification`)
+
+All calc formulas were correct. The only issue: `wc_rates`, `wc_guidelines`, and `suta_rates` tables were empty after a DB reset — the `testing/import_rates.py` script referenced in the setup instructions didn't exist in the repo. Created it to import all three rate tables from the Excel pricing template (`Pricing Template 03.10.26_ALL SHEETS.xlsx`): 24,965 WC cost rates, 19,552 WC guidelines, 51 SUTA state rows.
+
+Verified all outputs against `pricing_math.md` expected numbers for Hartman Industrial LLC (TX, biweekly, proposed_mod=0.88, admin_rate=3.5%):
+
+| Section | Expected | Got |
+|---|---|---|
+| Total WSEs | 41 | 41.0 ✓ |
+| WC Billed | $29,293.44 | $29,293.44 ✓ |
+| WC Cost | $26,071.16 | $26,071.16 ✓ |
+| FICA | $169,830 | $169,830 ✓ |
+| FUTA | $2,604 | $2,604 ✓ |
+| SUTA Bill | $11,493.90 | $11,493.90 ✓ |
+| SUTA Cost | $20,093.04 | $20,093.04 ✓ |
+| Admin Fee | $77,700 | $77,700 ✓ |
+| Internal Comm | $3,885 | $3,885 ✓ |
+
+TX5190 rate = 1.84 per $100; TX8810 rate = 0.04 per $100 (both from `WC Cost Rates` sheet).
+
+---
+
 ### 2026-05-08 — Fix Commission Calculations (`fix-commission-calculations`)
 
 Fixed three bugs in `calc/summary.py` and `routers/calculate.py`:
