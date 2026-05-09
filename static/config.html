@@ -172,6 +172,10 @@
           <label class="field-label">MCP States (manual class pricing — slower binding)</label>
           <input type="text" id="mcp_states" />
         </div>
+        <div class="field-group">
+          <label class="field-label">Independent Bureau States (use own class tables — no NCCI fallback)</label>
+          <input type="text" id="independent_bureau_states" />
+        </div>
       </div>
 
       <div class="csv-section">
@@ -371,8 +375,9 @@ function populateWC(cfg) {
   document.getElementById('fixed_cost_factor').value    = cfg.fixed_cost_factor    ?? '';
   document.getElementById('loss_fund_factor').value     = cfg.loss_fund_factor     ?? '';
   document.getElementById('pte_weight').value           = cfg.pte_weight           ?? '';
-  document.getElementById('monopolistic_states').value  = cfg.monopolistic_states  ?? '';
-  document.getElementById('mcp_states').value           = cfg.mcp_states           ?? '';
+  document.getElementById('monopolistic_states').value        = cfg.monopolistic_states        ?? '';
+  document.getElementById('mcp_states').value                 = cfg.mcp_states                 ?? '';
+  document.getElementById('independent_bureau_states').value  = cfg.independent_bureau_states  ?? '';
   updateCombinedCostFactor();
 }
 
@@ -414,8 +419,9 @@ function collectWC() {
     loss_fund_factor:     parseFloat(document.getElementById('loss_fund_factor').value)     || null,
     combined_cost_factor: parseFloat(document.getElementById('combined_cost_factor').value) || null,
     pte_weight:           parseFloat(document.getElementById('pte_weight').value)           || null,
-    monopolistic_states:  document.getElementById('monopolistic_states').value.trim() || null,
-    mcp_states:           document.getElementById('mcp_states').value.trim()           || null,
+    monopolistic_states:         document.getElementById('monopolistic_states').value.trim()        || null,
+    mcp_states:                  document.getElementById('mcp_states').value.trim()                  || null,
+    independent_bureau_states:   document.getElementById('independent_bureau_states').value.trim()   || null,
   };
 }
 
@@ -476,7 +482,7 @@ document.getElementById('medicare_rate').addEventListener('input', updateFicaTot
 const autosaveFields = [
   'ss_rate', 'medicare_rate', 'ss_wage_base', 'futa_rate', 'futa_wage_base',
   'fixed_cost_factor', 'loss_fund_factor', 'combined_cost_factor', 'pte_weight',
-  'monopolistic_states', 'mcp_states',
+  'monopolistic_states', 'mcp_states', 'independent_bureau_states',
   'consultant_commission_upfront', 'consultant_commission_ongoing',
   'fee_min_admin_per_cycle', 'fee_delivery_min', 'fee_delivery_max',
   'fee_out_of_cycle_payroll', 'fee_returned_check', 'fee_late_payroll_submission',
