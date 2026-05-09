@@ -1332,12 +1332,13 @@
                 <th>State</th>
                 <th>Reporting</th>
                 <th style="text-align:right;">Billing Rate</th>
+                <th style="text-align:right;">Billed</th>
               </tr>
             </thead>
             <tbody id="proposal-suta-body"></tbody>
             <tfoot>
               <tr class="totals-row">
-                <td colspan="2" style="text-align:right;">SUTA Total</td>
+                <td colspan="3" style="text-align:right;">SUTA Total</td>
                 <td style="text-align:right;" id="p-suta-total">—</td>
               </tr>
             </tfoot>
@@ -2155,16 +2156,21 @@ function renderProposal(r) {
   // SUTA table
   const sutaBody = document.getElementById('proposal-suta-body');
   sutaBody.innerHTML = '';
+  const sutaLineMap = {};
+  (r.suta_lines || []).forEach(l => { sutaLineMap[l.state] = l; });
   if (sutaLines.length === 0) {
-    sutaBody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:#a0aec0;">—</td></tr>`;
+    sutaBody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#a0aec0;">—</td></tr>`;
   } else {
     sutaLines.forEach(line => {
-      const rep = CLIENT_REPORTING_STATES.has(line.state) ? 'Client' : 'VHR';
-      const tr  = document.createElement('tr');
+      const rep      = CLIENT_REPORTING_STATES.has(line.state) ? 'Client' : 'VHR';
+      const sl       = sutaLineMap[line.state];
+      const billAmt  = sl ? formatCurrency(sl.suta_bill) : '—';
+      const tr       = document.createElement('tr');
       tr.innerHTML = `
         <td>${line.state}</td>
         <td>${rep}</td>
-        <td style="text-align:right;">${formatPct(line.billing_rate)}</td>`;
+        <td style="text-align:right;">${formatPct(line.billing_rate)}</td>
+        <td style="text-align:right;">${billAmt}</td>`;
       sutaBody.appendChild(tr);
     });
   }
@@ -2278,31 +2284,25 @@ function renderBillingAnalysis(r) {
   }
   subtotalRow('WC Total', vhrWCSum, curWCSum);
 
-  // SUTA section (rate comparison only — dollar amounts require server-side taxable wages)
+  // SUTA section
   if (sutaLines.length > 0) {
     sectionRow('SUTA');
+    const sutaMap = {};
+    (r.suta_lines || []).forEach(l => { sutaMap[l.state] = l; });
     sutaLines.forEach(line => {
-      const diff    = line.billing_rate - line.current_client_rate;
-      const diffCls = diff < 0 ? 'positive' : diff > 0 ? 'negative' : '';
-      const diffStr = (diff >= 0 ? '+' : '') + (diff * 100).toFixed(2) + ' pts';
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${line.state}</td>
-        <td style="text-align:right;">${formatPct(line.billing_rate)}</td>
-        <td style="text-align:right;">—</td>
-        <td style="text-align:right;">${formatPct(line.current_client_rate)}</td>
-        <td style="text-align:right;">—</td>
-        <td style="text-align:right;" class="${diffCls}">${diffStr}</td>`;
-      tbody.appendChild(tr);
+      const sl       = sutaMap[line.state];
+      const vhrAmt   = sl ? sl.suta_bill  : 0;
+      const curAmt   = sl ? sl.prior_cost : 0;
+      dataRow(
+        line.state,
+        formatPct(line.billing_rate),
+        vhrAmt,
+        formatPct(line.current_client_rate),
+        curAmt
+      );
     });
-    const sutaTotalRow = document.createElement('tr');
-    sutaTotalRow.className = 'totals-row';
-    sutaTotalRow.innerHTML = `
-      <td colspan="2">SUTA Total (server-calc)</td>
-      <td style="text-align:right;">${formatCurrency(to.suta_billed)}</td>
-      <td colspan="2"></td>
-      <td style="text-align:right;">—</td>`;
-    tbody.appendChild(sutaTotalRow);
+    const curSutaSum = (r.suta_lines || []).reduce((s, l) => s + (l.prior_cost || 0), 0);
+    subtotalRow('SUTA Total', to.suta_billed || 0, curSutaSum);
   }
 
   // Admin Fee section

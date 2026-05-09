@@ -97,4 +97,4 @@ def run_calculate(body: CalculateRequest, db: Session = Depends(get_db)):
         ancillary=ancillary_full,
     )
 
-    return summary
+    return {**summary, "suta_lines": suta_result["lines"]}
