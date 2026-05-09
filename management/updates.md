@@ -4,6 +4,12 @@ Most recent entry at the top. Add an entry when a task completes. This is where 
 
 ---
 
+### 2026-05-08 — Fix: SUTA GWs always $0
+
+`collectSutaLines()` in `static/client.html` hardcoded `gws: 0` and `total_wses: 0` for every SUTA row. Fixed by aggregating `annual_gw`, `ftes`, and `ptes` from WC lines that match each SUTA state (WSEs = ftes + 0.75 × ptes). Part of the `update-pricing-math` task — other items in that task still require VHR verification.
+
+---
+
 ### 2026-05-08 — UI restructure: Workers' Comp Questions, Admin tab, Commissions
 
 **Ad-hoc session — no task ID**

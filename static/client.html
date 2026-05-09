@@ -1858,15 +1858,19 @@ function collectWCLines() {
 
 function collectSutaLines() {
   const lines = [];
+  const wcLines = collectWCLines();
   const tbody = document.getElementById('suta-body');
   tbody.querySelectorAll('tr').forEach(tr => {
     const state       = tr.querySelector('select[name^="suta_state_"]')?.value?.trim() || null;
     const rateRaw     = parseFloat(tr.querySelector('input[name^="suta_rate_"]')?.value) || 0;
     const currRateRaw = parseFloat(tr.querySelector('input[name^="suta_current_rate_"]')?.value) || 0;
+    const stateWCLines = state ? wcLines.filter(l => l.state === state) : [];
+    const gws        = stateWCLines.reduce((sum, l) => sum + (l.annual_gw || 0), 0);
+    const total_wses = stateWCLines.reduce((sum, l) => sum + (l.ftes || 0) + 0.75 * (l.ptes || 0), 0);
     lines.push({
       state,
-      gws: 0,
-      total_wses: 0,
+      gws,
+      total_wses,
       current_client_rate: currRateRaw / 100,
       billing_rate: rateRaw / 100,
       cost_rate: 0,
