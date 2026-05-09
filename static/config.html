@@ -438,7 +438,6 @@ async function doAutosave() {
   try {
     const updated = await apiPut('/config', payload);
     currentConfig = updated;
-    showToast('Saved', 'success');
   } catch (err) {
     showToast('Autosave failed', 'error');
   }

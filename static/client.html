@@ -2027,7 +2027,6 @@ async function doAutoSave() {
   };
   try {
     await apiPut('/clients/' + clientId, saveBody);
-    showToast('Saved', 'success');
   } catch (e) {
     showToast('Autosave failed: ' + e.message, 'error');
   }
