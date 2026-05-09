@@ -71,10 +71,14 @@ def run_calculate(body: CalculateRequest, db: Session = Depends(get_db)):
     total_with_ancillary = admin_result["total_admin_fee"] + total_ancillary
 
     commission_result = calculate_commission(
-        total_admin_fee=admin_result["total_admin_fee"],
-        total_with_ancillary=total_with_ancillary,
-        internal_pct=body.internal_commission_pct,
-        external_pct=body.external_commission_pct,
+        admin_margin=admin_result["total_admin_fee"],
+        wc_billed=wc_result["total_billing"],
+        broker_admin_pct=body.external_commission_pct,
+        broker_comp_pct=body.broker_wc_commission_pct,
+        pool_pct=cfg_row.admin_commission_pool_pct,
+        upfront_no_broker=cfg_row.consultant_commission_upfront,
+        ongoing_no_broker=cfg_row.consultant_commission_ongoing,
+        min_ongoing=cfg_row.consultant_min_ongoing_pct,
     )
 
     ancillary_full = {

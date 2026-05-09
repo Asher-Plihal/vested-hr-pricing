@@ -1588,7 +1588,7 @@
       <p class="section-subhead" style="margin-top:24px;">Net Billing</p>
       <div class="deal-summary-grid">
         <div class="ds-row"><span class="ds-label">My Billing</span><span class="ds-value" id="bc-my-billing">—</span></div>
-        <div class="ds-row"><span class="ds-label">Commissions</span><span class="ds-value" id="bc-commissions">—</span></div>
+        <div class="ds-row"><span class="ds-label">Comp Commissions</span><span class="ds-value" id="bc-commissions">—</span></div>
         <div class="ds-row"><span class="ds-label">My Net Billing</span><span class="ds-value" id="bc-net-billing">—</span></div>
         <div class="ds-row"><span class="ds-label">My Fixed Cost</span><span class="ds-value" id="bc-wc-fixed">—</span></div>
       </div>
@@ -2303,11 +2303,18 @@ async function runCalculate() {
   const hasData = payload.wc_lines.some(l => l.annual_gw > 0) || payload.suta_lines.length > 0;
   if (!hasData) return;
 
+  // CalculateRequest expects flat fields — spread client fields to top level
+  const calcPayload = {
+    ...payload.client,
+    wc_lines:   payload.wc_lines,
+    suta_lines: payload.suta_lines,
+  };
+
   document.getElementById('summary-calculating').style.display = 'block';
   document.getElementById('summary-content').style.opacity = '0.4';
 
   try {
-    const result = await apiPost('/calculate', payload);
+    const result = await apiPost('/calculate', calcPayload);
     renderSummary(result);
   } catch (e) {
     console.error('Calculate error:', e);
@@ -2632,9 +2639,9 @@ function renderLossAnalysis(totalGws, wcFixedCost, wcLossFund, wcBilled, brokerW
 
 /* ── Billing & Commissions ───────────────────────────────────────────────── */
 function renderBillingCommissions(netLosses, wcFixedCost, wcLossFund, wcBilled, brokerWcComm) {
-  const leftover    = wcLossFund - netLosses;
-  const leftoverPct = wcLossFund > 0 ? (leftover / wcLossFund * 100) : null;
   const netBilling  = wcBilled - brokerWcComm;
+  const leftover    = netBilling - wcFixedCost;
+  const leftoverPct = netBilling > 0 ? (leftover / netBilling * 100) : null;
 
   document.getElementById('bc-my-billing').textContent   = formatCurrency(wcBilled);
   document.getElementById('bc-commissions').textContent  = formatCurrency(brokerWcComm);

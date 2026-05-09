@@ -4,6 +4,31 @@ Most recent entry at the top. Add an entry when a task completes. This is where 
 
 ---
 
+### 2026-05-09 — Commission logic rewrite + calculate payload fix
+
+**No task ID — ad-hoc session**
+
+**Commission logic rewrite (`calc/commission.py`):**
+Replaced the old single-pass commission function with the correct two-scenario model:
+
+- **No broker:** consultant gets 25% upfront (Year 1) + 20% ongoing, both applied to admin margin.
+- **Broker on deal:** upfront = 0. Broker earns `broker_admin_pct × admin_margin` and `broker_comp_pct × wc_billed` independently. Consultant ongoing = `max(10%, 40% − broker_admin_pct)` applied to admin margin net of broker's admin cut. Comp-only broker (no admin %): consultant gets 10% floor.
+
+All four rates (pool %, consultant min ongoing %, upfront no-broker %, ongoing no-broker %) are now configurable in `SystemConfig` with migrations in `testing/seed.py`.
+
+**Config page (`static/config.html`):**
+Admin tab gains two new fields: "Total Pool %" (40%) and "Consultant Min. Ongoing %" (10%). Existing upfront/ongoing fields labelled "(no broker only)".
+
+**Summary fix (`calc/summary.py`):**
+Removed duplicate commission calculations that ignored the new logic. Now reads `consultant_upfront`, `consultant_ongoing`, and `broker_comp` directly from `commission_result`. Fixed `broker_wc_commission` base: was `wc_profit × broker_pct` (wrong), now `wc_billed × broker_pct` via `commission_result["broker_comp"]`.
+
+**Loss Analysis label:** "Commissions" renamed to "Comp Commissions" in the WC Net Billing section of `client.html`.
+
+**Critical bug fix — calculate payload (`static/client.html`):**
+`runCalculate()` was sending `{ client: {...}, wc_lines, suta_lines }` to `POST /calculate`, but `CalculateRequest` expects flat fields. Pydantic silently ignored the nested `client` object and used defaults for every client-level field: `admin_method=1`, `admin_rate=0`, `proposed_mod=1`, `broker_wc_commission_pct=0`, `external_commission_pct=0`, `w2s_generated=0`, `payroll_frequency="biweekly"`. This meant admin fee, FUTA, and all commissions were wrong for every calculate call. Fixed by spreading `payload.client` into the top-level calc payload.
+
+---
+
 ### 2026-05-08 — Form Safety UX (`form-safety-ux`)
 
 Pure frontend changes in `static/client.html`:

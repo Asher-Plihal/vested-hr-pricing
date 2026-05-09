@@ -37,8 +37,10 @@ class SystemConfig(Base):
     wc_policy_adjustment = Column(Float, default=0.0)
 
     # Business Consultant commissions — system-level defaults shown on config page
-    consultant_commission_upfront = Column(Float, default=0.25)
-    consultant_commission_ongoing = Column(Float, default=0.20)
+    consultant_commission_upfront = Column(Float, default=0.25)  # no-broker only
+    consultant_commission_ongoing = Column(Float, default=0.20)  # no-broker only
+    admin_commission_pool_pct = Column(Float, default=0.40)      # total pool split between broker + consultant
+    consultant_min_ongoing_pct = Column(Float, default=0.10)     # consultant floor when broker is on the deal
 
     futa_approach = Column(String, default="B")
 

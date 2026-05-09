@@ -23,6 +23,8 @@ class SystemConfigOut(BaseModel):
     wc_policy_adjustment: float
     consultant_commission_upfront: float
     consultant_commission_ongoing: float
+    admin_commission_pool_pct: float
+    consultant_min_ongoing_pct: float
     futa_approach: str
     fee_min_admin_per_cycle: float
     fee_delivery_min: float
@@ -62,6 +64,8 @@ class SystemConfigUpdate(BaseModel):
     wc_policy_adjustment: Optional[float] = None
     consultant_commission_upfront: Optional[float] = None
     consultant_commission_ongoing: Optional[float] = None
+    admin_commission_pool_pct: Optional[float] = None
+    consultant_min_ongoing_pct: Optional[float] = None
     futa_approach: Optional[str] = None
     fee_min_admin_per_cycle: Optional[float] = None
     fee_delivery_min: Optional[float] = None

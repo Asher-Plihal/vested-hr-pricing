@@ -34,18 +34,12 @@ def calculate_summary(
     admin_after_comm = commission_result.get("admin_after_comm", 0.0)
 
     broker_wc_pct = ancillary.get("broker_wc_commission_pct", 0.0)
-    broker_wc_commission = wc_profit * broker_wc_pct
+    broker_wc_commission = commission_result.get("broker_comp", 0.0)
     wc_profit_after_broker = wc_profit - broker_wc_commission
-
-    consultant_upfront_rate = ancillary.get("consultant_commission_upfront", 0.25)
-    consultant_ongoing_rate = ancillary.get("consultant_commission_ongoing", 0.20)
     broker_admin_pct = ancillary.get("external_commission_pct", 0.0)
-    if broker_admin_pct > 0:
-        consultant_upfront_amt = 0.0
-        consultant_ongoing_amt = admin_fee * 0.10
-    else:
-        consultant_upfront_amt = admin_fee * consultant_upfront_rate
-        consultant_ongoing_amt = admin_fee * consultant_ongoing_rate
+
+    consultant_upfront_amt = commission_result.get("consultant_upfront", 0.0)
+    consultant_ongoing_amt = commission_result.get("consultant_ongoing", 0.0)
 
     total_profit_loss = wc_profit_after_broker + suta_profit + admin_after_comm + total_other
 

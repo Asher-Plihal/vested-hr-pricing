@@ -37,6 +37,8 @@ _MIGRATIONS = [
     ("fee_reactivation",                      "ALTER TABLE system_config ADD COLUMN fee_reactivation REAL DEFAULT 500.0"),
     ("fee_late_payroll_submission",           "ALTER TABLE system_config ADD COLUMN fee_late_payroll_submission REAL DEFAULT 50.0"),
     ("independent_bureau_states",             "ALTER TABLE system_config ADD COLUMN independent_bureau_states TEXT DEFAULT 'CA,DE,PA,MI,NJ,TX'"),
+    ("admin_commission_pool_pct",             "ALTER TABLE system_config ADD COLUMN admin_commission_pool_pct REAL DEFAULT 0.40"),
+    ("consultant_min_ongoing_pct",            "ALTER TABLE system_config ADD COLUMN consultant_min_ongoing_pct REAL DEFAULT 0.10"),
 ]
 
 # Also handle clients table migrations
