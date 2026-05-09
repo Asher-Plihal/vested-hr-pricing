@@ -5,87 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VestedHR — Dashboard</title>
   <link rel="stylesheet" href="/static/style.css" />
-  <style>
-    /* ── Empty state ── */
-    .empty-state {
-      text-align: center;
-      padding: 48px 24px;
-      color: #718096;
-      font-size: 0.875rem;
-    }
-    .empty-state a {
-      color: #c9a84c;
-      font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-    }
-    .empty-state a:hover { text-decoration: underline; }
-
-    /* ── Delete button ── */
-    .btn-delete-row {
-      padding: 3px 8px;
-      border-radius: 5px;
-      border: 1px solid #e2e8f0;
-      background: none;
-      color: #a0aec0;
-      cursor: pointer;
-      font-size: 0.9rem;
-      line-height: 1;
-      transition: background 0.12s, color 0.12s, border-color 0.12s;
-    }
-    .btn-delete-row:hover { background: #fee2e2; border-color: #fca5a5; color: #dc2626; }
-
-    /* ── New Client Modal ── */
-    .modal-backdrop {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      z-index: 200;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-backdrop.open { display: flex; }
-    .modal-card {
-      background: #fff;
-      border-radius: 10px;
-      border: 1px solid #e2e8f0;
-      padding: 28px 32px;
-      width: 420px;
-      max-width: 95vw;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-    }
-    .modal-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #1e3154;
-      margin-bottom: 20px;
-    }
-    .modal-field {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      margin-bottom: 16px;
-    }
-    .modal-field label {
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: #4a5568;
-    }
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 24px;
-    }
-    .modal-error {
-      font-size: 0.8rem;
-      color: #dc2626;
-      margin-top: -8px;
-      margin-bottom: 8px;
-      min-height: 1rem;
-    }
-  </style>
 </head>
 <body>
 
@@ -144,7 +63,7 @@
         <div class="page-title">Dashboard</div>
         <div class="page-sub">Welcome back, Asher — here's what's happening.</div>
       </div>
-      <button class="btn-new" id="btn-new-client" type="button">
+      <button class="btn-primary" id="btn-new-client" type="button">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         New Client
       </button>
@@ -200,7 +119,7 @@
     <div class="modal-error" id="modal-error"></div>
     <div class="modal-actions">
       <button class="btn-ghost" id="modal-cancel" type="button">Cancel</button>
-      <button class="btn-new" id="modal-create" type="button">Create Client</button>
+      <button class="btn-primary" id="modal-create" type="button">Create Client</button>
     </div>
   </div>
 </div>

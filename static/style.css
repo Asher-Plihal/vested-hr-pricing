@@ -560,7 +560,7 @@ input[readonly], input[disabled] {
   margin-bottom: 14px;
 }
 
-/* ── Clients table ────────────────────────────────────────────────────────── */
+/* ── Clients table — client list, navy header, larger row padding (12px) ─── */
 table.clients-table {
   width: 100%;
   border-collapse: collapse;
@@ -570,7 +570,7 @@ table.clients-table {
   text-align: left;
   padding: 10px 16px;
   background: #f8f9fb;
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -583,25 +583,9 @@ table.clients-table {
   color: #2d3748;
 }
 .clients-table tr:last-child td { border-bottom: none; }
-.clients-table tr:hover td { background: #fafbfc; }
+.clients-table tr:hover td { background: #f7fafc; }
 .clients-table tbody tr { cursor: pointer; }
 
-/* ── btn-new ──────────────────────────────────────────────────────────────── */
-.btn-new {
-  padding: 8px 18px;
-  border-radius: 7px;
-  border: none;
-  background: #1e3154;
-  color: #fff;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: inherit;
-}
-.btn-new:hover { background: #162644; }
 
 /* ── Dashboard layout ─────────────────────────────────────────────────────── */
 .layout {
@@ -626,11 +610,11 @@ table.clients-table {
   margin-bottom: 32px;
 }
 
-/* ── Table ────────────────────────────────────────────────────────────────── */
+/* ── Editable data grid — grey header (#718096), compact row padding (8px) ── */
 .data-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.85rem;
+  font-size: 0.875rem;
 }
 .data-table th {
   text-align: left;
@@ -917,7 +901,7 @@ table.clients-table {
 }
 .btn-save:hover { background: #162644; }
 
-/* ── Config page — divider + info-note ───────────────────────────────────── */
+/* ── Divider + info-note ──────────────────────────────────────────────────── */
 .divider {
   border: none;
   border-top: 1px solid #e2e8f0;
@@ -927,9 +911,14 @@ table.clients-table {
   background: #f7fafc;
   border: 1px solid #e2e8f0;
   border-radius: 6px;
-  padding: 14px 18px;
+  padding: 12px 16px;
   font-size: 0.85rem;
   color: #718096;
+}
+.info-note.warn {
+  background: #fffbeb;
+  border-color: #fde68a;
+  color: #92400e;
 }
 
 /* ── Config page — subheader override (transparent bg, 900px max-width) ─── */
@@ -954,4 +943,97 @@ table.clients-table {
   max-width: 900px;
   margin: 0 auto;
   padding: 32px 24px 80px;
+}
+
+/* ── Client page — subheader override (transparent bg, 960px max-width) ──── */
+.subheader-client {
+  background: transparent;
+  border-bottom: none;
+}
+.subheader-client .subheader-inner {
+  max-width: 960px;
+  padding: 22px 24px 0;
+}
+.subheader-client .tab-nav {
+  border-bottom: 2px solid #1a202c;
+}
+
+/* ── Client page — page wrapper (960px, narrower than default 1400px) ─────── */
+.page-content-client {
+  max-width: 960px;
+}
+
+/* ── Dashboard — empty state ─────────────────────────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: #718096;
+  font-size: 0.875rem;
+}
+.empty-state a {
+  color: #c9a84c;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+.empty-state a:hover { text-decoration: underline; }
+
+/* ── Dashboard — delete row button ───────────────────────────────────────── */
+.btn-delete-row {
+  padding: 3px 8px;
+  border-radius: 5px;
+  border: 1px solid #e2e8f0;
+  background: none;
+  color: #a0aec0;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.btn-delete-row:hover { background: #fee2e2; border-color: #fca5a5; color: #dc2626; }
+
+/* ── Modal ────────────────────────────────────────────────────────────────── */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+.modal-backdrop.open { display: flex; }
+.modal-card {
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  padding: 28px 32px;
+  width: 420px;
+  max-width: 95vw;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+.modal-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e3154;
+  margin-bottom: 20px;
+}
+.modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 16px;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+.modal-error {
+  font-size: 0.8rem;
+  color: #dc2626;
+  margin-top: -8px;
+  margin-bottom: 8px;
+  min-height: 1rem;
 }
