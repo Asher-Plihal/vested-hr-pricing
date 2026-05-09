@@ -1688,10 +1688,16 @@ function addWCCodeRow(data) {
   }
 
   stateSelect.addEventListener('change', lookupWCRate);
-  codeInput.addEventListener('blur', lookupWCRate);
+  codeInput.addEventListener('blur',   lookupWCRate);
+  codeInput.addEventListener('change', lookupWCRate);
 
   tbody.appendChild(tr);
   updateWCTotals();
+
+  // Backfill description/rate for rows loaded from DB that are missing auto-populated fields
+  if (data?.state && data?.wc_code && !data?.wc_description) {
+    lookupWCRate();
+  }
 }
 
 function removeWCRow(btn) {
