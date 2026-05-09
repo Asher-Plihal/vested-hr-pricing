@@ -6,6 +6,64 @@ Each item is a single-agent task brief. **Coding agents:** read only your assign
 
 ## Active — Phase 2
 
+### Fix Commission Calculations
+**Status:** pending — `fix-commission-calculations`
+**Priority:** High — fix before calc-verification runs
+
+Three known bugs in the commission/summary layer. All fixes are in `calc/summary.py` and `routers/calculate.py` — no DB schema changes needed.
+
+**Read these files first:**
+- `calc/summary.py` — all three bugs are here
+- `calc/commission.py` — `calculate_commission()`, understand what it returns
+- `routers/calculate.py` — how `calculate_summary()` is called and what gets passed to it
+- `models.py` lines 39–40 — `SystemConfig.consultant_commission_upfront` and `consultant_commission_ongoing` (both Float, default 0.25/0.20, added via migration in `testing/seed.py`)
+
+**Bug 1 — Consultant rates hardcoded instead of reading from SystemConfig**
+
+`calc/summary.py:73-74`:
+```python
+"consultant_upfront": admin_fee * 0.25,   # hardcoded — wrong
+"consultant_ongoing": admin_fee * 0.20,   # hardcoded — wrong
+```
+
+Fix: pass `consultant_commission_upfront` and `consultant_commission_ongoing` from `cfg_row` (SystemConfig) through to `calculate_summary()`. In `routers/calculate.py`, add them to the `ancillary_full` dict. In `calc/summary.py`, read them from `ancillary` instead of hardcoding.
+
+**Bug 2 — Conditional consultant rates when a broker is on the deal**
+
+Business rule: if `external_commission_pct > 0` (a broker is on the deal), consultant upfront drops to 0% and ongoing drops to 10% (minimum). Currently there is no conditional logic at all.
+
+In `calc/summary.py`, after reading the rates from config (Bug 1 fix), add:
+```python
+broker_admin_pct = ancillary.get("external_commission_pct", 0.0)
+if broker_admin_pct > 0:
+    consultant_upfront_amt = 0.0
+    consultant_ongoing_amt = admin_fee * 0.10
+else:
+    consultant_upfront_amt = admin_fee * consultant_upfront_rate
+    consultant_ongoing_amt = admin_fee * consultant_ongoing_rate
+```
+
+**Bug 3 — broker_wc_commission_pct has no dollar calculation**
+
+`calc/summary.py:75` passes the WC broker % as a display-only value. It never reduces WC profit. Fix: calculate the dollar amount and subtract it from `wc_profit` before rolling up `total_profit_loss`.
+
+```python
+broker_wc_pct = ancillary.get("broker_wc_commission_pct", 0.0)
+broker_wc_commission = wc_profit * broker_wc_pct
+wc_profit_after_broker = wc_profit - broker_wc_commission
+```
+
+Use `wc_profit_after_broker` in `total_profit_loss` instead of `wc_profit`. Add `broker_wc_commission` as a dollar amount to the `commissions` dict in the return value.
+
+**What NOT to change:**
+- `internal_commission_pct` — always 0 on the client model, harmless dead weight, leave it alone
+- `calc/commission.py` — correct as-is, no changes needed
+- Any DB models or schemas — all fixes are pure calc logic
+
+**Commit:** `fix: commission calc — read consultant rates from config, broker WC dollar amount, conditional rates when broker present`
+
+---
+
 ### Calculation Verification
 **Status:** pending — `calc-verification`
 **Priority:** High — do after `sheets-upload-fix`
