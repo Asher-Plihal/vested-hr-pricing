@@ -1834,6 +1834,7 @@ function addWCLossRow(data) {
   `;
   addRowRemoveModeClick(tr, wcLossRM);
   tbody.appendChild(tr);
+  reapplyCardLock(tbody);
 }
 addWCLossRow();
 document.getElementById('btn-add-wc-loss').addEventListener('click', () => {
@@ -1929,6 +1930,7 @@ function addWCCodeRow(data) {
   addRowRemoveModeClick(tr, wcCodesRM);
 
   tbody.appendChild(tr);
+  reapplyCardLock(tbody);
   updateWCTotals();
 
   // Backfill description/rate/flag for rows loaded from DB that are missing auto-populated fields
@@ -2022,6 +2024,7 @@ function addSutaRow(data) {
   });
   addRowRemoveModeClick(tr, sutaRM);
   tbody.appendChild(tr);
+  reapplyCardLock(tbody);
 }
 
 function onSutaStateChange(sel) {
@@ -2977,16 +2980,23 @@ function toggleCardLock(btn) {
   const card = btn.closest('.card');
   const locked = card.dataset.locked !== 'false';
   applyCardLock(card, !locked);
+  scheduleAutoSave();
 }
 
 function restoreCardLockStates(json) {
-  let states = {};
+  let states = null;
   if (json) { try { states = JSON.parse(json); } catch (_) {} }
+  const hasStates = states !== null;
   document.querySelectorAll('.card[data-card-id]').forEach(card => {
     const id = card.dataset.cardId;
-    const locked = id in states ? states[id] : true;
+    const locked = hasStates ? (id in states ? states[id] : true) : false;
     applyCardLock(card, locked);
   });
+}
+
+function reapplyCardLock(tbody) {
+  const card = tbody.closest('.card[data-card-id]');
+  if (card) applyCardLock(card, card.dataset.locked !== 'false');
 }
 
 function collectCardLockStates() {
