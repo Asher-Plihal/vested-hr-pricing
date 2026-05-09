@@ -21,7 +21,7 @@ def calculate_summary(
     pf = ancillary.get("pay_periods_per_year", 26)
 
     tlm_fee = ancillary.get("tlm_rate", 0.0) * total_wses * 12
-    epli_fee = ancillary.get("epli_fee", 0.0) * total_wses * pf
+    epli_fee = ancillary.get("epli_rate", 0.0) * total_wses * pf
     wire_ach_fee = ancillary.get("wire_ach_rate", 0.0) * pf
     implementation_fee = ancillary.get("implementation_fee", 0.0)
 

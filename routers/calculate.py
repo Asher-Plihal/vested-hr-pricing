@@ -80,7 +80,7 @@ def run_calculate(body: CalculateRequest, db: Session = Depends(get_db)):
 
     ancillary_full = {
         "implementation_fee": body.implementation_fee,
-        "epli_fee": body.epli_fee,
+        "epli_rate": body.epli_rate,
         "tlm_rate": tlm_rate,
         "wire_ach_rate": wire_ach_rate,
         "pay_periods_per_year": pay_periods_per_year,

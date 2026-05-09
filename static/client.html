@@ -1088,8 +1088,8 @@
       <hr class="card-divider" />
       <div class="form-grid">
         <div class="form-group">
-          <label for="epli_fee">EPLI Rate ($ / WSE / pay period) <span style="font-weight:400;color:#718096;font-size:0.78rem;">min $0.50</span></label>
-          <input type="number" id="epli_fee" name="epli_fee" step="0.01" min="0" value="0" />
+          <label for="epli_rate">EPLI Rate ($ / WSE / pay period) <span style="font-weight:400;color:#718096;font-size:0.78rem;">min $0.50</span></label>
+          <input type="number" id="epli_rate" name="epli_rate" step="0.01" min="0" value="0" />
         </div>
         <div class="form-group">
           <label class="req-y" for="implementation_fee">Implementation / Setup Fee ($)</label>
@@ -2116,7 +2116,7 @@ wcMod.addEventListener('input', () => {
 ['admin_method', 'admin_rate', 'admin_rate_2', 'admin_rate_3',
  'current_admin_rate', 'current_admin_rate_2', 'current_admin_rate_3',
  'pricing_proposed_mod', 'implementation_fee',
- 'epli_fee', 'broker_wc_commission_pct', 'internal_commission_pct',
+ 'epli_rate', 'broker_wc_commission_pct', 'internal_commission_pct',
  'external_commission_pct', 'futa_turnover_rate'].forEach(id => {
   const el = document.getElementById(id);
   if (el) {
@@ -2321,7 +2321,7 @@ function collectClientPayload() {
     current_admin_rate_2:      getNumVal('current_admin_rate_2') || 0,
     current_admin_rate_3:      getNumVal('current_admin_rate_3') || 0,
     implementation_fee:        getNumVal('implementation_fee'),
-    epli_fee:                  getNumVal('epli_fee'),
+    epli_rate:                 getNumVal('epli_rate'),
     internal_commission_pct:   internal / 100,
     external_commission_pct:   external / 100,
     broker_wc_commission_pct:  brokerWC / 100,
@@ -2925,7 +2925,7 @@ function populateForm(client) {
   selectAdminMethod(client.admin_method || 1);
 
   setField('implementation_fee',       client.implementation_fee);
-  setField('epli_fee',                 client.epli_fee);
+  setField('epli_rate',                client.epli_rate);
   setField('broker_wc_commission_pct',  ((client.broker_wc_commission_pct || 0) * 100).toFixed(4));
   setField('internal_commission_pct',   ((client.internal_commission_pct || 0) * 100).toFixed(4));
   setField('external_commission_pct',   ((client.external_commission_pct || 0) * 100).toFixed(4));

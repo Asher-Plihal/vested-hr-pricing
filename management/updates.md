@@ -4,6 +4,12 @@ Most recent entry at the top. Add an entry when a task completes. This is where 
 
 ---
 
+### 2026-05-09 — Cleanup: rename epli_fee → epli_rate (`fix-tlm-epli-wire-rates` closed)
+
+TLM and Wire/ACH were already correct (system config rates multiplied by WSEs/periods in `calc/summary.py`). Only remaining work was renaming `epli_fee` → `epli_rate` to match its actual usage as a rate. Changed: `models.py`, `schemas.py` (ClientUpdate, ClientOut, CalculateRequest), `routers/calculate.py`, `calc/summary.py`, `static/client.html` (id/name/JS/setField), `testing/seed.py` (migration). DB migrated live.
+
+---
+
 ### 2026-05-09 — FUTA: replace w2s_generated with direct futa_turnover_rate
 
 **No task ID — cleanup per product decision**

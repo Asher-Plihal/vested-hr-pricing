@@ -182,7 +182,7 @@ class Client(Base):
 
     # Ancillary fees
     implementation_fee = Column(Float, default=0.0)
-    epli_fee = Column(Float, default=0.0)
+    epli_rate = Column(Float, default=0.0)
     include_epli = Column(Boolean, default=False)
 
     # FUTA turnover input (decimal; can exceed 1.0 when W-2s > avg headcount)

@@ -240,7 +240,7 @@ class ClientUpdate(BaseModel):
     external_commission_pct: Optional[float] = None
     broker_wc_commission_pct: Optional[float] = None
     implementation_fee: Optional[float] = None
-    epli_fee: Optional[float] = None
+    epli_rate: Optional[float] = None
     include_epli: Optional[bool] = None
     futa_turnover_rate: Optional[float] = None
     card_lock_states: Optional[str] = None
@@ -332,7 +332,7 @@ class ClientOut(BaseModel):
     external_commission_pct: Optional[float]
     broker_wc_commission_pct: Optional[float]
     implementation_fee: Optional[float]
-    epli_fee: Optional[float]
+    epli_rate: Optional[float]
     include_epli: Optional[bool]
     futa_turnover_rate: Optional[float]
     card_lock_states: Optional[str] = None
@@ -381,4 +381,4 @@ class CalculateRequest(BaseModel):
     external_commission_pct: float = 0.0
     broker_wc_commission_pct: float = 0.0
     implementation_fee: float = 0.0
-    epli_fee: float = 0.0
+    epli_rate: float = 0.0
