@@ -1,49 +1,67 @@
 """
-Idempotent seed script. Run with: python seed.py
+Idempotent seed script. Run with: python testing/seed.py
 Seeds SystemConfig defaults only. SUTA rates, WC rates, and WC guidelines
 must be uploaded via the config page before the tool produces valid numbers.
 """
 import sys
 import os
 
-sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from database import engine, SessionLocal, Base
 from sqlalchemy import text
+import models  # must import before create_all so metadata is populated
 
 Base.metadata.create_all(bind=engine)
 
-# ── Column migrations (idempotent) — must run before any ORM query ────────────
+# ── Column migrations (only needed on pre-existing DBs) ───────────────────────
+# Fresh DBs skip this: create_all already built the table with all columns.
+_MIGRATIONS = [
+    ("consultant_commission_upfront",        "ALTER TABLE system_config ADD COLUMN consultant_commission_upfront REAL DEFAULT 0.25"),
+    ("consultant_commission_ongoing",         "ALTER TABLE system_config ADD COLUMN consultant_commission_ongoing REAL DEFAULT 0.20"),
+    ("fee_min_admin_per_cycle",               "ALTER TABLE system_config ADD COLUMN fee_min_admin_per_cycle REAL DEFAULT 50.0"),
+    ("fee_delivery_min",                      "ALTER TABLE system_config ADD COLUMN fee_delivery_min REAL DEFAULT 15.0"),
+    ("fee_delivery_max",                      "ALTER TABLE system_config ADD COLUMN fee_delivery_max REAL DEFAULT 60.0"),
+    ("fee_out_of_cycle_payroll",              "ALTER TABLE system_config ADD COLUMN fee_out_of_cycle_payroll REAL DEFAULT 25.0"),
+    ("fee_returned_check",                    "ALTER TABLE system_config ADD COLUMN fee_returned_check REAL DEFAULT 50.0"),
+    ("fee_timekeeping_implementation",        "ALTER TABLE system_config ADD COLUMN fee_timekeeping_implementation REAL DEFAULT 250.0"),
+    ("fee_timekeeping_monthly_per_ee",        "ALTER TABLE system_config ADD COLUMN fee_timekeeping_monthly_per_ee REAL DEFAULT 4.5"),
+    ("fee_applicant_tracking_implementation", "ALTER TABLE system_config ADD COLUMN fee_applicant_tracking_implementation REAL DEFAULT 250.0"),
+    ("fee_online_lms_implementation",         "ALTER TABLE system_config ADD COLUMN fee_online_lms_implementation REAL DEFAULT 200.0"),
+    ("fee_online_lms_per_ee_monthly",         "ALTER TABLE system_config ADD COLUMN fee_online_lms_per_ee_monthly REAL DEFAULT 1.5"),
+    ("fee_mvr_report",                        "ALTER TABLE system_config ADD COLUMN fee_mvr_report REAL DEFAULT 6.0"),
+    ("fee_everify_per_ee",                    "ALTER TABLE system_config ADD COLUMN fee_everify_per_ee REAL DEFAULT 5.0"),
+    ("fee_wc_waiver_subrogation",             "ALTER TABLE system_config ADD COLUMN fee_wc_waiver_subrogation REAL DEFAULT 200.0"),
+    ("fee_wc_late_reporting",                 "ALTER TABLE system_config ADD COLUMN fee_wc_late_reporting REAL DEFAULT 250.0"),
+    ("fee_wc_alternate_employer_endorsement", "ALTER TABLE system_config ADD COLUMN fee_wc_alternate_employer_endorsement REAL DEFAULT 200.0"),
+    ("fee_reactivation",                      "ALTER TABLE system_config ADD COLUMN fee_reactivation REAL DEFAULT 500.0"),
+    ("fee_late_payroll_submission",           "ALTER TABLE system_config ADD COLUMN fee_late_payroll_submission REAL DEFAULT 50.0"),
+]
+
+# Also handle clients table migrations
+_CLIENT_MIGRATIONS = [
+    ("current_admin_rate", "ALTER TABLE clients ADD COLUMN current_admin_rate REAL DEFAULT 0.0"),
+]
+
 with engine.connect() as conn:
-    existing = [row[1] for row in conn.execute(text("PRAGMA table_info(system_config)"))]
-    for col, ddl in [
-        ("consultant_commission_upfront", "ALTER TABLE system_config ADD COLUMN consultant_commission_upfront REAL DEFAULT 0.25"),
-        ("consultant_commission_ongoing", "ALTER TABLE system_config ADD COLUMN consultant_commission_ongoing REAL DEFAULT 0.20"),
-        ("fee_min_admin_per_cycle", "ALTER TABLE system_config ADD COLUMN fee_min_admin_per_cycle REAL DEFAULT 50.0"),
-        ("fee_delivery_min", "ALTER TABLE system_config ADD COLUMN fee_delivery_min REAL DEFAULT 15.0"),
-        ("fee_delivery_max", "ALTER TABLE system_config ADD COLUMN fee_delivery_max REAL DEFAULT 60.0"),
-        ("fee_out_of_cycle_payroll", "ALTER TABLE system_config ADD COLUMN fee_out_of_cycle_payroll REAL DEFAULT 25.0"),
-        ("fee_returned_check", "ALTER TABLE system_config ADD COLUMN fee_returned_check REAL DEFAULT 50.0"),
-        ("fee_timekeeping_implementation", "ALTER TABLE system_config ADD COLUMN fee_timekeeping_implementation REAL DEFAULT 250.0"),
-        ("fee_timekeeping_monthly_per_ee", "ALTER TABLE system_config ADD COLUMN fee_timekeeping_monthly_per_ee REAL DEFAULT 4.5"),
-        ("fee_applicant_tracking_implementation", "ALTER TABLE system_config ADD COLUMN fee_applicant_tracking_implementation REAL DEFAULT 250.0"),
-        ("fee_online_lms_implementation", "ALTER TABLE system_config ADD COLUMN fee_online_lms_implementation REAL DEFAULT 200.0"),
-        ("fee_online_lms_per_ee_monthly", "ALTER TABLE system_config ADD COLUMN fee_online_lms_per_ee_monthly REAL DEFAULT 1.5"),
-        ("fee_mvr_report", "ALTER TABLE system_config ADD COLUMN fee_mvr_report REAL DEFAULT 6.0"),
-        ("fee_everify_per_ee", "ALTER TABLE system_config ADD COLUMN fee_everify_per_ee REAL DEFAULT 5.0"),
-        ("fee_wc_waiver_subrogation", "ALTER TABLE system_config ADD COLUMN fee_wc_waiver_subrogation REAL DEFAULT 200.0"),
-        ("fee_wc_late_reporting", "ALTER TABLE system_config ADD COLUMN fee_wc_late_reporting REAL DEFAULT 250.0"),
-        ("fee_wc_alternate_employer_endorsement", "ALTER TABLE system_config ADD COLUMN fee_wc_alternate_employer_endorsement REAL DEFAULT 200.0"),
-        ("fee_reactivation", "ALTER TABLE system_config ADD COLUMN fee_reactivation REAL DEFAULT 500.0"),
-        ("fee_late_payroll_submission", "ALTER TABLE system_config ADD COLUMN fee_late_payroll_submission REAL DEFAULT 50.0"),
-    ]:
-        if col not in existing:
-            conn.execute(text(ddl))
-            conn.commit()
-            print(f"Migrated: added {col}")
+    sc_cols = [row[1] for row in conn.execute(text("PRAGMA table_info(system_config)"))]
+    if sc_cols:  # skip on fresh DB — create_all already has all columns
+        for col, ddl in _MIGRATIONS:
+            if col not in sc_cols:
+                conn.execute(text(ddl))
+                conn.commit()
+                print(f"Migrated system_config: added {col}")
+
+    cl_cols = [row[1] for row in conn.execute(text("PRAGMA table_info(clients)"))]
+    if cl_cols:
+        for col, ddl in _CLIENT_MIGRATIONS:
+            if col not in cl_cols:
+                conn.execute(text(ddl))
+                conn.commit()
+                print(f"Migrated clients: added {col}")
 
 # ── SystemConfig ──────────────────────────────────────────────────────────────
-from models import SystemConfig
+from models import SystemConfig  # noqa: E402 (already imported via `import models` above)
 
 db = SessionLocal()
 
@@ -72,5 +90,4 @@ else:
     print("SystemConfig already exists — skipped")
 
 db.close()
-
 print("Seed complete.")
