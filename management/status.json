@@ -1,4 +1,11 @@
 {
+  "update-pricing-math": {
+    "status": "pending",
+    "priority": 2,
+    "blocked_by": "VHR staff",
+    "note": "4 questions need VHR answers before the app's calculations and display can be finalized. See questions.md for the full text of each question.",
+    "brief": "Get VHR answers to the 4 open questions in management/questions.md. Each answer has a direct code consequence:\n\n1. WC fees (shared_claim_fee, min_wc_fee_per_week, safety_claim_fee) — wire into billing math or remove the fields.\n2. Missouri SUTA — confirm billing formula is same as other VHR-reporting states, or adjust.\n3. Broker commission base — confirm broker_admin_pct and broker_wc_pct apply independently (current behavior), or fix if wrong.\n4. Proposal FICA/FUTA — add or remove those line items from the Proposal section of the Deal Summary.\n\nOnce answers are in hand, make the corresponding code changes and update pricing_math.md.\n\nTo close: remove 'update-pricing-math' from management/status.json and add a one-line summary to management/updates.md."
+  },
   "benefits-tab": {
     "status": "blocked",
     "priority": 5,
