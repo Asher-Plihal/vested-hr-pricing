@@ -1698,6 +1698,9 @@ function addWCCodeRow(data) {
       hazardInput.value = data.hazard_group || '';
       flagInput.value   = data.flag_100k || '';
       applyFlagStyle(flagInput, flagInput.value);
+      rateInput.placeholder = '—';
+      tr.style.outline = '';
+      tr.title = '';
     } catch (_) {
       rateInput.value   = '';
       descInput.value   = '';
@@ -1705,6 +1708,8 @@ function addWCCodeRow(data) {
       flagInput.value   = '';
       applyFlagStyle(flagInput, '');
       rateInput.placeholder = '— not found';
+      tr.style.outline = '2px solid #fca5a5';
+      tr.title = `No WC rate found for ${s} / ${c} — check code or upload updated rates`;
     }
     updateWCTotals();
     scheduleCalculate();
@@ -1717,8 +1722,8 @@ function addWCCodeRow(data) {
   tbody.appendChild(tr);
   updateWCTotals();
 
-  // Backfill description/rate for rows loaded from DB that are missing auto-populated fields
-  if (data?.state && data?.wc_code && !data?.wc_description) {
+  // Backfill description/rate/flag for rows loaded from DB that are missing auto-populated fields
+  if (data?.state && data?.wc_code && (!data?.wc_description || !data?.flag_100k)) {
     lookupWCRate();
   }
 }
