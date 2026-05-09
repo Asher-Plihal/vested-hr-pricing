@@ -36,6 +36,16 @@ function formatCurrency(value) {
   }).format(value);
 }
 
+function formatDollars(value) {
+  if (value == null || isNaN(value)) return '$0';
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
 /**
  * Format a decimal fraction as a percentage: 0.062 → "6.20%"
  * @param {number|null|undefined} value

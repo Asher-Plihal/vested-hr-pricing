@@ -1158,7 +1158,7 @@
             <thead>
               <tr>
                 <th class="req-y" style="width:60px;">State</th>
-                <th class="req-y" style="width:38px;">Code</th>
+                <th class="req-y" style="width:38px;">WC<br>Code</th>
                 <th style="text-align:left;width:150px;">WC Description</th>
                 <th style="width:30px;">Haz</th>
                 <th style="width:46px;">100K<br>Flag</th>
@@ -1773,7 +1773,7 @@ function addWCCodeRow(data) {
     <td><input type="number" name="wc_fte_${idx}" step="1" min="0" placeholder="0" value="${data?.ftes || ''}" /></td>
     <td><input type="number" name="wc_pte_${idx}" step="1" min="0" placeholder="0" value="${data?.ptes || ''}" /></td>
     <td><input type="number" name="wc_cur_rate_${idx}" step="0.01" min="0" placeholder="0.00" value="${data?.current_client_rate || ''}" /></td>
-    <td><input type="number" name="wc_rate_${idx}" step="0.0001" min="0" placeholder="—" value="${data?.manual_rate || ''}" readonly style="background:#f5f5f5;cursor:not-allowed;" /></td>
+    <td><input type="text" name="wc_rate_${idx}" placeholder="—" value="${data?.manual_rate ? parseFloat(data.manual_rate).toFixed(2) + '%' : ''}" readonly style="background:#f5f5f5;cursor:not-allowed;text-align:center;" /></td>
   `;
   tr.querySelectorAll('input, select').forEach(inp => {
     inp.addEventListener('input', () => { updateWCTotals(); scheduleCalculate(); });
@@ -1810,7 +1810,7 @@ function addWCCodeRow(data) {
     if (!s || !c) return;
     try {
       const data = await apiGet(`/wc-rate?state=${encodeURIComponent(s)}&code=${encodeURIComponent(c)}`);
-      rateInput.value   = data.rate;
+      rateInput.value   = data.rate != null ? parseFloat(data.rate).toFixed(2) + '%' : '';
       descInput.value   = data.description || '';
       hazardInput.value = data.hazard_group || '';
       flagInput.value   = data.flag_100k || '';
@@ -2428,27 +2428,32 @@ function renderBillingAnalysis(r) {
 
   const proposedMod     = parseFloat(document.getElementById('pricing_proposed_mod')?.value) || 0;
   const wcLines         = collectWCLines().filter(l => l.wc_code || l.annual_gw > 0);
-  const sutaLines       = collectSutaLines().filter(l => l.state);
   const adminMethod     = getIntVal('admin_method') || 1;
-  const _adminSuffix    = adminMethod === 1 ? '' : '_' + adminMethod;
-  const curAdminRateRaw = getNumVal('current_admin_rate' + _adminSuffix) || 0;
-  const adminRateRaw    = adminMethod === 1
-    ? (getNumVal('admin_rate') || 0)
-    : (getNumVal('admin_rate_' + adminMethod) || 0);
+  const adminSuffix     = adminMethod === 1 ? '' : '_' + adminMethod;
+  const curAdminRateRaw = getNumVal('current_admin_rate' + adminSuffix) || 0;
+  const adminRateRaw    = getNumVal('admin_rate' + adminSuffix) || 0;
   const totalGWs        = ao.total_gws  || 0;
   const totalWses       = ao.total_wses || 0;
   const payPeriods      = getAdminPayPeriods();
 
+  // Admin rate display strings (rate, not dollar total)
+  const curAdminDisplay = adminMethod === 1
+    ? (curAdminRateRaw ? curAdminRateRaw.toFixed(2) + '%' : '—')
+    : (curAdminRateRaw ? '$' + curAdminRateRaw.toFixed(2) : '—');
+  const vhrAdminDisplay = adminMethod === 1
+    ? (adminRateRaw ? adminRateRaw.toFixed(2) + '%' : '—')
+    : (adminRateRaw ? '$' + adminRateRaw.toFixed(2) : '—');
+
+  // SUTA rate map from form inputs (for rate display per row)
+  const sutaRateMap = {};
+  collectSutaLines().filter(l => l.state).forEach(l => { sutaRateMap[l.state] = l; });
+
   function savCls(v) { return v > 0 ? 'positive' : v < 0 ? 'negative' : ''; }
 
-  // ── Workers' Compensation rows (with inline SUTA by state match) ──
-  const sutaMap = {};
-  (r.suta_lines || []).forEach(sl => { sutaMap[sl.state] = sl; });
-  const seenSutaStates = new Set();
-
+  // ── WC rows ──
   const wcBody = document.getElementById('analysis-wc-body');
   wcBody.innerHTML = '';
-  let sumGws = 0, sumWcSavings = 0, sumCurAdmin = 0, sumVhrAdmin = 0;
+  let sumGws = 0, sumWcSavings = 0, sumCurAdmin = 0, sumVhrAdmin = 0, sumSutaSavings = 0;
   if (wcLines.length === 0) {
     wcBody.innerHTML = `<tr><td colspan="13" style="text-align:center;color:#a0aec0;">—</td></tr>`;
   } else {
@@ -2461,7 +2466,7 @@ function renderBillingAnalysis(r) {
       sumGws       += gw;
       sumWcSavings += savings;
 
-      // Admin: compute per row from rates × this row's GWs/WSEs
+      // Admin: per-row savings dollar amount; display shows rate
       let curAdminRow = 0, vhrAdminRow = 0;
       if (adminMethod === 1) {
         curAdminRow = (curAdminRateRaw / 100) * gw;
@@ -2477,18 +2482,18 @@ function renderBillingAnalysis(r) {
       sumCurAdmin += curAdminRow;
       sumVhrAdmin += vhrAdminRow;
 
-      // SUTA: look up by state, show only on the first WC row per state
-      const sl = sutaMap[line.state];
-      let curSutaTxt = '—', vhrSutaTxt = '—', sutaSavTxt = '—', sutaSavCls = '';
-      if (sl && !seenSutaStates.has(line.state)) {
-        seenSutaStates.add(line.state);
-        const curAmt = sl.prior_cost     || 0;
-        const vhrAmt = sl.suta_bill      || 0;
-        const savAmt = sl.client_savings || 0;
-        curSutaTxt = curAmt ? formatDollars(curAmt) : '—';
-        vhrSutaTxt = vhrAmt ? formatDollars(vhrAmt) : '—';
-        sutaSavTxt = formatDollars(savAmt);
-        sutaSavCls = savCls(savAmt);
+      // SUTA: show rate for every matching row; savings = rate diff × gw
+      const sr = sutaRateMap[line.state];
+      let curSutaDisplay = '—', vhrSutaDisplay = '—', sutaSavTxt = '—', sutaSavCls = '';
+      if (sr) {
+        const curSutaRate = sr.current_client_rate || 0;
+        const vhrSutaRate = sr.billing_rate        || 0;
+        const sutaSavAmt  = (curSutaRate - vhrSutaRate) * gw;
+        curSutaDisplay = curSutaRate ? (curSutaRate * 100).toFixed(2) + '%' : '—';
+        vhrSutaDisplay = vhrSutaRate ? (vhrSutaRate * 100).toFixed(2) + '%' : '—';
+        sutaSavTxt     = formatDollars(sutaSavAmt);
+        sutaSavCls     = savCls(sutaSavAmt);
+        sumSutaSavings += sutaSavAmt;
       }
 
       const tr = document.createElement('tr');
@@ -2497,35 +2502,24 @@ function renderBillingAnalysis(r) {
         <td>${line.wc_code || '—'}</td>
         <td style="text-align:right;">${wses || '—'}</td>
         <td style="text-align:right;">${gw ? formatDollars(gw) : '—'}</td>
-        <td style="text-align:right;">${curRate ? curRate.toFixed(4) : '—'}</td>
-        <td style="text-align:right;">${vhrRate ? vhrRate.toFixed(4) : '—'}</td>
+        <td style="text-align:right;">${curRate ? curRate.toFixed(2) + '%' : '—'}</td>
+        <td style="text-align:right;">${vhrRate ? vhrRate.toFixed(2) + '%' : '—'}</td>
         <td style="text-align:right;" class="${savCls(savings)}">${gw ? formatDollars(savings) : '—'}</td>
-        <td style="text-align:right;">${gw ? formatDollars(curAdminRow) : '—'}</td>
-        <td style="text-align:right;">${gw ? formatDollars(vhrAdminRow) : '—'}</td>
+        <td style="text-align:right;">${curAdminDisplay}</td>
+        <td style="text-align:right;">${vhrAdminDisplay}</td>
         <td style="text-align:right;" class="${savCls(adminSavRow)}">${gw ? formatDollars(adminSavRow) : '—'}</td>
-        <td style="text-align:right;">${curSutaTxt}</td>
-        <td style="text-align:right;">${vhrSutaTxt}</td>
+        <td style="text-align:right;">${curSutaDisplay}</td>
+        <td style="text-align:right;">${vhrSutaDisplay}</td>
         <td style="text-align:right;" class="${sutaSavCls}">${sutaSavTxt}</td>`;
       wcBody.appendChild(tr);
     });
   }
 
-  // ── Administrative Fee totals (accumulated from per-row) ──
-  const curAdminFee  = sumCurAdmin;
-  const vhrAdminFee  = sumVhrAdmin;
-  const adminSavings = curAdminFee - vhrAdminFee;
-
-  // ── SUTA totals (from r.suta_lines, not from per-row display) ──
-  const sutaResultLines = r.suta_lines || [];
-  let sumCurrentSuta = 0, sumVhrSuta = 0, sumSutaSavings = 0;
-  sutaResultLines.forEach(sl => {
-    sumCurrentSuta  += sl.prior_cost     || 0;
-    sumVhrSuta      += sl.suta_bill      || 0;
-    sumSutaSavings  += sl.client_savings || 0;
-  });
+  // ── Admin and SUTA totals (accumulated from per-row) ──
+  const adminSavings = sumCurAdmin - sumVhrAdmin;
 
   // ── Totals row ──
-  const hasData = sumGws > 0 || totalGWs > 0 || sutaResultLines.length > 0;
+  const hasData = sumGws > 0;
 
   const wcSavEl = document.getElementById('a-wc-savings');
   wcSavEl.textContent = sumGws ? formatDollars(sumWcSavings) : '—';
@@ -2536,8 +2530,8 @@ function renderBillingAnalysis(r) {
   adminSavEl.className   = sumGws ? savCls(adminSavings) : '';
 
   const sutaSavEl = document.getElementById('a-suta-savings');
-  sutaSavEl.textContent = sutaResultLines.length ? formatDollars(sumSutaSavings) : '—';
-  sutaSavEl.className   = sutaResultLines.length ? savCls(sumSutaSavings) : '';
+  sutaSavEl.textContent = sumGws ? formatDollars(sumSutaSavings) : '—';
+  sutaSavEl.className   = sumGws ? savCls(sumSutaSavings) : '';
 
   // ── Grand total ──
   const grandSavings = sumWcSavings + adminSavings + sumSutaSavings;

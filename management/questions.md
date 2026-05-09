@@ -33,27 +33,4 @@ Short questions only. Answers go inline, then move to the Answered section at th
 
 - Should the proposal total show **FICA and FUTA** as line items, or only VHR-billed items (WC + SUTA + Admin + extras)? These are employer payroll taxes that are technically the client's cost but not VHR's revenue.
 
----
-
-## Loss Analysis
-
-- What **loss ratio % flags a client as high-risk**? The tool calculates it but has no threshold to color-code or warn against.
-- Are loss history periods **calendar years or policy years**?
-
----
-
-## Benefits
-
-- Is the base medical PEPM (`Bp`) the **employee contribution, employer cost, or full plan premium**? Changes how billing vs. deductions flow.
-- Is the **Utilization Load (3%)** applied to medical only, or also ancillary benefits?
-- When a client brings their **own carrier**, does the Benefits Admin Fee PEPM still apply?
-- **Bands 1–5 are missing** from the Rate Tier Band table — is Band 6 the minimum, or are the lower bands just not in the data we received?
-
----
-
-## Auth / Access
-
-- Can sales agents **see each other's clients**, or only their own book?
-- What **login method** — username/password, Google SSO, or existing identity provider?
-- Should **commission rates and margins** be visible to sales agents, or are those internal-only fields?
 
