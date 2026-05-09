@@ -12,6 +12,18 @@
     .tab-nav { border-bottom: 2px solid #1a202c; }
     .page-content { max-width: 960px; }
 
+    /* WC codes table — tighter, fixed layout so description flexes */
+    #wc-codes-table { table-layout: fixed; }
+    #wc-codes-table th,
+    #wc-codes-table td { padding: 5px 4px; text-align: center; }
+    #wc-codes-table th:nth-child(3),
+    #wc-codes-table td:nth-child(3) { text-align: left; }
+    #wc-codes-table td input,
+    #wc-codes-table td select { min-width: 0; width: 100%; box-sizing: border-box; text-align: center; padding: 4px 3px; }
+    #wc-codes-table td:nth-child(3) input { text-align: left; }
+    #wc-codes-body.remove-mode tr { cursor: pointer; }
+    #wc-codes-body.remove-mode tr:hover td { background: #fee2e2 !important; color: #991b1b; }
+
     /* State picker */
     .state-picker {
       display: flex;
@@ -1102,16 +1114,16 @@
           <table class="data-table" id="wc-codes-table" style="font-size:0.8rem;">
             <thead>
               <tr>
-                <th class="req-y">State</th>
-                <th class="req-y">WC<br>Code</th>
-                <th>WC Description</th>
-                <th style="width:34px;">Haz</th>
-                <th style="width:44px;">100K<br>Flag</th>
-                <th class="req-y">Annual<br>Payroll ($)</th>
-                <th class="req-y" style="text-align:center;">#<br>FTEs</th>
-                <th class="req-y" style="text-align:center;">#<br>PTEs</th>
-                <th>Cur<br>Rate</th>
-                <th style="text-align:center;">Our<br>Rate</th>
+                <th class="req-y" style="width:60px;">State</th>
+                <th class="req-y" style="width:38px;">Code</th>
+                <th style="text-align:left;">WC Description</th>
+                <th style="width:30px;">Haz</th>
+                <th style="width:46px;">100K<br>Flag</th>
+                <th class="req-y" style="width:84px;">Annual<br>Payroll ($)</th>
+                <th class="req-y" style="width:36px;">#<br>FTEs</th>
+                <th class="req-y" style="width:36px;">#<br>PTEs</th>
+                <th style="width:50px;">Cur<br>Rate</th>
+                <th style="width:50px;">Our<br>Rate</th>
               </tr>
             </thead>
             <tbody id="wc-codes-body"></tbody>
@@ -1127,7 +1139,10 @@
           </table>
         </div>
 
-        <button class="btn-add-row" type="button" id="btn-add-wc-code">+ Add Row</button>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:10px;">
+          <button class="btn-add-row" type="button" id="btn-add-wc-code" style="margin-top:0;">+ Add Row</button>
+          <button class="btn-add-row" type="button" id="btn-remove-wc-rows" style="margin-top:0;color:#dc2626;border-color:#fecaca;">− Remove Row</button>
+        </div>
 
         <div class="wc-extra-grid">
           <div class="form-group">
@@ -1641,21 +1656,18 @@ function addWCCodeRow(data) {
     `<option value="${s}"${s === (data?.state || '') ? ' selected' : ''}>${s}</option>`
   ).join('');
   tr.innerHTML = `
-    <td style="white-space:nowrap;">
-      <select name="wc_state_${idx}" style="width:auto;min-width:0;font-size:0.8rem;padding:4px 4px">
+    <td><select name="wc_state_${idx}" style="font-size:0.8rem;">
         <option value="">—</option>${stateOpts}
-      </select>
-      <button type="button" class="btn-ghost" style="padding:1px 4px;font-size:0.7rem;color:#dc2626;border-color:#fecaca;margin-left:2px;vertical-align:middle;" onclick="removeWCRow(this)">×</button>
-    </td>
-    <td><input type="text" name="wc_code_${idx}" placeholder="8810" style="width:36px;" value="${data?.wc_code || ''}" /></td>
-    <td><input type="text" name="wc_desc_${idx}" placeholder="—" style="width:160px;background:#f5f5f5;cursor:not-allowed;" value="${data?.wc_description || ''}" readonly /></td>
-    <td style="text-align:center;"><input type="text" name="wc_hazard_${idx}" placeholder="—" style="width:26px;text-align:center;background:#f5f5f5;cursor:not-allowed;" value="${data?.hazard_group || ''}" readonly /></td>
-    <td style="text-align:center;"><input type="text" name="wc_flag_${idx}" placeholder="—" style="width:40px;text-align:center;background:#f5f5f5;cursor:not-allowed;" value="${data?.flag_100k || ''}" readonly /></td>
-    <td><input type="number" name="wc_payroll_${idx}" step="0.01" min="0" placeholder="0.00" style="width:82px;" value="${data?.annual_gw || ''}" /></td>
-    <td style="text-align:center;"><input type="number" name="wc_fte_${idx}" step="1" min="0" placeholder="0" style="width:32px;text-align:center;" value="${data?.ftes || ''}" /></td>
-    <td style="text-align:center;"><input type="number" name="wc_pte_${idx}" step="1" min="0" placeholder="0" style="width:32px;text-align:center;" value="${data?.ptes || ''}" /></td>
-    <td><input type="number" name="wc_cur_rate_${idx}" step="0.01" min="0" placeholder="0.00" style="width:48px;" value="${data?.current_client_rate || ''}" /></td>
-    <td style="text-align:center;"><input type="number" name="wc_rate_${idx}" step="0.0001" min="0" placeholder="—" value="${data?.manual_rate || ''}" readonly style="width:46px;text-align:center;background:#f5f5f5;cursor:not-allowed;" /></td>
+      </select></td>
+    <td><input type="text" name="wc_code_${idx}" placeholder="8810" value="${data?.wc_code || ''}" /></td>
+    <td><input type="text" name="wc_desc_${idx}" placeholder="—" style="background:#f5f5f5;cursor:not-allowed;" value="${data?.wc_description || ''}" readonly /></td>
+    <td><input type="text" name="wc_hazard_${idx}" placeholder="—" style="background:#f5f5f5;cursor:not-allowed;" value="${data?.hazard_group || ''}" readonly /></td>
+    <td><input type="text" name="wc_flag_${idx}" placeholder="—" style="background:#f5f5f5;cursor:not-allowed;" value="${data?.flag_100k || ''}" readonly /></td>
+    <td><input type="number" name="wc_payroll_${idx}" step="0.01" min="0" placeholder="0.00" value="${data?.annual_gw || ''}" /></td>
+    <td><input type="number" name="wc_fte_${idx}" step="1" min="0" placeholder="0" value="${data?.ftes || ''}" /></td>
+    <td><input type="number" name="wc_pte_${idx}" step="1" min="0" placeholder="0" value="${data?.ptes || ''}" /></td>
+    <td><input type="number" name="wc_cur_rate_${idx}" step="0.01" min="0" placeholder="0.00" value="${data?.current_client_rate || ''}" /></td>
+    <td><input type="number" name="wc_rate_${idx}" step="0.0001" min="0" placeholder="—" value="${data?.manual_rate || ''}" readonly style="background:#f5f5f5;cursor:not-allowed;" /></td>
   `;
   tr.querySelectorAll('input, select').forEach(inp => {
     inp.addEventListener('input', () => { updateWCTotals(); scheduleCalculate(); });
@@ -1718,6 +1730,15 @@ function addWCCodeRow(data) {
   codeInput.addEventListener('blur',   lookupWCRate);
   codeInput.addEventListener('change', lookupWCRate);
 
+  tr.addEventListener('click', (e) => {
+    if (!wcRemoveMode) return;
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+    tr.remove();
+    updateWCTotals();
+    scheduleCalculate();
+    scheduleAutoSave();
+  });
+
   tbody.appendChild(tr);
   updateWCTotals();
 
@@ -1727,12 +1748,21 @@ function addWCCodeRow(data) {
   }
 }
 
-function removeWCRow(btn) {
-  if (!confirm('Delete this WC line?')) return;
-  btn.closest('tr').remove();
-  updateWCTotals();
-  scheduleCalculate();
-  scheduleAutoSave();
+let wcRemoveMode = false;
+
+function toggleWCRemoveMode() {
+  wcRemoveMode = !wcRemoveMode;
+  const btn = document.getElementById('btn-remove-wc-rows');
+  const tbody = document.getElementById('wc-codes-body');
+  if (wcRemoveMode) {
+    btn.textContent = 'Done';
+    btn.style.background = '#fee2e2';
+    tbody.classList.add('remove-mode');
+  } else {
+    btn.textContent = '− Remove Row';
+    btn.style.background = '';
+    tbody.classList.remove('remove-mode');
+  }
 }
 
 function updateWCTotals() {
@@ -1749,6 +1779,7 @@ function updateWCTotals() {
 }
 
 document.getElementById('btn-add-wc-code').addEventListener('click', () => addWCCodeRow());
+document.getElementById('btn-remove-wc-rows').addEventListener('click', toggleWCRemoveMode);
 
 /* ── SUTA Table ──────────────────────────────────────────────────────────── */
 let sutaMinRates = {};
