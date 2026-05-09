@@ -41,6 +41,33 @@ class SystemConfig(Base):
 
     futa_approach = Column(String, default="B")
 
+    # Additional Fees — Payroll
+    fee_min_admin_per_cycle = Column(Float, default=50.0)
+    fee_delivery_min = Column(Float, default=15.0)
+    fee_delivery_max = Column(Float, default=60.0)
+    fee_out_of_cycle_payroll = Column(Float, default=25.0)
+    fee_returned_check = Column(Float, default=50.0)
+
+    # Additional Fees — Timekeeping
+    fee_timekeeping_implementation = Column(Float, default=250.0)
+    fee_timekeeping_monthly_per_ee = Column(Float, default=4.50)
+
+    # Additional Fees — HR Technology
+    fee_applicant_tracking_implementation = Column(Float, default=250.0)
+    fee_online_lms_implementation = Column(Float, default=200.0)
+    fee_online_lms_per_ee_monthly = Column(Float, default=1.50)
+    fee_mvr_report = Column(Float, default=6.0)
+    fee_everify_per_ee = Column(Float, default=5.0)
+
+    # Additional Fees — Workers' Comp
+    fee_wc_waiver_subrogation = Column(Float, default=200.0)
+    fee_wc_late_reporting = Column(Float, default=250.0)
+    fee_wc_alternate_employer_endorsement = Column(Float, default=200.0)
+
+    # Additional Fees — Account
+    fee_reactivation = Column(Float, default=500.0)
+    fee_late_payroll_submission = Column(Float, default=50.0)
+
 
 class Client(Base):
     __tablename__ = "clients"

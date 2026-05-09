@@ -5,6 +5,12 @@
     "blocked_by": null,
     "note": "Three known bugs: (1) consultant rates hardcoded at 25%/20% in summary.py instead of reading from SystemConfig. (2) broker_wc_commission_pct has no dollar calculation — display-only %. (3) No conditional consultant rate logic when a broker is on the deal. Full brief in todo.md."
   },
+  "update-pricing-math": {
+    "status": "pending",
+    "priority": 2,
+    "blocked_by": null,
+    "note": "Surfaced while building Proposal/Analysis display cards. 6 items need VHR verification: (1) Proposal total billing formula — does it include FICA/FUTA passthroughs? (2) Loss Analysis formulas (loss rate, annualized losses) — confirm base and thresholds. (3) SUTA GWs bug — gws hardcoded to 0 in collectSutaLines(), SUTA billing always $0. (4) Admin fee comparison method assumption. (5) shared_claim_fee and min_wc_fee_per_week not wired into billing. (6) Proposal SUTA column missing amounts. Full brief in todo.md."
+  },
   "calc-verification": {
     "status": "pending",
     "priority": 2,

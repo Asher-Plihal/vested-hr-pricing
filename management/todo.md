@@ -213,6 +213,82 @@ Wire the decorative topnav search input on `dashboard.html` to filter the client
 
 ---
 
+### Update Pricing Math Documentation
+**Status:** pending — `update-pricing-math`
+**Priority:** Medium — verify before presenting proposal/analysis views to VHR
+
+Review the formulas and open questions surfaced when building the Proposal, Annual Billing Analysis, and Loss Analysis display cards. Each item needs VHR staff verification against the actual Excel source of truth before the tool can be trusted for client-facing output.
+
+**File to update:** `C:\workspaces\business\vested-hr\plan_drafts\pricing_math.md`
+
+---
+
+**1. Proposal — Total Annual Billing formula (not documented)**
+
+Current implementation sums: `WC Billed + SUTA Billed + FICA + FUTA + Admin Fee + EPLI + Implementation Fee`
+
+Open questions:
+- Is it correct to include FICA and FUTA as client-facing line items in the proposal? These are employer payroll taxes billed to the client (passthrough), but the Excel proposal sheet needs to be checked.
+- Does the proposal show gross client cost (all passthroughs) or net VHR-billed items only (WC + SUTA + Admin + extras)?
+- Should TLM and Wire/ACH fees also appear in the proposal total? They're wired in the backend (`other_items.tlm`, `other_items.wire_ach_fee`) but the proposal card currently omits them.
+
+---
+
+**2. Loss Analysis formulas (not documented)**
+
+Current implementation uses:
+- **Loss Rate** = Total Losses ÷ Total Annual Payroll × 100
+  - Denominator is `total_gws` (all WC lines summed) — is this the right base? Should it be only the payroll for the states covered by each loss period?
+- **Annualized Losses** = (Total Losses ÷ Months in Policy) × 12
+  - Used to normalize periods of varying length. Confirm this is how VHR uses the loss history.
+
+Open questions:
+- What is the loss ratio threshold VHR uses to flag a client as high-risk? (e.g., loss ratio > 60% = red flag)
+- Are loss history years always calendar years or policy years (which can span two calendar years)?
+- Should open claims be weighted differently from closed claims in the risk assessment?
+
+---
+
+**3. SUTA GWs bug — billing always computes as $0**
+
+Root cause: `collectSutaLines()` in `client.html` hardcodes `gws: 0` for every SUTA row. The backend `calculate_suta()` receives `gws=0`, so `taxable_gws = min(0, threshold × WSEs) = 0`, and `suta_bill = billing_rate × 0 = $0`.
+
+This means the SUTA Billed, SUTA Cost, and SUTA Profit/Loss in the Deal Summary are always zero regardless of what rates are entered.
+
+Fix needed: compute per-state GWs on the frontend by aggregating WC lines by state before building the SUTA payload. In `collectSutaLines()`, for each SUTA state row, sum up `annual_gw` from all WC lines matching that state. Pass that sum as `gws`.
+
+This is a frontend-only fix (no backend changes). The person implementing this should also verify that `total_wses` per SUTA state is correct (currently also 0).
+
+---
+
+**4. Annual Billing Analysis — current admin fee comparison method**
+
+When comparing VHR admin fee vs. current provider fee:
+- Current implementation applies the same method (% of GWs / per check / PEPM) to `current_admin_rate` as VHR's method.
+- Open question: is it valid to compare a "% of GWs" VHR rate against a "per check" current rate using the same formula? The UI labels the current rate field dynamically based on the selected method (e.g., "Current Rate ($ per check)" when method = 2). Confirm this is intentional.
+
+---
+
+**5. WC additional fees — not in billing math**
+
+The following fields are collected in the form but are not wired into any billing formula:
+- `shared_claim_fee` — entered per client, never used in WC billing or cost
+- `min_wc_fee_per_week` — same
+
+Confirm with VHR: where do these appear in the client bill? Are they added as line items on top of WC billing, or do they affect the WC cost structure?
+
+---
+
+**6. Proposal SUTA column limitation**
+
+The Proposal card shows SUTA billing rate per state but shows "—" for dollar amounts. This is because SUTA billing requires taxable wages by state (see item 3 above). Once item 3 is fixed, the SUTA dollar column in the Proposal card should be populated.
+
+---
+
+**Commit when done:** `docs: update pricing math — loss analysis formulas, proposal total, SUTA GWs bug, open questions`
+
+---
+
 ## Blocked — Waiting on VHR Staff
 
 ### Benefits Tab
