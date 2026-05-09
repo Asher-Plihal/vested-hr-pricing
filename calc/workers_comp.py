@@ -1,6 +1,22 @@
 from models import WCRate
 
 
+def _lookup_rate(state: str, code: str, db, independent_bureau_states: str) -> float | None:
+    """Return WC rate using independent bureau or NCCI fallback logic."""
+    state = (state or "").upper().strip()
+    code = str(code or "").strip()
+    ib_states = {s.strip().upper() for s in independent_bureau_states.split(",") if s.strip()}
+    concat_key = state + code
+    row = db.query(WCRate).filter(WCRate.concat == concat_key).first()
+    if row is not None and row.rate is not None:
+        return row.rate
+    if state not in ib_states:
+        fallback = db.query(WCRate).filter(WCRate.concat == "Other" + code).first()
+        if fallback and fallback.rate is not None:
+            return fallback.rate
+    return None
+
+
 def calculate_wc(lines: list[dict], proposed_mod: float, config: dict, db=None) -> dict:
     """
     lines: [{state, wc_code, annual_gw, ftes, ptes, current_client_rate, manual_rate}]
@@ -27,12 +43,14 @@ def calculate_wc(lines: list[dict], proposed_mod: float, config: dict, db=None) 
         ptes = line.get("ptes", 0.0)
         manual_rate = line.get("manual_rate", 0.0) or 0.0
         if db is not None and (not manual_rate):
-            state_key = line.get("state", "")
-            wc_code_key = str(line.get("wc_code", "")).strip()
-            concat_key = state_key + wc_code_key
-            wc_row = db.query(WCRate).filter(WCRate.concat == concat_key).first()
-            if wc_row and wc_row.rate is not None:
-                manual_rate = wc_row.rate
+            found = _lookup_rate(
+                line.get("state", ""),
+                line.get("wc_code", ""),
+                db,
+                config.get("independent_bureau_states", ""),
+            )
+            if found is not None:
+                manual_rate = found
         current_client_rate = line.get("current_client_rate", 0.0)
 
         wses = ftes + pte_weight * ptes

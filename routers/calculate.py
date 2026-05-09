@@ -33,6 +33,7 @@ def run_calculate(body: CalculateRequest, db: Session = Depends(get_db)):
         "loss_fund_factor": cfg_row.loss_fund_factor,
         "pte_weight": cfg_row.pte_weight,
         "wc_policy_adjustment": cfg_row.wc_policy_adjustment,
+        "independent_bureau_states": cfg_row.independent_bureau_states or "",
     }
 
     pay_periods_map = {"weekly": 52, "biweekly": 26, "semimonthly": 24, "monthly": 12}

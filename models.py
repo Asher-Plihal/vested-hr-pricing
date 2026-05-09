@@ -28,6 +28,7 @@ class SystemConfig(Base):
     # WC state lists (comma-separated)
     monopolistic_states = Column(String, default="WA,WY,ND,OH")
     mcp_states = Column(String, default="RI,NY,NJ,PA,LA,WI,MN,SD,KS,MT,AZ,UT,NV,CA,OR")
+    independent_bureau_states = Column(String, default="CA,DE,PA,MI,NJ,TX")
 
     # Pay periods JSON: {"weekly":52,"biweekly":26,"semimonthly":24,"monthly":12}
     pay_periods_json = Column(Text, default='{"weekly":52,"biweekly":26,"semimonthly":24,"monthly":12}')
@@ -197,6 +198,7 @@ class WCLine(Base):
     current_client_rate = Column(Float, default=0.0)
     # Manual rate from WC Rates table — stored at intake since full WC Rates table not yet imported
     manual_rate = Column(Float, default=0.0)
+    flag_100k = Column(String, nullable=True)
 
 
 class SutaLine(Base):

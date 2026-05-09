@@ -6,7 +6,7 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import SutaRate, WCGuideline, WCRate
+from models import SutaRate, SystemConfig, WCGuideline, WCRate
 
 router = APIRouter(tags=["rates"])
 
@@ -42,22 +42,45 @@ def _safe_float(val: str):
 
 # ── WC Rate Lookup ────────────────────────────────────────────────────────────
 
+def _lookup_wc_row_and_guideline(state: str, code: str, db: Session, independent_bureau_states: str):
+    """Return (WCRate, WCGuideline) using independent bureau or NCCI fallback logic."""
+    state = state.upper().strip()
+    code = code.strip()
+    concat_key = state + code
+    ib_states = {s.strip().upper() for s in independent_bureau_states.split(",") if s.strip()}
+
+    rate_row = db.query(WCRate).filter(WCRate.concat == concat_key).first()
+    guideline_row = db.query(WCGuideline).filter(WCGuideline.concat == concat_key).first()
+
+    if rate_row is None and state not in ib_states:
+        # NCCI fallback: try "Other" + code
+        fallback_key = "Other" + code
+        rate_row = db.query(WCRate).filter(WCRate.concat == fallback_key).first()
+        guideline_row = db.query(WCGuideline).filter(WCGuideline.concat == fallback_key).first()
+
+    return rate_row, guideline_row
+
+
 @router.get("/wc-rate")
 def get_wc_rate(
     state: str = Query(..., min_length=2, max_length=2),
     code: str = Query(...),
     db: Session = Depends(get_db),
 ):
-    """Look up a WC cost rate by state + class code. Returns {"rate": float} or 404."""
-    concat_key = state.upper().strip() + code.strip()
-    row = db.query(WCRate).filter(WCRate.concat == concat_key).first()
-    if row is None or row.rate is None:
+    """Look up a WC cost rate by state + class code. Returns rate, description, hazard_group, flag_100k or 404."""
+    cfg = db.query(SystemConfig).first()
+    ib_states_str = (cfg.independent_bureau_states or "") if cfg else ""
+
+    rate_row, guideline_row = _lookup_wc_row_and_guideline(state, code, db, ib_states_str)
+
+    if rate_row is None or rate_row.rate is None:
         raise HTTPException(status_code=404, detail="Not found")
-    guideline = db.query(WCGuideline).filter(WCGuideline.concat == concat_key).first()
+
     return {
-        "rate": row.rate,
-        "description": row.description or "",
-        "hazard_group": guideline.hazard_group if guideline else "",
+        "rate": rate_row.rate,
+        "description": rate_row.description or "",
+        "hazard_group": guideline_row.hazard_group if guideline_row else "",
+        "flag_100k": guideline_row.flag_100k if guideline_row else None,
     }
 
 

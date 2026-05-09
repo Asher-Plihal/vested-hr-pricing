@@ -18,6 +18,7 @@ class SystemConfigOut(BaseModel):
     pte_weight: float
     monopolistic_states: str
     mcp_states: str
+    independent_bureau_states: str
     pay_periods_json: str
     wc_policy_adjustment: float
     consultant_commission_upfront: float
@@ -56,6 +57,7 @@ class SystemConfigUpdate(BaseModel):
     pte_weight: Optional[float] = None
     monopolistic_states: Optional[str] = None
     mcp_states: Optional[str] = None
+    independent_bureau_states: Optional[str] = None
     pay_periods_json: Optional[str] = None
     wc_policy_adjustment: Optional[float] = None
     consultant_commission_upfront: Optional[float] = None
@@ -87,6 +89,7 @@ class WCLineIn(BaseModel):
     wc_code: Optional[str] = None
     wc_description: Optional[str] = None
     hazard_group: Optional[str] = None
+    flag_100k: Optional[str] = None
     annual_gw: float = 0.0
     ftes: float = 0.0
     ptes: float = 0.0

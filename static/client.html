@@ -1106,6 +1106,7 @@
                 <th class="req-y">WC<br>Code</th>
                 <th>WC<br>Description</th>
                 <th style="width:40px;">Hazard<br>Group</th>
+                <th style="width:50px;">100K<br>Flag</th>
                 <th class="req-y">Annual<br>Payroll ($)</th>
                 <th class="req-y">#<br>FT EEs</th>
                 <th class="req-y">#<br>PT EEs</th>
@@ -1117,7 +1118,7 @@
             <tbody id="wc-codes-body"></tbody>
             <tfoot>
               <tr class="totals-row">
-                <td colspan="4" style="text-align:right;padding-right:8px;">Totals</td>
+                <td colspan="5" style="text-align:right;padding-right:8px;">Totals</td>
                 <td id="wc-total-payroll" style="padding-left:5px;font-size:0.78rem;">$0</td>
                 <td id="wc-total-fte" style="text-align:center;">0</td>
                 <td id="wc-total-pte" style="text-align:center;">0</td>
@@ -1649,6 +1650,7 @@ function addWCCodeRow(data) {
     <td><input type="text" name="wc_code_${idx}" placeholder="8810" style="width:42px;" value="${data?.wc_code || ''}" /></td>
     <td><input type="text" name="wc_desc_${idx}" placeholder="—" style="width:240px;background:#f5f5f5;cursor:not-allowed;" value="${data?.wc_description || ''}" readonly /></td>
     <td style="text-align:center;"><input type="text" name="wc_hazard_${idx}" placeholder="—" style="width:32px;text-align:center;background:#f5f5f5;cursor:not-allowed;" value="${data?.hazard_group || ''}" readonly /></td>
+    <td style="text-align:center;"><input type="text" name="wc_flag_${idx}" placeholder="—" style="width:46px;text-align:center;background:#f5f5f5;cursor:not-allowed;" value="${data?.flag_100k || ''}" readonly /></td>
     <td><input type="number" name="wc_payroll_${idx}" step="0.01" min="0" placeholder="0.00" style="width:90px;" value="${data?.annual_gw || ''}" /></td>
     <td><input type="number" name="wc_fte_${idx}" step="1" min="0" placeholder="0" style="width:38px;" value="${data?.ftes || ''}" /></td>
     <td><input type="number" name="wc_pte_${idx}" step="1" min="0" placeholder="0" style="width:38px;" value="${data?.ptes || ''}" /></td>
@@ -1666,7 +1668,24 @@ function addWCCodeRow(data) {
   const codeInput    = tr.querySelector(`input[name="wc_code_${idx}"]`);
   const descInput    = tr.querySelector(`input[name="wc_desc_${idx}"]`);
   const hazardInput  = tr.querySelector(`input[name="wc_hazard_${idx}"]`);
+  const flagInput    = tr.querySelector(`input[name="wc_flag_${idx}"]`);
   const rateInput    = tr.querySelector(`input[name="wc_rate_${idx}"]`);
+
+  function applyFlagStyle(input, val) {
+    if (val === 'EXCLD') {
+      input.style.background = '#fee2e2';
+      input.style.color = '#dc2626';
+    } else if (val === 'RSTD') {
+      input.style.background = '#fef3c7';
+      input.style.color = '#d97706';
+    } else {
+      input.style.background = '#f5f5f5';
+      input.style.color = 'inherit';
+    }
+  }
+
+  // Apply color to initial value if loaded from DB
+  applyFlagStyle(flagInput, flagInput.value);
 
   async function lookupWCRate() {
     const s = stateSelect.value;
@@ -1674,13 +1693,17 @@ function addWCCodeRow(data) {
     if (!s || !c) return;
     try {
       const data = await apiGet(`/wc-rate?state=${encodeURIComponent(s)}&code=${encodeURIComponent(c)}`);
-      rateInput.value  = data.rate;
-      descInput.value  = data.description || '';
+      rateInput.value   = data.rate;
+      descInput.value   = data.description || '';
       hazardInput.value = data.hazard_group || '';
+      flagInput.value   = data.flag_100k || '';
+      applyFlagStyle(flagInput, flagInput.value);
     } catch (_) {
       rateInput.value   = '';
       descInput.value   = '';
       hazardInput.value = '';
+      flagInput.value   = '';
+      applyFlagStyle(flagInput, '');
       rateInput.placeholder = '— not found';
     }
     updateWCTotals();
@@ -1915,12 +1938,13 @@ function collectWCLines() {
     const wc_code             = tr.querySelector('input[name^="wc_code_"]')?.value?.trim() || null;
     const wc_description      = tr.querySelector('input[name^="wc_desc_"]')?.value?.trim() || null;
     const hazard_group        = tr.querySelector('input[name^="wc_hazard_"]')?.value?.trim() || null;
+    const flag_100k           = tr.querySelector('input[name^="wc_flag_"]')?.value?.trim() || null;
     const annual_gw           = parseFloat(tr.querySelector('input[name^="wc_payroll_"]')?.value) || 0;
     const ftes                = parseFloat(tr.querySelector('input[name^="wc_fte_"]')?.value) || 0;
     const ptes                = parseFloat(tr.querySelector('input[name^="wc_pte_"]')?.value) || 0;
     const current_client_rate = parseFloat(tr.querySelector('input[name^="wc_cur_rate_"]')?.value) || 0;
     const manual_rate         = parseFloat(tr.querySelector('input[name^="wc_rate_"]')?.value) || 0;
-    lines.push({ state, wc_code, wc_description, hazard_group, annual_gw, ftes, ptes, current_client_rate, manual_rate });
+    lines.push({ state, wc_code, wc_description, hazard_group, flag_100k, annual_gw, ftes, ptes, current_client_rate, manual_rate });
   });
   return lines;
 }

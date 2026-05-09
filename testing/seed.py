@@ -36,11 +36,17 @@ _MIGRATIONS = [
     ("fee_wc_alternate_employer_endorsement", "ALTER TABLE system_config ADD COLUMN fee_wc_alternate_employer_endorsement REAL DEFAULT 200.0"),
     ("fee_reactivation",                      "ALTER TABLE system_config ADD COLUMN fee_reactivation REAL DEFAULT 500.0"),
     ("fee_late_payroll_submission",           "ALTER TABLE system_config ADD COLUMN fee_late_payroll_submission REAL DEFAULT 50.0"),
+    ("independent_bureau_states",             "ALTER TABLE system_config ADD COLUMN independent_bureau_states TEXT DEFAULT 'CA,DE,PA,MI,NJ,TX'"),
 ]
 
 # Also handle clients table migrations
 _CLIENT_MIGRATIONS = [
     ("current_admin_rate", "ALTER TABLE clients ADD COLUMN current_admin_rate REAL DEFAULT 0.0"),
+]
+
+# WC lines table migrations
+_WC_LINE_MIGRATIONS = [
+    ("flag_100k", "ALTER TABLE wc_lines ADD COLUMN flag_100k TEXT"),
 ]
 
 with engine.connect() as conn:
@@ -59,6 +65,14 @@ with engine.connect() as conn:
                 conn.execute(text(ddl))
                 conn.commit()
                 print(f"Migrated clients: added {col}")
+
+    wl_cols = [row[1] for row in conn.execute(text("PRAGMA table_info(wc_lines)"))]
+    if wl_cols:
+        for col, ddl in _WC_LINE_MIGRATIONS:
+            if col not in wl_cols:
+                conn.execute(text(ddl))
+                conn.commit()
+                print(f"Migrated wc_lines: added {col}")
 
 # ── SystemConfig ──────────────────────────────────────────────────────────────
 from models import SystemConfig  # noqa: E402 (already imported via `import models` above)
@@ -80,6 +94,7 @@ if not existing_config:
         pte_weight=0.75,
         monopolistic_states="WA,WY,ND,OH",
         mcp_states="RI,NY,NJ,PA,LA,WI,MN,SD,KS,MT,AZ,UT,NV,CA,OR",
+        independent_bureau_states="CA,DE,PA,MI,NJ,TX",
         pay_periods_json='{"weekly":52,"biweekly":26,"semimonthly":24,"monthly":12}',
         wc_policy_adjustment=0.0,
         futa_approach="B",
