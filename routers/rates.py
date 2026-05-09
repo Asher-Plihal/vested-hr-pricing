@@ -53,7 +53,12 @@ def get_wc_rate(
     row = db.query(WCRate).filter(WCRate.concat == concat_key).first()
     if row is None or row.rate is None:
         raise HTTPException(status_code=404, detail="Not found")
-    return {"rate": row.rate}
+    guideline = db.query(WCGuideline).filter(WCGuideline.concat == concat_key).first()
+    return {
+        "rate": row.rate,
+        "description": row.description or "",
+        "hazard_group": guideline.hazard_group if guideline else "",
+    }
 
 
 # ── Downloads ─────────────────────────────────────────────────────────────────

@@ -1,4 +1,3 @@
-import json
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -36,10 +35,7 @@ def run_calculate(body: CalculateRequest, db: Session = Depends(get_db)):
         "wc_policy_adjustment": cfg_row.wc_policy_adjustment,
     }
 
-    try:
-        pay_periods_map = json.loads(cfg_row.pay_periods_json)
-    except (json.JSONDecodeError, TypeError):
-        pay_periods_map = {"weekly": 52, "biweekly": 26, "semimonthly": 24, "monthly": 12}
+    pay_periods_map = {"weekly": 52, "biweekly": 26, "semimonthly": 24, "monthly": 12}
 
     wc_line_dicts = [l.model_dump() for l in body.wc_lines]
     suta_line_dicts = [l.model_dump() for l in body.suta_lines]
