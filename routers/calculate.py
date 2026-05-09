@@ -83,6 +83,8 @@ def run_calculate(body: CalculateRequest, db: Session = Depends(get_db)):
         "wire_ach_fee": wire_ach_fee,
         "broker_wc_commission_pct": body.broker_wc_commission_pct,
         "external_commission_pct": body.external_commission_pct,
+        "consultant_commission_upfront": cfg_row.consultant_commission_upfront,
+        "consultant_commission_ongoing": cfg_row.consultant_commission_ongoing,
     }
 
     summary = calculate_summary(

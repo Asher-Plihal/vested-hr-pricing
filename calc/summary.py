@@ -33,7 +33,21 @@ def calculate_summary(
     external_comm = commission_result.get("external_comm", 0.0)
     admin_after_comm = commission_result.get("admin_after_comm", 0.0)
 
-    total_profit_loss = wc_profit + suta_profit + admin_after_comm + total_other
+    broker_wc_pct = ancillary.get("broker_wc_commission_pct", 0.0)
+    broker_wc_commission = wc_profit * broker_wc_pct
+    wc_profit_after_broker = wc_profit - broker_wc_commission
+
+    consultant_upfront_rate = ancillary.get("consultant_commission_upfront", 0.25)
+    consultant_ongoing_rate = ancillary.get("consultant_commission_ongoing", 0.20)
+    broker_admin_pct = ancillary.get("external_commission_pct", 0.0)
+    if broker_admin_pct > 0:
+        consultant_upfront_amt = 0.0
+        consultant_ongoing_amt = admin_fee * 0.10
+    else:
+        consultant_upfront_amt = admin_fee * consultant_upfront_rate
+        consultant_ongoing_amt = admin_fee * consultant_ongoing_rate
+
+    total_profit_loss = wc_profit_after_broker + suta_profit + admin_after_comm + total_other
 
     # Year 1 differs from ongoing by removing implementation fee from recurring calculation
     admin_net_year1 = admin_after_comm - implementation_fee
@@ -70,10 +84,11 @@ def calculate_summary(
             "total_profit_loss": total_profit_loss,
         },
         "commissions": {
-            "consultant_upfront": admin_fee * 0.25,
-            "consultant_ongoing": admin_fee * 0.20,
-            "broker_wc_pct": ancillary.get("broker_wc_commission_pct", 0.0),
-            "broker_admin_pct": ancillary.get("external_commission_pct", 0.0),
+            "consultant_upfront": consultant_upfront_amt,
+            "consultant_ongoing": consultant_ongoing_amt,
+            "broker_wc_commission": broker_wc_commission,
+            "broker_wc_pct": broker_wc_pct,
+            "broker_admin_pct": broker_admin_pct,
             "admin_net_ongoing": admin_after_comm,
             "admin_net_year1": admin_net_year1,
             "cashflow_50pct_loss_fund": cashflow_50pct_loss_fund,
