@@ -242,7 +242,7 @@ class ClientUpdate(BaseModel):
     implementation_fee: Optional[float] = None
     epli_fee: Optional[float] = None
     include_epli: Optional[bool] = None
-    w2s_generated: Optional[float] = None
+    futa_turnover_rate: Optional[float] = None
     card_lock_states: Optional[str] = None
     wc_lines: Optional[list[WCLineIn]] = None
     suta_lines: Optional[list[SutaLineIn]] = None
@@ -334,7 +334,7 @@ class ClientOut(BaseModel):
     implementation_fee: Optional[float]
     epli_fee: Optional[float]
     include_epli: Optional[bool]
-    w2s_generated: Optional[float]
+    futa_turnover_rate: Optional[float]
     card_lock_states: Optional[str] = None
     wc_lines: list[WCLineOut] = []
     suta_lines: list[SutaLineOut] = []
@@ -368,7 +368,7 @@ class CalculateRequest(BaseModel):
     # Flat fields (used by smoke test and client page)
     ftes: float = 0.0
     ptes: float = 0.0
-    w2s_generated: float = 0.0
+    futa_turnover_rate: float = 1.0
     wc_lines: list[WCLineIn] = []
     suta_lines: list[SutaLineIn] = []
     proposed_mod: float = 1.0

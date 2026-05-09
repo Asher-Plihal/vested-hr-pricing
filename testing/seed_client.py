@@ -48,7 +48,7 @@ def seed():
             admin_rate=0.035,
             internal_commission_pct=0.05,
             external_commission_pct=0.0,
-            w2s_generated=62,
+            futa_turnover_rate=1.5122,
         )
         db.add(client)
         db.flush()  # populate client.id before creating child records

@@ -185,8 +185,8 @@ class Client(Base):
     epli_fee = Column(Float, default=0.0)
     include_epli = Column(Boolean, default=False)
 
-    # FUTA turnover input
-    w2s_generated = Column(Float, default=0.0)
+    # FUTA turnover input (decimal; can exceed 1.0 when W-2s > avg headcount)
+    futa_turnover_rate = Column(Float, default=1.0)
 
     # UI state — JSON dict of card-id → locked boolean
     card_lock_states = Column(Text, nullable=True)

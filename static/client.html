@@ -1133,8 +1133,8 @@
       <hr class="card-divider" />
       <div class="form-grid" style="margin-bottom:16px">
         <div class="form-group">
-          <label for="w2s_generated">Client Turnover Rate</label>
-          <input type="number" id="w2s_generated" name="w2s_generated" step="0.01" min="0" value="0" />
+          <label for="futa_turnover_rate">Client Turnover Rate</label>
+          <input type="number" id="futa_turnover_rate" name="futa_turnover_rate" step="0.01" min="0" placeholder="e.g. 1.51" />
         </div>
         <div class="form-group"></div>
       </div>
@@ -2117,7 +2117,7 @@ wcMod.addEventListener('input', () => {
  'current_admin_rate', 'current_admin_rate_2', 'current_admin_rate_3',
  'pricing_proposed_mod', 'implementation_fee',
  'epli_fee', 'broker_wc_commission_pct', 'internal_commission_pct',
- 'external_commission_pct', 'w2s_generated'].forEach(id => {
+ 'external_commission_pct', 'futa_turnover_rate'].forEach(id => {
   const el = document.getElementById(id);
   if (el) {
     el.addEventListener('change', scheduleCalculate);
@@ -2325,7 +2325,7 @@ function collectClientPayload() {
     internal_commission_pct:   internal / 100,
     external_commission_pct:   external / 100,
     broker_wc_commission_pct:  brokerWC / 100,
-    w2s_generated:             getNumVal('w2s_generated'),
+    futa_turnover_rate:        getNumVal('futa_turnover_rate'),
     card_lock_states:          collectCardLockStates(),
   };
 
@@ -2929,7 +2929,7 @@ function populateForm(client) {
   setField('broker_wc_commission_pct',  ((client.broker_wc_commission_pct || 0) * 100).toFixed(4));
   setField('internal_commission_pct',   ((client.internal_commission_pct || 0) * 100).toFixed(4));
   setField('external_commission_pct',   ((client.external_commission_pct || 0) * 100).toFixed(4));
-  setField('w2s_generated', client.w2s_generated);
+  setField('futa_turnover_rate', client.futa_turnover_rate);
 
   scheduleCalculate();
 }

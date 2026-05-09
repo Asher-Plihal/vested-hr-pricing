@@ -4,6 +4,14 @@ Most recent entry at the top. Add an entry when a task completes. This is where 
 
 ---
 
+### 2026-05-09 — FUTA: replace w2s_generated with direct futa_turnover_rate
+
+**No task ID — cleanup per product decision**
+
+`w2s_generated` removed from the entire stack. FUTA now takes a direct decimal turnover rate (`futa_turnover_rate`) instead of computing it from W-2 count ÷ headcount. Rate can exceed 1.0 (e.g. 1.51 = 151% when W-2s outnumber average WSEs). Changed: `calc/futa.py` signature, `schemas.py` (ClientUpdate, ClientOut, CalculateRequest default changed from 0.0 → 1.0), `models.py`, `routers/calculate.py`, `static/client.html` (id/name/JS), `testing/seed_client.py` (was `w2s_generated=62`, now `futa_turnover_rate=1.5122`), `testing/seed.py` (migration adds new column). DB migrated live.
+
+---
+
 ### 2026-05-09 — Commission logic rewrite + calculate payload fix
 
 **No task ID — ad-hoc session**

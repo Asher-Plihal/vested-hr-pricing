@@ -51,6 +51,7 @@ _CLIENT_MIGRATIONS = [
     ("tlm_fee",            "ALTER TABLE clients ADD COLUMN tlm_fee REAL DEFAULT 0.0"),
     ("include_wire",       "ALTER TABLE clients ADD COLUMN include_wire INTEGER DEFAULT 0"),
     ("setup_fee_waived",   "ALTER TABLE clients ADD COLUMN setup_fee_waived INTEGER DEFAULT 0"),
+    ("futa_turnover_rate", "ALTER TABLE clients ADD COLUMN futa_turnover_rate REAL DEFAULT 1.0"),
 ]
 
 # WC lines table migrations

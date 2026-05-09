@@ -1,7 +1,8 @@
-def calculate_futa(lines: list[dict], w2s_generated: float, config: dict) -> dict:
+def calculate_futa(lines: list[dict], turnover_rate: float, config: dict) -> dict:
     """
     Approach B only (per pricing_math.md — see notes on Approach A vs B tradeoffs).
     Pure passthrough: no VHR margin.
+    turnover_rate is a decimal (e.g. 1.51 = 151% — W-2s can exceed headcount).
     """
     futa_rate = config["futa_rate"]
     futa_wage_base = config["futa_wage_base"]
@@ -12,11 +13,10 @@ def calculate_futa(lines: list[dict], w2s_generated: float, config: dict) -> dic
         for line in lines
     )
 
-    turnover_pct = w2s_generated / total_wses if total_wses > 0 else 0.0
-    futa_dollars = total_wses * futa_wage_base * futa_rate * turnover_pct
+    futa_dollars = total_wses * futa_wage_base * futa_rate * turnover_rate
 
     return {
         "futa_dollars": futa_dollars,
-        "turnover_pct": turnover_pct,
+        "turnover_pct": turnover_rate,
         "total_wses": total_wses,
     }

@@ -46,7 +46,7 @@ def run_calculate(body: CalculateRequest, db: Session = Depends(get_db)):
 
     fica_result = calculate_fica(wc_line_dicts, config)
 
-    futa_result = calculate_futa(wc_line_dicts, body.w2s_generated, config)
+    futa_result = calculate_futa(wc_line_dicts, body.futa_turnover_rate, config)
 
     suta_result = calculate_suta(suta_line_dicts)
 
