@@ -229,8 +229,13 @@
     .ds-label { font-size: 0.875rem; color: #4a5568; }
     .ds-value { font-size: 0.9rem; font-weight: 600; color: #1a202c; }
     .ds-row.total {
-      border-top: 2px solid #e2e8f0;
+      border-top: 2px solid #eab308;
       border-bottom: none;
+      background: #fefce8;
+      margin-left: -28px;
+      margin-right: -28px;
+      padding-left: 28px;
+      padding-right: 28px;
       margin-top: 4px;
       padding-top: 10px;
     }
@@ -238,6 +243,8 @@
     .ds-row.total .ds-value { font-size: 1rem; color: #1e3154; }
     .ds-value.positive { color: #16a34a; }
     .ds-value.negative { color: #dc2626; }
+    .ds-value.ds-dual { display: flex; gap: 12px; align-items: center; }
+    .ds-secondary { font-size: 0.82rem; color: #64748b; font-weight: 500; }
 
     /* Pricing: admin method row */
     .pricing-method-row { display: flex; align-items: center; gap: 16px; }
@@ -1075,18 +1082,18 @@
 
     <div class="card" data-card-id="additional-fees" data-locked="true">
       <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
-        <span>Additional Fees</span>
+        <span>Other / Ancillary Services</span>
         <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
       </div>
       <hr class="card-divider" />
       <div class="form-grid">
         <div class="form-group">
-          <label class="req-y" for="implementation_fee">Implementation Fee ($)</label>
-          <input type="number" id="implementation_fee" name="implementation_fee" step="0.01" min="0" value="0" />
+          <label for="epli_fee">EPLI Rate ($ / WSE / pay period) <span style="font-weight:400;color:#718096;font-size:0.78rem;">min $0.50</span></label>
+          <input type="number" id="epli_fee" name="epli_fee" step="0.01" min="0" value="0" />
         </div>
         <div class="form-group">
-          <label class="req-y" for="epli_fee">EPLI ($) <span style="font-weight:400;color:#718096;font-size:0.78rem;">(Cannot be less than $0.50 per week)</span></label>
-          <input type="number" id="epli_fee" name="epli_fee" step="0.01" min="0" value="0" />
+          <label class="req-y" for="implementation_fee">Implementation / Setup Fee ($)</label>
+          <input type="number" id="implementation_fee" name="implementation_fee" step="0.01" min="0" value="0" />
         </div>
       </div>
     </div>
@@ -1140,6 +1147,9 @@
               <th style="width:80px;">VHR Min<br>Rate</th>
               <th style="width:76px;">Rate (%)</th>
               <th style="width:90px;">Current<br>Rate (%)</th>
+              <th style="width:90px;">Threshold</th>
+              <th style="width:100px;">WSEs w/<br>Turnover</th>
+              <th style="width:100px;">Taxable GWs</th>
             </tr>
           </thead>
           <tbody id="suta-body"></tbody>
@@ -1592,18 +1602,18 @@
         <div class="ds-row"><span class="ds-label">My Net Billing</span><span class="ds-value" id="bc-net-billing">—</span></div>
         <div class="ds-row"><span class="ds-label">My Fixed Cost</span><span class="ds-value" id="bc-wc-fixed">—</span></div>
       </div>
-      <div style="margin:12px -28px -24px;padding:14px 28px;background:#f0fdf4;border-top:2px solid #22c55e;border-radius:0 0 10px 10px;display:flex;justify-content:space-between;align-items:center;">
+      <div style="margin:12px -28px -24px;padding:14px 28px;background:#fefce8;border-top:2px solid #eab308;border-radius:0 0 10px 10px;display:flex;justify-content:space-between;align-items:center;">
         <span style="font-weight:700;color:#1e3154;font-size:0.9rem;">Leftover of Claims</span>
         <span style="display:flex;gap:10px;align-items:center;">
           <span id="bc-leftover-amt" style="font-weight:700;color:#1e3154;">—</span>
-          <span id="bc-leftover-pct" style="font-size:0.82rem;color:#166534;font-weight:600;"></span>
+          <span id="bc-leftover-pct" style="font-size:0.82rem;color:#854d0e;font-weight:600;"></span>
         </span>
       </div>
     </div>
 
     <!-- Deal Summary -->
     <div class="card" id="deal-summary-card">
-      <div class="card-title">Deal Summary <span style="font-size:0.78rem;font-weight:400;color:#a0aec0;margin-left:8px">(read-only — calculated from inputs above)</span></div>
+      <div class="card-title">Deal Summary</div>
       <hr class="card-divider" />
 
       <div id="summary-calculating" class="summary-calculating" style="display:none;">Calculating…</div>
@@ -1615,7 +1625,16 @@
           <div class="ds-row"><span class="ds-label">Total WSEs</span><span class="ds-value" id="s-total-wses">—</span></div>
           <div class="ds-row"><span class="ds-label">Gross Wages</span><span class="ds-value" id="s-total-gws">—</span></div>
           <div class="ds-row"><span class="ds-label">Average Wage</span><span class="ds-value" id="s-avg-wage">—</span></div>
-          <div class="ds-row"><span class="ds-label">Admin Margin</span><span class="ds-value" id="s-admin-margin">—</span></div>
+        </div>
+        <div class="ds-row total" style="margin-top:8px">
+          <span class="ds-label">Admin Margin</span>
+          <span class="ds-value" style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
+            <span id="s-admin-margin">—</span>
+            <span style="display:flex;gap:10px;font-size:0.78rem;color:#64748b;font-weight:500;">
+              <span id="s-admin-margin-pct">—</span>
+              <span id="s-admin-margin-per-wse">—</span>
+            </span>
+          </span>
         </div>
 
         <p class="section-subhead" style="margin-top:20px">WC Overview</p>
@@ -1624,39 +1643,64 @@
           <div class="ds-row"><span class="ds-label">WC Fixed Cost</span><span class="ds-value" id="s-wc-fixed-cost">—</span></div>
           <div class="ds-row"><span class="ds-label">WC Loss Fund Contribution</span><span class="ds-value" id="s-wc-loss-fund">—</span></div>
           <div class="ds-row"><span class="ds-label">Total WC Cost</span><span class="ds-value" id="s-total-wc-cost">—</span></div>
-          <div class="ds-row"><span class="ds-label">WC Profit / Loss</span><span class="ds-value" id="s-wc-profit-loss">—</span></div>
+        </div>
+        <div class="ds-row total" style="margin-top:8px">
+          <span class="ds-label">WC Profit / Loss</span>
+          <span class="ds-value" style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
+            <span id="s-wc-profit-loss">—</span>
+            <span style="display:flex;gap:10px;font-size:0.78rem;color:#64748b;font-weight:500;">
+              <span id="s-wc-mod">—</span>
+              <span id="s-wc-billed-rate">—</span>
+            </span>
+          </span>
         </div>
 
         <p class="section-subhead" style="margin-top:20px">Taxes Overview</p>
         <div class="deal-summary-grid">
           <div class="ds-row"><span class="ds-label">SUTA Billed</span><span class="ds-value" id="s-suta-billed">—</span></div>
           <div class="ds-row"><span class="ds-label">SUTA Cost</span><span class="ds-value" id="s-suta-cost">—</span></div>
-          <div class="ds-row"><span class="ds-label">SUTA Profit / Loss</span><span class="ds-value" id="s-suta-profit-loss">—</span></div>
-          <div class="ds-row"><span class="ds-label">FICA Total</span><span class="ds-value" id="s-fica-total">—</span></div>
-          <div class="ds-row"><span class="ds-label">FUTA Total</span><span class="ds-value" id="s-futa-total">—</span></div>
+        </div>
+        <div class="ds-row total" style="margin-top:8px">
+          <span class="ds-label">SUTA Profit / Loss</span>
+          <span class="ds-value" id="s-suta-profit-loss">—</span>
         </div>
 
-        <p class="section-subhead" style="margin-top:20px">Other Items</p>
+        <p class="section-subhead" style="margin-top:20px">Other / Ancillary Services</p>
         <div class="deal-summary-grid">
+          <div class="ds-row"><span class="ds-label">TLM</span><span class="ds-value" id="s-tlm">—</span></div>
           <div class="ds-row"><span class="ds-label">EPLI</span><span class="ds-value" id="s-epli">—</span></div>
+          <div class="ds-row"><span class="ds-label">Reverse Wire / ACH Fee</span><span class="ds-value" id="s-reverse-wire">—</span></div>
           <div class="ds-row"><span class="ds-label">Implementation Fee</span><span class="ds-value" id="s-impl-fee">—</span></div>
         </div>
         <div class="ds-row total" style="margin-top:8px">
-          <span class="ds-label">Total Profit / Loss</span>
-          <span class="ds-value" id="s-total-profit-loss">—</span>
+          <span class="ds-label">Total Ancillary</span>
+          <span class="ds-value" id="s-total-ancillary">—</span>
         </div>
 
         <p class="section-subhead" style="margin-top:24px">Commissions</p>
         <div class="deal-summary-grid">
-          <div class="ds-row"><span class="ds-label">Business Consultant — Upfront (25% admin)</span><span class="ds-value" id="s-consultant-upfront">—</span></div>
-          <div class="ds-row"><span class="ds-label">Business Consultant — Ongoing (20% admin)</span><span class="ds-value" id="s-consultant-ongoing">—</span></div>
-          <div class="ds-row"><span class="ds-label">Broker/Referral Partner WC %</span><span class="ds-value" id="s-broker-wc-pct">—</span></div>
-          <div class="ds-row"><span class="ds-label">Broker/Referral Partner Admin %</span><span class="ds-value" id="s-broker-admin-pct">—</span></div>
-          <div class="ds-row"><span class="ds-label">Admin Net of Ongoing Admin</span><span class="ds-value" id="s-admin-net-ongoing">—</span></div>
-          <div class="ds-row"><span class="ds-label">Admin Net of First-Year Commissions</span><span class="ds-value" id="s-admin-net-year1">—</span></div>
+          <div class="ds-row"><span class="ds-label">Business Consultant — Upfront</span><span class="ds-value ds-dual"><span id="s-consultant-upfront-pct">—</span><span id="s-consultant-upfront" class="ds-secondary">—</span></span></div>
+          <div class="ds-row"><span class="ds-label">Business Consultant — Ongoing</span><span class="ds-value ds-dual"><span id="s-consultant-ongoing-pct">—</span><span id="s-consultant-ongoing" class="ds-secondary">—</span></span></div>
+          <div class="ds-row"><span class="ds-label">Broker/Referral Partner WC</span><span class="ds-value ds-dual"><span id="s-broker-wc-pct">—</span><span id="s-broker-wc-amt" class="ds-secondary">—</span></span></div>
+          <div class="ds-row"><span class="ds-label">Broker/Referral Partner Admin</span><span class="ds-value ds-dual"><span id="s-broker-admin-pct">—</span><span id="s-broker-admin-amt" class="ds-secondary">—</span></span></div>
+        </div>
+        <div class="ds-row total" style="margin-top:8px">
+          <span class="ds-label">Total Commissions</span>
+          <span class="ds-value ds-dual"><span id="s-total-comm-pct">—</span><span id="s-total-comm" class="ds-secondary">—</span></span>
+        </div>
+        <div class="deal-summary-grid" style="margin-top:8px">
+          <div class="ds-row"><span class="ds-label">Admin Net after Ongoing Commissions</span><span class="ds-value" style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;"><span id="s-admin-net-ongoing">—</span><span style="display:flex;gap:10px;font-size:0.78rem;color:#64748b;font-weight:500;"><span id="s-admin-net-ongoing-pct">—</span><span id="s-admin-net-ongoing-per-wse">—</span></span></span></div>
+          <div class="ds-row"><span class="ds-label">Admin Net after First Year Commissions</span><span class="ds-value" style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;"><span id="s-admin-net-year1">—</span><span style="display:flex;gap:10px;font-size:0.78rem;color:#64748b;font-weight:500;"><span id="s-admin-net-year1-pct">—</span><span id="s-admin-net-year1-per-wse">—</span></span></span></div>
+          <div class="ds-row"><span class="ds-label">Cash Flow after Commissions</span><span class="ds-value" style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;"><span id="s-cash-flow-after-comm">—</span><span style="display:flex;gap:10px;font-size:0.78rem;color:#64748b;font-weight:500;"><span id="s-cash-flow-after-comm-pct">—</span><span id="s-cash-flow-after-comm-per-wse">—</span></span></span></div>
+          <div class="ds-row"><span class="ds-label">Cash Flow with Estimated Losses</span><span class="ds-value" style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;"><span id="s-cash-flow-est-losses">—</span><span style="display:flex;gap:10px;font-size:0.78rem;color:#64748b;font-weight:500;"><span id="s-cash-flow-est-losses-pct">—</span><span id="s-cash-flow-est-losses-per-wse">—</span></span></span></div>
         </div>
 
       </div><!-- /summary-content -->
+
+      <div style="margin:12px -28px -24px;padding:14px 28px;background:#fefce8;border-top:2px solid #eab308;border-radius:0 0 10px 10px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-weight:700;color:#1e3154;font-size:0.9rem;">Total Profit / Loss</span>
+        <span id="s-total-profit-loss" style="font-weight:700;font-size:0.95rem;">—</span>
+      </div>
     </div><!-- /deal-summary-card -->
 
   </div><!-- /panel-analysis -->
@@ -1679,6 +1723,7 @@ const clientId = new URLSearchParams(window.location.search).get('id');
 let calcDebounceTimer = null;
 let autoSaveTimer = null;
 let isPopulating = false;
+let _avgAnnualLoss = null;
 
 /* ── Tab Navigation ─────────────────────────────────────────────────────── */
 document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -1944,8 +1989,16 @@ function addSutaRow(data) {
   const tbody = document.getElementById('suta-body');
   const idx = tbody.rows.length;
   const state = data?.state || '';
-  const minRate = (state && sutaMinRates[state]) ? formatPct(sutaMinRates[state]) : '—';
+  const minRate   = (state && sutaMinRates[state])   ? formatPct(sutaMinRates[state])        : '—';
+  const threshold = (state && sutaThresholds[state]) ? formatCurrency(sutaThresholds[state]) : '—';
   const clientRep = sutaClientReporting(state);
+  const wcLns     = collectWCLines();
+  const stateWC   = state ? wcLns.filter(l => l.state === state) : [];
+  const stateGws  = stateWC.reduce((s, l) => s + (l.annual_gw || 0), 0);
+  const stateWses = stateWC.reduce((s, l) => s + (l.ftes || 0) + 0.75 * (l.ptes || 0), 0);
+  const wsesWithTurnover = stateWses * 1.1;
+  const thresh    = sutaThresholds[state] || 0;
+  const taxableGws = Math.min(stateGws, thresh * wsesWithTurnover);
   const tr = document.createElement('tr');
   tr.dataset.sutaIdx = idx;
   tr.innerHTML = `
@@ -1959,6 +2012,9 @@ function addSutaRow(data) {
     <td><input type="text" name="suta_min_${idx}" readonly style="background:#f7fafc;color:#718096;" value="${minRate}" /></td>
     <td><input type="number" name="suta_rate_${idx}" step="0.01" min="0" max="100" placeholder="0.00" value="${data?.billing_rate != null ? (data.billing_rate * 100).toFixed(2) : ''}" /></td>
     <td><input type="number" name="suta_current_rate_${idx}" step="0.01" min="0" max="100" placeholder="0.00" value="${data?.current_client_rate != null ? (data.current_client_rate * 100).toFixed(2) : ''}" /></td>
+    <td><input type="text" name="suta_threshold_${idx}" readonly style="background:#f7fafc;color:#718096;" value="${threshold}" /></td>
+    <td><input type="text" name="suta_wses_turnover_${idx}" readonly style="background:#f7fafc;color:#718096;" value="${wsesWithTurnover ? wsesWithTurnover.toFixed(2) : '—'}" /></td>
+    <td><input type="text" name="suta_taxable_gws_${idx}" readonly style="background:#f7fafc;color:#718096;" value="${taxableGws ? formatCurrency(taxableGws) : '—'}" /></td>
   `;
   tr.querySelectorAll('input, select').forEach(el => {
     el.addEventListener('change', scheduleCalculate);
@@ -1972,8 +2028,19 @@ function onSutaStateChange(sel) {
   const tr = sel.closest('tr');
   const state = sel.value;
   tr.querySelector('input[name^="suta_min_"]').value =
-    (state && sutaMinRates[state]) ? formatPct(sutaMinRates[state]) : '—';
+    (state && sutaMinRates[state])  ? formatPct(sutaMinRates[state])        : '—';
   tr.querySelector('input[name^="suta_client_rep_"]').value = sutaClientReporting(state);
+  tr.querySelector('input[name^="suta_threshold_"]').value =
+    (state && sutaThresholds[state]) ? formatCurrency(sutaThresholds[state]) : '—';
+  const wcLns   = collectWCLines();
+  const stateWC = state ? wcLns.filter(l => l.state === state) : [];
+  const gws     = stateWC.reduce((s, l) => s + (l.annual_gw || 0), 0);
+  const wses    = stateWC.reduce((s, l) => s + (l.ftes || 0) + 0.75 * (l.ptes || 0), 0);
+  const wsesT   = wses * 1.1;
+  const thresh  = sutaThresholds[state] || 0;
+  const taxGws  = Math.min(gws, thresh * wsesT);
+  tr.querySelector('input[name^="suta_wses_turnover_"]').value  = wsesT ? wsesT.toFixed(2)        : '—';
+  tr.querySelector('input[name^="suta_taxable_gws_"]').value   = taxGws ? formatCurrency(taxGws) : '—';
 }
 
 
@@ -2127,7 +2194,7 @@ function collectSutaLines() {
       total_wses,
       current_client_rate: currRateRaw / 100,
       billing_rate: rateRaw / 100,
-      cost_rate: sutaCostRates[state]  || 0,
+      cost_rate: sutaMinRates[state]   || 0,
       threshold: sutaThresholds[state] || 0,
       turnover_pct: 0.1,
     });
@@ -2289,8 +2356,8 @@ async function doAutoSave() {
   }
 }
 
-document.addEventListener('input',  e => { if (e.isTrusted && e.target.closest('.tab-panel')) scheduleAutoSave(); });
-document.addEventListener('change', e => { if (e.isTrusted && e.target.closest('.tab-panel')) scheduleAutoSave(); });
+document.addEventListener('input',  e => { if (e.isTrusted && e.target.closest('.tab-panel')) { scheduleAutoSave(); scheduleCalculate(); } });
+document.addEventListener('change', e => { if (e.isTrusted && e.target.closest('.tab-panel')) { scheduleAutoSave(); scheduleCalculate(); } });
 
 /* ── Calculate ───────────────────────────────────────────────────────────── */
 function scheduleCalculate() {
@@ -2337,16 +2404,28 @@ function renderSummary(r) {
   const oi = r.other_items      || {};
   const co = r.commissions      || {};
 
-  setDS('s-total-wses',   ao.total_wses?.toFixed(2) || '0');
+  setDS('s-total-wses',   ao.total_wses != null ? Math.round(ao.total_wses) : '0');
   setDS('s-total-gws',    formatCurrency(ao.total_gws));
   setDS('s-avg-wage',     formatCurrency(ao.avg_wage));
   setDS('s-admin-margin', formatCurrency(ao.admin_margin));
+  const adminPct    = ao.total_gws  > 0 ? ao.admin_margin / ao.total_gws  : null;
+  const adminPerWse = ao.total_wses > 0 ? ao.admin_margin / ao.total_wses : null;
+  const elAdminPct    = document.getElementById('s-admin-margin-pct');
+  const elAdminPerWse = document.getElementById('s-admin-margin-per-wse');
+  if (elAdminPct)    elAdminPct.textContent    = adminPct    != null ? formatPct(adminPct)                   : '—';
+  if (elAdminPerWse) elAdminPerWse.textContent = adminPerWse != null ? formatCurrency(adminPerWse) + '/WSE'  : '—';
 
   setDS('s-wc-billed',      formatCurrency(wo.wc_billed));
   setDS('s-wc-fixed-cost',  formatCurrency(wo.wc_fixed_cost));
   setDS('s-wc-loss-fund',   formatCurrency(wo.wc_loss_fund));
   setDS('s-total-wc-cost',  formatCurrency(wo.total_wc_cost));
   setPnlDS('s-wc-profit-loss',  wo.wc_profit_loss);
+  const wcMod = parseFloat(document.getElementById('pricing_proposed_mod')?.value);
+  const wcBilledRate = ao.total_gws > 0 ? wo.wc_billed / ao.total_gws : null;
+  const elWcMod = document.getElementById('s-wc-mod');
+  const elWcBilledRate = document.getElementById('s-wc-billed-rate');
+  if (elWcMod)       elWcMod.textContent       = !isNaN(wcMod) ? 'Mod: ' + wcMod.toFixed(2)                  : '—';
+  if (elWcBilledRate) elWcBilledRate.textContent = wcBilledRate != null ? formatPct(wcBilledRate) + ' of GWs'  : '—';
 
   setDS('s-suta-billed',      formatCurrency(to.suta_billed));
   setDS('s-suta-cost',        formatCurrency(to.suta_cost));
@@ -2354,20 +2433,64 @@ function renderSummary(r) {
   setDS('s-fica-total',   formatCurrency(to.fica_total));
   setDS('s-futa-total',   formatCurrency(to.futa_total));
 
-  setDS('s-epli',       formatCurrency(oi.epli));
-  setDS('s-impl-fee',   formatCurrency(oi.implementation_fee));
-  setPnlDS('s-total-profit-loss', oi.total_profit_loss);
+  setDS('s-tlm',             formatCurrency(oi.tlm));
+  setDS('s-epli',            formatCurrency(oi.epli));
+  setDS('s-reverse-wire',    formatCurrency(oi.wire_ach_fee));
+  setDS('s-impl-fee',        formatCurrency(oi.implementation_fee));
+  setDS('s-total-ancillary', formatCurrency(oi.total_ancillary));
+  const elTotalPL = document.getElementById('s-total-profit-loss');
+  if (elTotalPL) {
+    elTotalPL.textContent = formatCurrency(oi.total_profit_loss);
+    elTotalPL.style.color = (oi.total_profit_loss || 0) > 0 ? '#16a34a' : (oi.total_profit_loss || 0) < 0 ? '#dc2626' : '#1e3154';
+  }
 
-  setDS('s-consultant-upfront',  formatCurrency(co.consultant_upfront));
-  setDS('s-consultant-ongoing',  formatCurrency(co.consultant_ongoing));
-  setDS('s-broker-wc-pct',   formatPct(co.broker_wc_pct));
-  setDS('s-broker-admin-pct', formatPct(co.broker_admin_pct));
-  setDS('s-admin-net-ongoing', formatCurrency(co.admin_net_ongoing));
-  setDS('s-admin-net-year1',   formatCurrency(co.admin_net_year1));
+  setDS('s-consultant-upfront-pct', formatPct(co.consultant_upfront_rate));
+  setDS('s-consultant-upfront',     formatCurrency(co.consultant_upfront));
+  setDS('s-consultant-ongoing-pct', formatPct(co.consultant_ongoing_rate));
+  setDS('s-consultant-ongoing',     formatCurrency(co.consultant_ongoing));
+  setDS('s-broker-wc-pct',          formatPct(co.broker_wc_pct));
+  setDS('s-broker-wc-amt',          formatCurrency(co.broker_wc_commission));
+  setDS('s-broker-admin-pct',       formatPct(co.broker_admin_pct));
+  setDS('s-broker-admin-amt',       formatCurrency(co.broker_admin_amt));
+  setDS('s-admin-net-ongoing',      formatCurrency(co.admin_net_ongoing));
+  setDS('s-admin-net-year1',        formatCurrency(co.admin_net_year1));
+  const netOngoingPct    = ao.total_gws  > 0 ? co.admin_net_ongoing / ao.total_gws  : null;
+  const netOngoingPerWse = ao.total_wses > 0 ? co.admin_net_ongoing / ao.total_wses : null;
+  const elNetOngoingPct    = document.getElementById('s-admin-net-ongoing-pct');
+  const elNetOngoingPerWse = document.getElementById('s-admin-net-ongoing-per-wse');
+  if (elNetOngoingPct)    elNetOngoingPct.textContent    = netOngoingPct    != null ? formatPct(netOngoingPct)                  : '—';
+  if (elNetOngoingPerWse) elNetOngoingPerWse.textContent = netOngoingPerWse != null ? formatCurrency(netOngoingPerWse) + '/WSE' : '—';
+  const netYear1Pct    = ao.total_gws  > 0 ? co.admin_net_year1 / ao.total_gws  : null;
+  const netYear1PerWse = ao.total_wses > 0 ? co.admin_net_year1 / ao.total_wses : null;
+  const elNetYear1Pct    = document.getElementById('s-admin-net-year1-pct');
+  const elNetYear1PerWse = document.getElementById('s-admin-net-year1-per-wse');
+  if (elNetYear1Pct)    elNetYear1Pct.textContent    = netYear1Pct    != null ? formatPct(netYear1Pct)                  : '—';
+  if (elNetYear1PerWse) elNetYear1PerWse.textContent = netYear1PerWse != null ? formatCurrency(netYear1PerWse) + '/WSE' : '—';
+  setDS('s-cash-flow-after-comm', formatCurrency(co.cash_flow_after_comm));
+  const cfPct    = ao.total_gws  > 0 ? co.cash_flow_after_comm / ao.total_gws  : null;
+  const cfPerWse = ao.total_wses > 0 ? co.cash_flow_after_comm / ao.total_wses : null;
+  const elCfPct    = document.getElementById('s-cash-flow-after-comm-pct');
+  const elCfPerWse = document.getElementById('s-cash-flow-after-comm-per-wse');
+  if (elCfPct)    elCfPct.textContent    = cfPct    != null ? formatPct(cfPct)                  : '—';
+  if (elCfPerWse) elCfPerWse.textContent = cfPerWse != null ? formatCurrency(cfPerWse) + '/WSE' : '—';
+  setDS('s-total-comm-pct',         formatPct(co.total_comm_rate));
+  setDS('s-total-comm',             formatCurrency(co.total_comm));
 
   renderProposal(r);
   renderBillingAnalysis(r);
   renderLossAnalysis(ao.total_gws || 0, wo.wc_fixed_cost || 0, wo.wc_loss_fund || 0, wo.wc_billed || 0, co.broker_wc_commission || 0);
+
+  const cfEl = ao.total_gws > 0 && _avgAnnualLoss != null;
+  const cfElVal = cfEl
+    ? ao.admin_margin + (wo.wc_billed - wo.wc_fixed_cost) + to.suta_profit_loss + oi.total_ancillary - co.total_comm - _avgAnnualLoss
+    : null;
+  setDS('s-cash-flow-est-losses', cfElVal != null ? formatCurrency(cfElVal) : '—');
+  const cfElPct    = cfElVal != null && ao.total_gws  > 0 ? cfElVal / ao.total_gws  : null;
+  const cfElPerWse = cfElVal != null && ao.total_wses > 0 ? cfElVal / ao.total_wses : null;
+  const elCfElPct    = document.getElementById('s-cash-flow-est-losses-pct');
+  const elCfElPerWse = document.getElementById('s-cash-flow-est-losses-per-wse');
+  if (elCfElPct)    elCfElPct.textContent    = cfElPct    != null ? formatPct(cfElPct)                  : '—';
+  if (elCfElPerWse) elCfElPerWse.textContent = cfElPerWse != null ? formatCurrency(cfElPerWse) + '/WSE' : '—';
 }
 
 function setDS(id, val) {
@@ -2594,9 +2717,10 @@ function renderBillingAnalysis(r) {
 
 /* ── Loss Analysis ───────────────────────────────────────────────────────── */
 function renderLossAnalysis(totalGws, wcFixedCost, wcLossFund, wcBilled, brokerWcComm) {
-  const losses = collectWCLosses().filter(
-    l => l.total_losses_incurred > 0 || l.num_claims > 0
+  const allLosses = collectWCLosses().filter(
+    l => l.total_losses_incurred > 0 || l.num_claims > 0 || l.months_in_policy > 0
   );
+  const losses = allLosses;
 
   const blank = ['la-total-losses','la-total-claims','la-total-months','la-open-claims',
                  'la-total-losses-detail','la-total-retention','la-net-losses','la-avg-annual','la-proposed-mod'];
@@ -2626,6 +2750,7 @@ function renderLossAnalysis(totalGws, wcFixedCost, wcLossFund, wcBilled, brokerW
   const totalRetention = sumClaims * (sharedClaimFee / 2);
   const netLosses      = sumLosses - totalRetention;
   const avgAnnual      = sumMonths > 0 ? (netLosses / sumMonths) * 12 : null;
+  _avgAnnualLoss = avgAnnual;
   const proposedMod    = parseFloat(document.getElementById('pricing_proposed_mod')?.value);
 
   document.getElementById('la-total-losses-detail').textContent = formatCurrency(sumLosses);
