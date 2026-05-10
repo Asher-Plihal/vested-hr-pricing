@@ -464,9 +464,6 @@ function renderBillingAnalysis(r) {
 
   function savCls(v) { return v > 0 ? 'positive' : v < 0 ? 'negative' : ''; }
 
-  // Pre-build state GW totals so per-row SUTA can apportion backend state totals proportionally
-  const stateGwMap = {};
-  wcLines.forEach(l => { stateGwMap[l.state] = (stateGwMap[l.state] || 0) + (l.annual_gw || 0); });
 
   // ── WC rows ──
   const wcBody = document.getElementById('analysis-wc-body');
@@ -499,14 +496,18 @@ function renderBillingAnalysis(r) {
       const adminSavRow = curAdminRow - vhrAdminRow;
       sumCurAdmin += curAdminRow;
 
-      // SUTA: apportion backend state totals to this row by its share of the state's GW
+      // SUTA: per-row taxable base = min(rowGW, threshold × rowWSEs × (1+turnover))
       const sr = sutaRateMap[line.state];
       let curSutaDisplay = '—', vhrSutaDisplay = '—', sutaSavTxt = '—', sutaSavCls = '';
       if (sr) {
-        const gwFraction = (stateGwMap[line.state] || 0) > 0 ? gw / stateGwMap[line.state] : 0;
-        const sutaSavAmt = (sr.client_savings || 0) * gwFraction;
-        curSutaDisplay = sr.current_client_rate ? (sr.current_client_rate * 100).toFixed(2) + '%' : '—';
-        vhrSutaDisplay = sr.billing_rate        ? (sr.billing_rate        * 100).toFixed(2) + '%' : '—';
+        const curSutaRate = sr.current_client_rate || 0;
+        const vhrSutaRate = sr.billing_rate        || 0;
+        const rowWSEs     = line.wses || 0;
+        const turnover    = sr.turnover_pct || 0.1;
+        const taxableGw   = Math.min(gw, (sr.threshold || 0) * rowWSEs * (1 + turnover));
+        const sutaSavAmt  = (curSutaRate - vhrSutaRate) * taxableGw;
+        curSutaDisplay = curSutaRate ? (curSutaRate * 100).toFixed(2) + '%' : '—';
+        vhrSutaDisplay = vhrSutaRate ? (vhrSutaRate * 100).toFixed(2) + '%' : '—';
         sutaSavTxt     = formatDollars(sutaSavAmt);
         sutaSavCls     = savCls(sutaSavAmt);
       }
