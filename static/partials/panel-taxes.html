@@ -1,0 +1,36 @@
+
+    <div class="card" data-card-id="suta" data-locked="true">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>SUTA <span class="req-section-badge y">Required for estimate</span></span>
+        <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+      </div>
+      <hr class="card-divider" />
+      <div class="form-grid" style="margin-bottom:16px">
+        <div class="form-group">
+          <label for="futa_turnover_rate">Client Turnover Rate</label>
+          <input type="number" id="futa_turnover_rate" name="futa_turnover_rate" step="0.01" min="0" placeholder="e.g. 1.51" />
+        </div>
+        <div class="form-group"></div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="data-table tbl-fixed" id="suta-table">
+          <thead>
+            <tr>
+              <th style="width:62px;">Client<br>Reporting</th>
+              <th style="width:68px;">State</th>
+              <th style="width:80px;">VHR Min<br>Rate</th>
+              <th style="width:76px;">Rate (%)</th>
+              <th style="width:90px;">Current<br>Rate (%)</th>
+              <th style="width:90px;">Threshold</th>
+              <th style="width:100px;">WSEs w/<br>Turnover</th>
+              <th style="width:100px;">Taxable GWs</th>
+            </tr>
+          </thead>
+          <tbody id="suta-body"></tbody>
+        </table>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:10px;">
+        <button class="btn-add-row" type="button" id="btn-add-suta" style="margin-top:0;">+ Add State</button>
+        <button class="btn-add-row" type="button" id="btn-remove-suta" style="margin-top:0;color:#dc2626;border-color:#fecaca;">− Remove Row</button>
+      </div>
+    </div>

@@ -1,0 +1,170 @@
+
+    <div class="card" data-card-id="payroll" data-locked="true">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Payroll Information</span>
+        <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+      </div>
+      <hr class="card-divider" />
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label class="req-y" for="payroll_frequency">Payroll Frequency</label>
+          <select id="payroll_frequency" name="payroll_frequency">
+            <option value="">— Select —</option>
+            <option value="weekly">Weekly</option>
+            <option value="biweekly">Bi-Weekly</option>
+            <option value="semimonthly">Semi-Monthly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="method_of_payment">Method of Payment</label>
+          <select id="method_of_payment" name="method_of_payment">
+            <option value="">— Select —</option>
+            <option value="direct_wire">Direct Wire</option>
+            <option value="reverse_wire">Reverse Wire</option>
+            <option value="ach">ACH (Approval Required)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="req-g" for="pay_cycle_start">Payroll Cycle Start DAY</label>
+          <select id="pay_cycle_start" name="pay_cycle_start">
+            <option value="">— Select —</option>
+            <option value="Sunday">Sunday</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="req-g" for="pay_cycle_end">Payroll Cycle End DAY</label>
+          <select id="pay_cycle_end" name="pay_cycle_end">
+            <option value="">— Select —</option>
+            <option value="Sunday">Sunday</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="req-g" for="pay_date">Pay DAY</label>
+          <select id="pay_date" name="pay_date">
+            <option value="">— Select —</option>
+            <option value="Sunday">Sunday</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+          </select>
+        </div>
+        <div class="form-group"></div>
+
+        <div class="form-group">
+          <label for="effective_date">Effective Date (per CSA)</label>
+          <input type="date" id="effective_date" name="effective_date" />
+        </div>
+        <div class="form-group">
+          <label for="requested_payroll_delivery">Requested Payroll Delivery Method</label>
+          <select id="requested_payroll_delivery" name="requested_payroll_delivery">
+            <option value="">— Select —</option>
+            <option value="electronic">Electronic / Paperless</option>
+            <option value="courier">Delivery via Courier / FedEx</option>
+          </select>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="card" data-card-id="admin-fee" data-locked="true">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Admin Fee <span class="req-section-badge y">Required for estimate</span></span>
+        <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+      </div>
+      <hr class="card-divider" />
+
+      <div class="admin-method-grid">
+        <div class="admin-method-box" data-method="1" onclick="selectAdminMethod(1)">Percentage of GWs</div>
+        <div class="admin-method-box" data-method="2" onclick="selectAdminMethod(2)">Per Check Fee</div>
+        <div class="admin-method-box" data-method="3" onclick="selectAdminMethod(3)">Per WSE per Month</div>
+      </div>
+      <input type="hidden" id="admin_method" name="admin_method" value="1" />
+
+      <div id="admin-rate-fields-1" class="form-grid admin-rate-fields">
+        <div class="form-group">
+          <label class="req-y" for="admin_rate">Vested Rate (%)</label>
+          <input type="number" id="admin_rate" name="admin_rate" step="0.01" min="0" value="0" />
+        </div>
+        <div class="form-group">
+          <label for="current_admin_rate">Current Rate (%)</label>
+          <input type="number" id="current_admin_rate" name="current_admin_rate" step="0.01" min="0" value="0" />
+        </div>
+      </div>
+      <div id="admin-rate-fields-2" class="form-grid admin-rate-fields" style="display:none;">
+        <div class="form-group">
+          <label class="req-y" for="admin_rate_2">Vested Rate ($ per check)</label>
+          <input type="number" id="admin_rate_2" name="admin_rate_2" step="0.01" min="0" value="0" />
+        </div>
+        <div class="form-group">
+          <label for="current_admin_rate_2">Current Rate ($ per check)</label>
+          <input type="number" id="current_admin_rate_2" name="current_admin_rate_2" step="0.01" min="0" value="0" />
+        </div>
+      </div>
+      <div id="admin-rate-fields-3" class="form-grid admin-rate-fields" style="display:none;">
+        <div class="form-group">
+          <label class="req-y" for="admin_rate_3">Vested Rate ($ per WSE/mo)</label>
+          <input type="number" id="admin_rate_3" name="admin_rate_3" step="0.01" min="0" value="0" />
+        </div>
+        <div class="form-group">
+          <label for="current_admin_rate_3">Current Rate ($ per WSE/mo)</label>
+          <input type="number" id="current_admin_rate_3" name="current_admin_rate_3" step="0.01" min="0" value="0" />
+        </div>
+      </div>
+
+    </div>
+
+    <div class="card" data-card-id="additional-fees" data-locked="true">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Other / Ancillary Services</span>
+        <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+      </div>
+      <hr class="card-divider" />
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="epli_rate">EPLI Rate ($ / WSE / pay period) <span style="font-weight:400;color:#718096;font-size:0.78rem;">min $0.50</span></label>
+          <input type="number" id="epli_rate" name="epli_rate" step="0.01" min="0" value="0" />
+        </div>
+        <div class="form-group">
+          <label class="req-y" for="implementation_fee">Implementation / Setup Fee ($)</label>
+          <input type="number" id="implementation_fee" name="implementation_fee" step="0.01" min="0" value="0" />
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-card-id="commissions" data-locked="true">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Commissions</span>
+        <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+      </div>
+      <hr class="card-divider" />
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="broker_wc_commission_pct">Broker/Referral Partner WC (%)</label>
+          <input type="number" id="broker_wc_commission_pct" name="broker_wc_commission_pct" step="0.01" min="0" max="100" value="0" />
+        </div>
+        <div class="form-group">
+          <label for="external_commission_pct">Broker/Referral Partner Admin (%)</label>
+          <input type="number" id="external_commission_pct" name="external_commission_pct" step="0.01" min="0" max="100" value="0" />
+        </div>
+      </div>
+      <input type="hidden" id="internal_commission_pct" name="internal_commission_pct" value="0" />
+    </div>

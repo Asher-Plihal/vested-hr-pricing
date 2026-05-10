@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from routers import clients, config, calculate
-from routers import suta_rates
-from routers import rates
+from controllers import clients, config, calculate
+from controllers import suta_rates
+from controllers import rates
 
 app = FastAPI(title="VestedHR Pricing Tool")
 app.mount("/static", StaticFiles(directory="static"), name="static")

@@ -1,0 +1,297 @@
+
+    <!-- General Information -->
+    <div class="card" data-card-id="general-info" data-locked="true">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>General Information</span>
+        <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+      </div>
+      <hr class="card-divider" />
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label class="req-y" for="consultant_name">VHR Business Consultant (Lead)</label>
+          <input type="text" id="consultant_name" name="consultant_name" />
+        </div>
+        <div class="form-group">
+          <label class="req-y" for="date">Date</label>
+          <input type="date" id="date" name="date" />
+        </div>
+
+        <div class="form-group">
+          <label for="consultant_name_split">VHR Business Consultant (Split)</label>
+          <input type="text" id="consultant_name_split" name="consultant_name_split" />
+        </div>
+        <div class="form-group"></div>
+
+        <div class="form-group">
+          <label for="referral_partner_business">Referral Partner's Business Name</label>
+          <input type="text" id="referral_partner_business" name="referral_partner_business" />
+        </div>
+        <div class="form-group">
+          <label for="referral_partner_name">Referral Partner's Name</label>
+          <input type="text" id="referral_partner_name" name="referral_partner_name" />
+        </div>
+
+        <div class="form-group">
+          <label class="req-y" for="legal_name">Client Legal Name</label>
+          <input type="text" id="legal_name" name="legal_name" />
+        </div>
+        <div class="form-group">
+          <label for="dba">Client DBA</label>
+          <input type="text" id="dba" name="dba" />
+        </div>
+
+        <div class="form-group full">
+          <label class="req-y" for="main_address">Main Physical Address</label>
+          <input type="text" id="main_address" name="main_address" />
+        </div>
+
+        <div class="form-group">
+          <label class="req-y" for="city">City</label>
+          <input type="text" id="city" name="city" />
+        </div>
+        <div class="form-group" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group" style="margin:0;">
+            <label class="req-y" for="state">State</label>
+            <select id="state" name="state">
+              <option value="">— Select —</option>
+              <option>AL</option><option>AK</option><option>AZ</option><option>AR</option>
+              <option>CA</option><option>CO</option><option>CT</option><option>DE</option>
+              <option>FL</option><option>GA</option><option>HI</option><option>ID</option>
+              <option>IL</option><option>IN</option><option>IA</option><option>KS</option>
+              <option>KY</option><option>LA</option><option>ME</option><option>MD</option>
+              <option>MA</option><option>MI</option><option>MN</option><option>MS</option>
+              <option>MO</option><option>MT</option><option>NE</option><option>NV</option>
+              <option>NH</option><option>NJ</option><option>NM</option><option>NY</option>
+              <option>NC</option><option>ND</option><option>OH</option><option>OK</option>
+              <option>OR</option><option>PA</option><option>RI</option><option>SC</option>
+              <option>SD</option><option>TN</option><option>TX</option><option>UT</option>
+              <option>VT</option><option>VA</option><option>WA</option><option>WV</option>
+              <option>WI</option><option>WY</option><option>DC</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin:0;">
+            <label class="req-y" for="zip">ZIP</label>
+            <input type="text" id="zip" name="zip" maxlength="10" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="county">County</label>
+          <input type="text" id="county" name="county" />
+        </div>
+        <div class="form-group"></div>
+
+        <div class="form-group">
+          <label class="req-y" for="fein">FEIN</label>
+          <input type="text" id="fein" name="fein" placeholder="XX-XXXXXXX" />
+        </div>
+        <div class="form-group">
+          <label class="req-g" for="org_structure">Organizational Structure</label>
+          <select id="org_structure" name="org_structure">
+            <option value="">— Select —</option>
+            <option>LLC</option><option>S-Corp</option><option>C-Corp</option>
+            <option>Partnership</option><option>Sole Proprietor</option><option>Non-Profit</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="req-g" for="naics">NAICS</label>
+          <input type="text" id="naics" name="naics" />
+        </div>
+        <div class="form-group">
+          <label class="req-g" for="sic">SIC</label>
+          <input type="text" id="sic" name="sic" />
+        </div>
+
+        <div class="form-group">
+          <label for="years_in_business"># of Years in Business</label>
+          <input type="number" id="years_in_business" name="years_in_business" min="0" />
+        </div>
+        <div class="form-group">
+          <label class="req-y" for="website">Website</label>
+          <input type="text" id="website" name="website" />
+        </div>
+
+        <div class="form-group">
+          <label class="req-y" for="num_locations"># of Locations</label>
+          <input type="number" id="num_locations" name="num_locations" min="1" />
+        </div>
+        <div class="form-group">
+          <label for="main_phone">Main Office Phone</label>
+          <input type="tel" id="main_phone" name="main_phone" />
+        </div>
+
+        <div class="form-group">
+          <label class="req-g" for="owner_name">Owner's Name</label>
+          <input type="text" id="owner_name" name="owner_name" />
+        </div>
+        <div class="form-group">
+          <label for="owner_phone">Owner's Office Number</label>
+          <input type="tel" id="owner_phone" name="owner_phone" />
+        </div>
+
+        <div class="form-group">
+          <label for="owner_email">Owner's Email</label>
+          <input type="email" id="owner_email" name="owner_email" />
+        </div>
+        <div class="form-group">
+          <label for="owner_cell">Owner's Cell</label>
+          <input type="tel" id="owner_cell" name="owner_cell" />
+        </div>
+
+        <div class="form-group">
+          <label class="req-g" for="contact_name">Main Point of Contact Name</label>
+          <input type="text" id="contact_name" name="contact_name" />
+        </div>
+        <div class="form-group">
+          <label for="contact_phone">Main Contact Office Number</label>
+          <input type="tel" id="contact_phone" name="contact_phone" />
+        </div>
+
+        <div class="form-group">
+          <label class="req-g" for="contact_cell">Main Contact Cell</label>
+          <input type="tel" id="contact_cell" name="contact_cell" />
+        </div>
+        <div class="form-group">
+          <label class="req-g" for="contact_email">Main Contact Email</label>
+          <input type="email" id="contact_email" name="contact_email" />
+        </div>
+
+        <div class="form-group full">
+          <label class="req-y" for="description_of_operations">Description of Operations</label>
+          <textarea id="description_of_operations" name="description_of_operations" rows="4"></textarea>
+        </div>
+
+        <div class="form-group full">
+          <label class="req-y">States Operating In</label>
+          <div class="state-picker" id="state-picker">
+            <button type="button" class="state-pill" data-abbr="AL">AL</button>
+            <button type="button" class="state-pill" data-abbr="AK">AK</button>
+            <button type="button" class="state-pill" data-abbr="AZ">AZ</button>
+            <button type="button" class="state-pill" data-abbr="AR">AR</button>
+            <button type="button" class="state-pill" data-abbr="CA">CA</button>
+            <button type="button" class="state-pill" data-abbr="CO">CO</button>
+            <button type="button" class="state-pill" data-abbr="CT">CT</button>
+            <button type="button" class="state-pill" data-abbr="DE">DE</button>
+            <button type="button" class="state-pill" data-abbr="FL">FL</button>
+            <button type="button" class="state-pill" data-abbr="GA">GA</button>
+            <button type="button" class="state-pill" data-abbr="HI">HI</button>
+            <button type="button" class="state-pill" data-abbr="ID">ID</button>
+            <button type="button" class="state-pill" data-abbr="IL">IL</button>
+            <button type="button" class="state-pill" data-abbr="IN">IN</button>
+            <button type="button" class="state-pill" data-abbr="IA">IA</button>
+            <button type="button" class="state-pill" data-abbr="KS">KS</button>
+            <button type="button" class="state-pill" data-abbr="KY">KY</button>
+            <button type="button" class="state-pill" data-abbr="LA">LA</button>
+            <button type="button" class="state-pill" data-abbr="ME">ME</button>
+            <button type="button" class="state-pill" data-abbr="MD">MD</button>
+            <button type="button" class="state-pill" data-abbr="MA">MA</button>
+            <button type="button" class="state-pill" data-abbr="MI">MI</button>
+            <button type="button" class="state-pill" data-abbr="MN">MN</button>
+            <button type="button" class="state-pill" data-abbr="MS">MS</button>
+            <button type="button" class="state-pill" data-abbr="MO">MO</button>
+            <button type="button" class="state-pill" data-abbr="MT">MT</button>
+            <button type="button" class="state-pill" data-abbr="NE">NE</button>
+            <button type="button" class="state-pill" data-abbr="NV">NV</button>
+            <button type="button" class="state-pill" data-abbr="NH">NH</button>
+            <button type="button" class="state-pill" data-abbr="NJ">NJ</button>
+            <button type="button" class="state-pill" data-abbr="NM">NM</button>
+            <button type="button" class="state-pill" data-abbr="NY">NY</button>
+            <button type="button" class="state-pill" data-abbr="NC">NC</button>
+            <button type="button" class="state-pill" data-abbr="ND">ND</button>
+            <button type="button" class="state-pill" data-abbr="OH">OH</button>
+            <button type="button" class="state-pill" data-abbr="OK">OK</button>
+            <button type="button" class="state-pill" data-abbr="OR">OR</button>
+            <button type="button" class="state-pill" data-abbr="PA">PA</button>
+            <button type="button" class="state-pill" data-abbr="RI">RI</button>
+            <button type="button" class="state-pill" data-abbr="SC">SC</button>
+            <button type="button" class="state-pill" data-abbr="SD">SD</button>
+            <button type="button" class="state-pill" data-abbr="TN">TN</button>
+            <button type="button" class="state-pill" data-abbr="TX">TX</button>
+            <button type="button" class="state-pill" data-abbr="UT">UT</button>
+            <button type="button" class="state-pill" data-abbr="VT">VT</button>
+            <button type="button" class="state-pill" data-abbr="VA">VA</button>
+            <button type="button" class="state-pill" data-abbr="WA">WA</button>
+            <button type="button" class="state-pill" data-abbr="WV">WV</button>
+            <button type="button" class="state-pill" data-abbr="WI">WI</button>
+            <button type="button" class="state-pill" data-abbr="WY">WY</button>
+            <button type="button" class="state-pill" data-abbr="DC">DC</button>
+          </div>
+          <div class="state-count" id="state-count"><strong>0</strong> states selected</div>
+        </div>
+
+        <div class="form-group full">
+          <label>Locations</label>
+          <div id="locations-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px;"></div>
+          <button type="button" class="btn-add-row" id="btn-add-location">+ Add Location</button>
+        </div>
+
+      </div>
+    </div><!-- /card general info -->
+
+    <!-- Compliance Questionnaire -->
+    <div class="card" data-card-id="compliance" data-locked="true">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Compliance Questions <span class="req-section-badge y">Required for estimate</span></span>
+        <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+      </div>
+      <hr class="card-divider" />
+      <div class="compliance-rows" id="compliance-rows">
+
+        <div class="q-row">
+          <span class="q-label">EEOC Violations</span>
+          <select class="q-select" name="eeoc_violations" onchange="toggleQExplain(this)">
+            <option value="false" selected>No</option>
+            <option value="true">Yes</option>
+          </select>
+          <textarea class="q-explain" name="eeoc_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+        </div>
+
+        <div class="q-row">
+          <span class="q-label">Active Claims</span>
+          <select class="q-select" name="active_claims" onchange="toggleQExplain(this)">
+            <option value="false" selected>No</option>
+            <option value="true">Yes</option>
+          </select>
+          <textarea class="q-explain" name="active_claims_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+        </div>
+
+        <div class="q-row">
+          <span class="q-label">COBRA / Continuation</span>
+          <select class="q-select" name="cobra_continuation" onchange="toggleQExplain(this)">
+            <option value="false" selected>No</option>
+            <option value="true">Yes</option>
+          </select>
+          <textarea class="q-explain" name="cobra_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+        </div>
+
+        <div class="q-row">
+          <span class="q-label">Past Layoffs</span>
+          <select class="q-select" name="past_layoffs" onchange="toggleQExplain(this)">
+            <option value="false" selected>No</option>
+            <option value="true">Yes</option>
+          </select>
+          <textarea class="q-explain" name="past_layoffs_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+        </div>
+
+        <div class="q-row">
+          <span class="q-label">Future Layoffs</span>
+          <select class="q-select" name="future_layoffs" onchange="toggleQExplain(this)">
+            <option value="false" selected>No</option>
+            <option value="true">Yes</option>
+          </select>
+          <textarea class="q-explain" name="future_layoffs_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+        </div>
+
+        <div class="q-row">
+          <span class="q-label">Leave of Absence</span>
+          <select class="q-select" name="leave_of_absence" onchange="toggleQExplain(this)">
+            <option value="false" selected>No</option>
+            <option value="true">Yes</option>
+          </select>
+          <textarea class="q-explain" name="leave_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+        </div>
+
+      </div>
+    </div><!-- /card compliance -->

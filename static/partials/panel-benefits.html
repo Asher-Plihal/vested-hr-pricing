@@ -1,0 +1,123 @@
+
+    <!-- Medical Carve-Out -->
+    <div class="card" style="padding:10px 16px;">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <span style="font-size:0.85rem;font-weight:600;color:#2d3748;">Medical Carve-Out?</span>
+        <select name="medical_carve_out" onchange="onMedCarveOut(this)" style="width:auto;padding:3px 6px;font-size:0.8rem;height:auto;">
+          <option value="">—</option>
+          <option value="false">No</option>
+          <option value="true">Yes</option>
+        </select>
+        <span class="info-note warn" id="med-carveout-note" style="display:none;margin:0;padding:4px 10px;">
+          Carve-out selected — remaining questions skipped.
+        </span>
+      </div>
+    </div>
+
+    <!-- Sections hidden on carve-out -->
+    <div id="benefits-sections-wrapper">
+
+    <!-- Medical Questions -->
+    <div class="card" data-card-id="medical" data-locked="true">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Medical Questions <span class="req-section-badge y">Required for estimate</span></span>
+        <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+      </div>
+      <hr class="card-divider" />
+
+      <div class="compliance-rows" id="medical-rows">
+
+        <div class="q-row" data-med-field="enrolled_over_50">
+          <span class="q-label">More than 50 enrolled?</span>
+          <select class="q-select" name="enrolled_over_50" onchange="toggleMedNote(this,'true','med-note-over50')">
+            <option value="false" selected>No</option>
+            <option value="true">Yes</option>
+          </select>
+          <div class="q-note" id="med-note-over50">Need a General Health Questionnaire (GHQ). Create a task to check off once GHQ is uploaded for Nate.</div>
+        </div>
+
+        <div class="q-row" data-med-field="enrolled_under_10">
+          <span class="q-label">Under 10 enrolled?</span>
+          <select class="q-select" name="enrolled_under_10" onchange="toggleMedNote(this,'true','med-note-under10')">
+            <option value="false" selected>No</option>
+            <option value="true">Yes</option>
+          </select>
+          <div class="q-note" id="med-note-under10">Need Patient Health Questionnaires (PHQs). If not already obtained, collect employee names and emails — Nate will send PHQs directly to employees to maintain HIPAA compliance. Create a task for the consultant to send this info to Nate.</div>
+        </div>
+
+        <div class="q-row" data-med-field="level_funded_plan">
+          <span class="q-label">Level-Funded Plan?</span>
+          <select class="q-select" name="level_funded_plan" onchange="toggleMedNote(this,'true','med-note-levelfunded')">
+            <option value="false" selected>No</option>
+            <option value="true">Yes</option>
+          </select>
+          <div class="q-note" id="med-note-levelfunded">Need monthly claims reports or medical invoices.</div>
+        </div>
+
+        <div class="q-row" data-med-field="currently_has_health_insurance">
+          <span class="q-label">Provide Health Insurance Currently?</span>
+          <select class="q-select" name="currently_has_health_insurance" onchange="toggleMedNote(this,'true','med-note-hasinsurance')">
+            <option value="false" selected>No</option>
+            <option value="true">Yes</option>
+          </select>
+          <div class="q-note" id="med-note-hasinsurance">Create a task for the consultant to: fill out the census, collect SBCs of current plans, current plan rates, and renewal rates if available.</div>
+        </div>
+
+        <div class="q-row" data-med-field="census_available">
+          <span class="q-label">Employee Census Available?</span>
+          <select class="q-select" name="census_available" onchange="toggleMedNote(this,'false','med-note-nocensus')">
+            <option value="false" selected>No</option>
+            <option value="true">Yes</option>
+          </select>
+          <div class="q-note" id="med-note-nocensus">For a new group: need an employee census of those likely to take benefits — a survey can help determine this. If they currently have benefits, need the existing census or an invoice breakdown to build one.</div>
+        </div>
+
+        <div class="q-row" data-med-field="cobra_expected">
+          <span class="q-label">COBRA / State Continuation Expected?</span>
+          <select class="q-select" name="cobra_expected" onchange="toggleQExplain(this)">
+            <option value="false" selected>No</option>
+            <option value="true">Yes</option>
+          </select>
+          <textarea class="q-explain" name="cobra_expected_explanation" placeholder="Notes…" rows="3" style="display:none"></textarea>
+        </div>
+
+      </div>
+
+    </div><!-- /card medical -->
+
+    <!-- Ancillary Benefits -->
+    <div class="card" id="ancillary-card" data-card-id="ancillary" data-locked="true">
+      <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Ancillary Benefit Questions <span class="req-section-badge g">Required for final approval</span></span>
+        <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+      </div>
+      <hr class="card-divider" />
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label class="req-g" for="offers_ancillary_benefits">Currently offer ancillary benefits?</label>
+          <select id="offers_ancillary_benefits" name="offers_ancillary_benefits">
+            <option value="false" selected>No</option>
+            <option value="true">Yes</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="req-g" for="wants_ancillary_benefits">Want to offer ancillary benefits?</label>
+          <select id="wants_ancillary_benefits" name="wants_ancillary_benefits">
+            <option value="false" selected>No</option>
+            <option value="true">Yes</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="req-g" for="current_contribution_strategy">Current contribution strategy <span style="font-weight:400;color:#718096;font-size:0.78rem;">(Fill out Exhibit D if able)</span></label>
+          <input type="text" id="current_contribution_strategy" name="current_contribution_strategy" />
+        </div>
+        <div class="form-group">
+          <label class="req-g" for="new_contribution_strategy">New contribution strategy <span style="font-weight:400;color:#718096;font-size:0.78rem;">(Fill out Exhibit D if able)</span></label>
+          <input type="text" id="new_contribution_strategy" name="new_contribution_strategy" placeholder="e.g. Employee + dependent, 80/20…" />
+        </div>
+
+      </div>
+    </div><!-- /card ancillary -->
+
+    </div><!-- /benefits-sections-wrapper -->

@@ -1,0 +1,140 @@
+
+    <div class="card">
+      <div class="card-title">Loss Analysis</div>
+      <hr class="card-divider" />
+      <!-- Totals summary row -->
+      <div class="la-summary-row" style="margin-top:16px;">
+        <div class="la-stat">
+          <div class="la-stat-label">Total Losses</div>
+          <div class="la-stat-value" id="la-total-losses">—</div>
+        </div>
+        <div class="la-stat">
+          <div class="la-stat-label">Total # of Claims</div>
+          <div class="la-stat-value" id="la-total-claims">—</div>
+        </div>
+        <div class="la-stat">
+          <div class="la-stat-label">Months in Policy</div>
+          <div class="la-stat-value" id="la-total-months">—</div>
+        </div>
+        <div class="la-stat">
+          <div class="la-stat-label">Open Claims</div>
+          <div class="la-stat-value" id="la-open-claims">—</div>
+        </div>
+      </div>
+
+      <!-- Derived metrics -->
+      <div class="la-metrics" style="margin-top:16px;">
+        <div class="ds-row"><span class="ds-label">Total Losses</span><span class="ds-value" id="la-total-losses-detail">—</span></div>
+        <div class="ds-row"><span class="ds-label">Total Retention</span><span class="ds-value" id="la-total-retention">—</span></div>
+        <div class="ds-row"><span class="ds-label">Net Losses</span><span class="ds-value" id="la-net-losses">—</span></div>
+        <div class="ds-row"><span class="ds-label">Avg Annual Loss / Claims</span><span class="ds-value" id="la-avg-annual">—</span></div>
+        <div class="ds-row"><span class="ds-label">Proposed WC Mod</span><span class="ds-value" id="la-proposed-mod">—</span></div>
+      </div>
+
+      <p class="section-subhead" style="margin-top:24px;">Net Billing</p>
+      <div class="deal-summary-grid">
+        <div class="ds-row"><span class="ds-label">My Billing</span><span class="ds-value" id="bc-my-billing">—</span></div>
+        <div class="ds-row"><span class="ds-label">Comp Commissions</span><span class="ds-value" id="bc-commissions">—</span></div>
+        <div class="ds-row"><span class="ds-label">My Net Billing</span><span class="ds-value" id="bc-net-billing">—</span></div>
+        <div class="ds-row"><span class="ds-label">My Fixed Cost</span><span class="ds-value" id="bc-wc-fixed">—</span></div>
+      </div>
+      <div style="margin:12px -28px -24px;padding:14px 28px;background:#fefce8;border-top:2px solid #eab308;border-radius:0 0 10px 10px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-weight:700;color:#1e3154;font-size:0.9rem;">Leftover of Claims</span>
+        <span style="display:flex;gap:10px;align-items:center;">
+          <span id="bc-leftover-amt" style="font-weight:700;color:#1e3154;">—</span>
+          <span id="bc-leftover-pct" style="font-size:0.82rem;color:#854d0e;font-weight:600;"></span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Deal Summary -->
+    <div class="card" id="deal-summary-card">
+      <div class="card-title">Deal Summary</div>
+      <hr class="card-divider" />
+
+      <div id="summary-calculating" class="summary-calculating" style="display:none;">Calculating…</div>
+
+      <div id="summary-content">
+
+        <p class="section-subhead">Admin Overview</p>
+        <div class="deal-summary-grid">
+          <div class="ds-row"><span class="ds-label">Total WSEs</span><span class="ds-value" id="s-total-wses">—</span></div>
+          <div class="ds-row"><span class="ds-label">Gross Wages</span><span class="ds-value" id="s-total-gws">—</span></div>
+          <div class="ds-row"><span class="ds-label">Average Wage</span><span class="ds-value" id="s-avg-wage">—</span></div>
+        </div>
+        <div class="ds-row total" style="margin-top:8px">
+          <span class="ds-label">Admin Margin</span>
+          <span class="ds-value" style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
+            <span id="s-admin-margin">—</span>
+            <span style="display:flex;gap:10px;font-size:0.78rem;color:#64748b;font-weight:500;">
+              <span id="s-admin-margin-pct">—</span>
+              <span id="s-admin-margin-per-wse">—</span>
+            </span>
+          </span>
+        </div>
+
+        <p class="section-subhead" style="margin-top:20px">WC Overview</p>
+        <div class="deal-summary-grid">
+          <div class="ds-row"><span class="ds-label">WC Billed</span><span class="ds-value" id="s-wc-billed">—</span></div>
+          <div class="ds-row"><span class="ds-label">WC Fixed Cost</span><span class="ds-value" id="s-wc-fixed-cost">—</span></div>
+          <div class="ds-row"><span class="ds-label">WC Loss Fund Contribution</span><span class="ds-value" id="s-wc-loss-fund">—</span></div>
+          <div class="ds-row"><span class="ds-label">Total WC Cost</span><span class="ds-value" id="s-total-wc-cost">—</span></div>
+        </div>
+        <div class="ds-row total" style="margin-top:8px">
+          <span class="ds-label">WC Profit / Loss</span>
+          <span class="ds-value" style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
+            <span id="s-wc-profit-loss">—</span>
+            <span style="display:flex;gap:10px;font-size:0.78rem;color:#64748b;font-weight:500;">
+              <span id="s-wc-mod">—</span>
+              <span id="s-wc-billed-rate">—</span>
+            </span>
+          </span>
+        </div>
+
+        <p class="section-subhead" style="margin-top:20px">Taxes Overview</p>
+        <div class="deal-summary-grid">
+          <div class="ds-row"><span class="ds-label">SUTA Billed</span><span class="ds-value" id="s-suta-billed">—</span></div>
+          <div class="ds-row"><span class="ds-label">SUTA Cost</span><span class="ds-value" id="s-suta-cost">—</span></div>
+        </div>
+        <div class="ds-row total" style="margin-top:8px">
+          <span class="ds-label">SUTA Profit / Loss</span>
+          <span class="ds-value" id="s-suta-profit-loss">—</span>
+        </div>
+
+        <p class="section-subhead" style="margin-top:20px">Other / Ancillary Services</p>
+        <div class="deal-summary-grid">
+          <div class="ds-row"><span class="ds-label">TLM</span><span class="ds-value" id="s-tlm">—</span></div>
+          <div class="ds-row"><span class="ds-label">EPLI</span><span class="ds-value" id="s-epli">—</span></div>
+          <div class="ds-row"><span class="ds-label">Reverse Wire / ACH Fee</span><span class="ds-value" id="s-reverse-wire">—</span></div>
+          <div class="ds-row"><span class="ds-label">Implementation Fee</span><span class="ds-value" id="s-impl-fee">—</span></div>
+        </div>
+        <div class="ds-row total" style="margin-top:8px">
+          <span class="ds-label">Total Ancillary</span>
+          <span class="ds-value" id="s-total-ancillary">—</span>
+        </div>
+
+        <p class="section-subhead" style="margin-top:24px">Commissions</p>
+        <div class="deal-summary-grid">
+          <div class="ds-row"><span class="ds-label">Business Consultant — Upfront</span><span class="ds-value ds-dual"><span id="s-consultant-upfront-pct">—</span><span id="s-consultant-upfront" class="ds-secondary">—</span></span></div>
+          <div class="ds-row"><span class="ds-label">Business Consultant — Ongoing</span><span class="ds-value ds-dual"><span id="s-consultant-ongoing-pct">—</span><span id="s-consultant-ongoing" class="ds-secondary">—</span></span></div>
+          <div class="ds-row"><span class="ds-label">Broker/Referral Partner WC</span><span class="ds-value ds-dual"><span id="s-broker-wc-pct">—</span><span id="s-broker-wc-amt" class="ds-secondary">—</span></span></div>
+          <div class="ds-row"><span class="ds-label">Broker/Referral Partner Admin</span><span class="ds-value ds-dual"><span id="s-broker-admin-pct">—</span><span id="s-broker-admin-amt" class="ds-secondary">—</span></span></div>
+        </div>
+        <div class="ds-row total" style="margin-top:8px">
+          <span class="ds-label">Total Commissions</span>
+          <span class="ds-value ds-dual"><span id="s-total-comm-pct">—</span><span id="s-total-comm" class="ds-secondary">—</span></span>
+        </div>
+        <div class="deal-summary-grid" style="margin-top:8px">
+          <div class="ds-row"><span class="ds-label">Admin Net after Ongoing Commissions</span><span class="ds-value" style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;"><span id="s-admin-net-ongoing">—</span><span style="display:flex;gap:10px;font-size:0.78rem;color:#64748b;font-weight:500;"><span id="s-admin-net-ongoing-pct">—</span><span id="s-admin-net-ongoing-per-wse">—</span></span></span></div>
+          <div class="ds-row"><span class="ds-label">Admin Net after First Year Commissions</span><span class="ds-value" style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;"><span id="s-admin-net-year1">—</span><span style="display:flex;gap:10px;font-size:0.78rem;color:#64748b;font-weight:500;"><span id="s-admin-net-year1-pct">—</span><span id="s-admin-net-year1-per-wse">—</span></span></span></div>
+          <div class="ds-row"><span class="ds-label">Cash Flow after Commissions</span><span class="ds-value" style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;"><span id="s-cash-flow-after-comm">—</span><span style="display:flex;gap:10px;font-size:0.78rem;color:#64748b;font-weight:500;"><span id="s-cash-flow-after-comm-pct">—</span><span id="s-cash-flow-after-comm-per-wse">—</span></span></span></div>
+          <div class="ds-row"><span class="ds-label">Cash Flow with Estimated Losses</span><span class="ds-value" style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;"><span id="s-cash-flow-est-losses">—</span><span style="display:flex;gap:10px;font-size:0.78rem;color:#64748b;font-weight:500;"><span id="s-cash-flow-est-losses-pct">—</span><span id="s-cash-flow-est-losses-per-wse">—</span></span></span></div>
+        </div>
+
+      </div><!-- /summary-content -->
+
+      <div style="margin:12px -28px -24px;padding:14px 28px;background:#fefce8;border-top:2px solid #eab308;border-radius:0 0 10px 10px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-weight:700;color:#1e3154;font-size:0.9rem;">Total Profit / Loss</span>
+        <span id="s-total-profit-loss" style="font-weight:700;font-size:0.95rem;">—</span>
+      </div>
+    </div><!-- /deal-summary-card -->

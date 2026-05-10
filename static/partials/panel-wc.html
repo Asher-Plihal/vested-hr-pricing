@@ -1,0 +1,265 @@
+
+    <!-- WC Carve-Out -->
+    <div class="card" style="padding:10px 16px;">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <span style="font-size:0.85rem;font-weight:600;color:#2d3748;">Workers' Comp Carve-Out?</span>
+        <select id="wc_carve_out_sel" name="wc_carve_out" onchange="toggleWcCarveout(this)" style="width:auto;padding:3px 6px;font-size:0.8rem;height:auto;">
+          <option value="">—</option>
+          <option value="false">No</option>
+          <option value="true">Yes</option>
+        </select>
+        <span class="info-note warn" id="wc-carveout-note" style="display:none;margin:0;padding:4px 10px;">
+          Carve-out selected — WC Losses, Codes, and Questions are hidden.
+        </span>
+      </div>
+    </div>
+
+    <!-- Sections hidden on carve-out -->
+    <div id="wc-sections-wrapper">
+
+      <!-- WC Codes -->
+      <div class="card" data-card-id="wc-codes" data-locked="true" style="padding:20px 14px;">
+        <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+          <span>Workers' Compensation Codes</span>
+          <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+        </div>
+        <hr class="card-divider" />
+
+        <div style="overflow-x:auto;">
+          <table class="data-table tbl-fixed" id="wc-codes-table" style="font-size:0.8rem;">
+            <thead>
+              <tr>
+                <th class="req-y" style="width:60px;">State</th>
+                <th class="req-y" style="width:38px;">WC<br>Code</th>
+                <th style="text-align:left;width:150px;">WC Description</th>
+                <th style="width:30px;">Haz</th>
+                <th style="width:46px;">100K<br>Flag</th>
+                <th class="req-y" style="width:84px;">Annual<br>Payroll ($)</th>
+                <th class="req-y" style="width:36px;">#<br>FTEs</th>
+                <th class="req-y" style="width:36px;">#<br>PTEs</th>
+                <th style="width:50px;">Cur<br>Rate</th>
+                <th style="width:50px;">Our<br>Rate</th>
+              </tr>
+            </thead>
+            <tbody id="wc-codes-body"></tbody>
+            <tfoot>
+              <tr class="totals-row">
+                <td colspan="5" style="text-align:right;padding-right:8px;">Totals</td>
+                <td id="wc-total-payroll" style="padding-left:5px;font-size:0.78rem;">$0</td>
+                <td id="wc-total-fte" style="text-align:center;">0</td>
+                <td id="wc-total-pte" style="text-align:center;">0</td>
+                <td colspan="2"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center;margin-top:10px;">
+          <button class="btn-add-row" type="button" id="btn-add-wc-code" style="margin-top:0;">+ Add Row</button>
+          <button class="btn-add-row" type="button" id="btn-remove-wc-rows" style="margin-top:0;color:#dc2626;border-color:#fecaca;">− Remove Row</button>
+        </div>
+
+        <div class="wc-extra-grid">
+          <div class="form-group">
+            <label class="req-g" for="proposed_mod">WC Mod (0 = full carve-out)</label>
+            <input type="number" id="proposed_mod" name="proposed_mod" step="0.01" min="0" value="1.00" />
+            <input type="hidden" id="pricing_proposed_mod" name="pricing_proposed_mod" value="1.00" />
+          </div>
+          <div class="form-group">
+            <label for="shared_claim_fee">Shared Claim Fee ($)</label>
+            <input type="number" id="shared_claim_fee" name="shared_claim_fee" step="0.01" min="0" value="0" />
+          </div>
+          <div class="form-group">
+            <label for="min_wc_fee_per_week">Minimum Per Week ($)</label>
+            <input type="number" id="min_wc_fee_per_week" name="min_wc_fee_per_week" step="0.01" min="0" value="0" />
+          </div>
+        </div>
+
+      </div><!-- /card wc codes -->
+
+      <!-- WC Losses -->
+      <div class="card" data-card-id="wc-losses" data-locked="true">
+        <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+          <span>Workers' Compensation Losses <span class="req-section-badge g">Required for final approval</span></span>
+          <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+        </div>
+        <hr class="card-divider" />
+
+        <div class="form-grid" style="margin-bottom:16px">
+          <div class="form-group">
+            <label class="req-g" for="new_company_sel">New company?</label>
+            <select id="new_company_sel" name="new_company" onchange="toggleInlineNote(this, 'note-new-co')">
+              <option value="">—</option>
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </select>
+            <div class="inline-note" id="note-new-co">Loss History Affidavit required.</div>
+          </div>
+          <div class="form-group">
+            <label class="req-g" for="gaps_in_coverage_sel">Gaps in coverage?</label>
+            <select id="gaps_in_coverage_sel" name="gaps_in_coverage" onchange="toggleInlineNote(this, 'note-gaps')">
+              <option value="">—</option>
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </select>
+            <div class="inline-note" id="note-gaps">LHA required for gap period.</div>
+          </div>
+        </div>
+
+        <div style="overflow-x:auto;">
+          <table class="data-table tbl-fixed" id="wc-losses-table">
+            <thead>
+              <tr>
+                <th style="width:108px;">Period Start</th>
+                <th style="width:108px;">Period End</th>
+                <th style="width:96px;">Total Losses</th>
+                <th style="width:56px;"># Claims</th>
+                <th style="width:64px;">Months in<br>Policy</th>
+                <th style="width:60px;">Open<br>Claims</th>
+              </tr>
+            </thead>
+            <tbody id="wc-losses-body"></tbody>
+          </table>
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center;margin-top:10px;">
+          <button class="btn-add-row" type="button" id="btn-add-wc-loss" style="margin-top:0;">+ Add Row</button>
+          <button class="btn-add-row" type="button" id="btn-remove-wc-loss" style="margin-top:0;color:#dc2626;border-color:#fecaca;">− Remove Row</button>
+        </div>
+
+      </div><!-- /card wc losses -->
+
+      <!-- WC Questions -->
+      <div class="card" data-card-id="wc-questions" data-locked="true">
+        <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+          <span>Workers' Comp Questions <span class="req-section-badge y">Required for estimate</span></span>
+          <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
+        </div>
+        <hr class="card-divider" />
+        <div class="compliance-rows" id="wc-q-grid">
+
+          <div class="q-row">
+            <span class="q-label">Does applicant own, operate or lease aircraft / watercraft?</span>
+            <select class="q-select" name="wc_q_aircraft" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_aircraft_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Do / have past, present or discontinued operations involve(d) storing, treating, discharging, applying, disposing, or transporting of hazardous material? (e.g. landfills, wastes, fuel tanks, etc.)</span>
+            <select class="q-select" name="wc_q_hazmat" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_hazmat_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Any work performed underground or above 15 feet? If yes, list max height and equipment used.</span>
+            <select class="q-select" name="wc_q_above15ft" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_above15ft_explanation" placeholder="Max height, equipment…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Any work performed on barges, vessels, docks, bridges over water?</span>
+            <select class="q-select" name="wc_q_overwater" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_overwater_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Is applicant engaged in any other type of business? If so, name and describe other businesses.</span>
+            <select class="q-select" name="wc_q_other_biz" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_other_biz_explanation" placeholder="Name and describe…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Are sub-contractors and/or independent contractors used? If yes provide a copy of sub-agreement. Identify % of work subcontracted out and what specific work is subcontracted out.</span>
+            <select class="q-select" name="wc_q_subcontractors" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_subcontractors_explanation" placeholder="% subcontracted, type of work…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Any work subcontracted without certificates of insurance?</span>
+            <select class="q-select" name="wc_q_unsub" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_unsub_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Is a formal safety program in operation? If yes provide a copy of manual.</span>
+            <select class="q-select" name="wc_q_safety" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_safety_explanation" placeholder="Describe program…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Any group transportation provided?</span>
+            <select class="q-select" name="wc_q_transport" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_transport_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Any employees under 16 or over 60 years of age?</span>
+            <select class="q-select" name="wc_q_age_extremes" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_age_extremes_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Any part time or seasonal employees?</span>
+            <select class="q-select" name="wc_q_parttime" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_parttime_explanation" placeholder="# seasonal, type of work…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Is there any volunteer or donated labor?</span>
+            <select class="q-select" name="wc_q_volunteer" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_volunteer_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Any employees with physical handicaps?</span>
+            <select class="q-select" name="wc_q_disabilities" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_disabilities_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Do employees travel out of state or out of the country? If so, scope of travel?</span>
+            <select class="q-select" name="wc_q_outofstate" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_outofstate_explanation" placeholder="States / countries, frequency…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Are athletic teams sponsored?</span>
+            <select class="q-select" name="wc_q_athletic" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_athletic_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Are physicals required after offers of employment are made?</span>
+            <select class="q-select" name="wc_q_physicals" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_physicals_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Does turnover exceed 30% annually?</span>
+            <select class="q-select" name="wc_q_turnover" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_turnover_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Any prior coverage declined / cancelled / non-renewed (last 3 years)?</span>
+            <select class="q-select" name="wc_q_declined" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_declined_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Are employee health plans provided?</span>
+            <select class="q-select" name="wc_q_health_plans" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_health_plans_explanation" placeholder="Plan type…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Is there a labor interchange with any other business / subsidiary?</span>
+            <select class="q-select" name="wc_q_labor_int" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_labor_int_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Do you lease employees to or from other employers?</span>
+            <select class="q-select" name="wc_q_leased" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_leased_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Do any employees predominantly work at home?</span>
+            <select class="q-select" name="wc_q_remote" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_remote_explanation" placeholder="# remote, states…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Any tax liens or bankruptcy within the last five (5) years?</span>
+            <select class="q-select" name="wc_q_liens" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_liens_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+          <div class="q-row">
+            <span class="q-label">Is there any current or anticipated debt for unpaid premiums owed to any previous workers' compensation provider?</span>
+            <select class="q-select" name="wc_q_unpaid" onchange="toggleQExplain(this)"><option value="false" selected>No</option><option value="true">Yes</option></select>
+            <textarea class="q-explain" name="wc_q_unpaid_explanation" placeholder="Explain…" rows="3" style="display:none"></textarea>
+          </div>
+
+        </div>
+      </div><!-- /card wc questions -->
+
+    </div><!-- /wc-sections-wrapper -->

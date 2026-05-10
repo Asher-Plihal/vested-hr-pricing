@@ -1,0 +1,110 @@
+
+    <div class="card">
+      <div class="card-title">Proposal</div>
+      <hr class="card-divider" />
+
+      <div id="proposal-content">
+
+        <div style="overflow-x:auto;margin-bottom:20px;">
+          <table class="data-table" id="proposal-wc-table">
+            <thead>
+              <tr>
+                <th>State</th>
+                <th>WC<br>Code</th>
+                <th>WC<br>Description</th>
+                <th style="text-align:right;">Total<br>WSEs</th>
+                <th style="text-align:right;">Annual<br>GWs</th>
+                <th style="text-align:right;">WC<br>Rate</th>
+                <th style="text-align:right;">FICA</th>
+                <th style="text-align:right;">FUTA</th>
+                <th style="text-align:right;">SUTA</th>
+                <th style="text-align:right;" id="proposal-admin-th">Admin</th>
+                <th style="text-align:right;">Pre<br>Cutoff<br>Cost %</th>
+                <th style="text-align:right;">Post<br>Cutoff<br>Cost %</th>
+              </tr>
+            </thead>
+            <tbody id="proposal-wc-body"></tbody>
+            <tfoot>
+              <tr class="totals-row">
+                <td colspan="3">Totals</td>
+                <td style="text-align:right;" id="p-total-wses">—</td>
+                <td style="text-align:right;" id="p-total-gws">—</td>
+                <td style="text-align:right;" id="p-wc-billed">—</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td style="text-align:right;" id="p-admin-total">—</td>
+                <td></td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+
+      </div><!-- /proposal-content -->
+    </div>
+
+    <div class="card">
+      <div class="card-title">Annual Billing Analysis</div>
+      <hr class="card-divider" />
+
+      <div id="analysis-content">
+        <div style="overflow-x:auto;">
+          <table class="data-table" id="analysis-table">
+            <thead>
+              <!-- Group header row -->
+              <tr>
+                <th colspan="4"></th>
+                <th colspan="3" class="analysis-group-label" style="text-align:center;">Workers' Compensation</th>
+                <th colspan="3" class="analysis-group-label" style="text-align:center;">Administrative Fees</th>
+                <th colspan="3" class="analysis-group-label" style="text-align:center;">SUTA</th>
+              </tr>
+              <!-- Column header row -->
+              <tr>
+                <th>State</th>
+                <th>WC<br>Code</th>
+                <th style="text-align:right;">Total<br>WSEs</th>
+                <th style="text-align:right;">Annual<br>GWs</th>
+                <th style="text-align:right;">Current<br>Rate</th>
+                <th style="text-align:right;">VHR<br>Rate</th>
+                <th style="text-align:right;">WC<br>Savings</th>
+                <th style="text-align:right;">Current<br>Admin</th>
+                <th style="text-align:right;">VHR<br>Admin</th>
+                <th style="text-align:right;">Admin<br>Savings</th>
+                <th style="text-align:right;">Current<br>SUTA</th>
+                <th style="text-align:right;">VHR<br>SUTA</th>
+                <th style="text-align:right;">SUTA<br>Savings</th>
+              </tr>
+            </thead>
+
+            <!-- WC rows (SUTA cols inline, first row per state) -->
+            <tbody id="analysis-wc-body"></tbody>
+
+            <!-- Savings totals row -->
+            <tbody>
+              <tr class="totals-row">
+                <td colspan="4">Totals</td>
+                <td></td><td></td>
+                <td style="text-align:right;" id="a-wc-savings">—</td>
+                <td></td>
+                <td></td>
+                <td style="text-align:right;" id="a-admin-savings">—</td>
+                <td></td>
+                <td></td>
+                <td style="text-align:right;" id="a-suta-savings">—</td>
+              </tr>
+            </tbody>
+
+            <tfoot>
+              <tr class="totals-row">
+                <td colspan="12">Total Savings — Vested HR</td>
+                <td style="text-align:right;" id="a-grand-total-savings">—</td>
+              </tr>
+            </tfoot>
+
+          </table>
+        </div>
+      </div><!-- /analysis-content -->
+
+    </div>
