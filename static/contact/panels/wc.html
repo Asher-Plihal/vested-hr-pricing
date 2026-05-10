@@ -9,16 +9,13 @@
           <option value="true">Yes</option>
         </select>
         <span class="info-note warn" id="wc-carveout-note" style="display:none;margin:0;padding:4px 10px;">
-          Carve-out selected — WC Losses, Codes, and Questions are hidden.
+          Carve-out selected — WC Losses and Questions are hidden.
         </span>
       </div>
     </div>
 
-    <!-- Sections hidden on carve-out -->
-    <div id="wc-sections-wrapper">
-
-      <!-- WC Codes -->
-      <div class="card" data-card-id="wc-codes" data-locked="true" style="padding:20px 14px;">
+    <!-- WC Codes — always visible, even on carve-out -->
+    <div class="card" data-card-id="wc-codes" data-locked="true" style="padding:20px 14px;">
         <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
           <span>Workers' Compensation Codes</span>
           <button type="button" class="card-lock-btn" onclick="toggleCardLock(this)" title="Unlock to edit">🔒</button>
@@ -75,7 +72,10 @@
           </div>
         </div>
 
-      </div><!-- /card wc codes -->
+    </div><!-- /card wc codes -->
+
+    <!-- Sections hidden on carve-out -->
+    <div id="wc-sections-wrapper">
 
       <!-- WC Losses -->
       <div class="card" data-card-id="wc-losses" data-locked="true">

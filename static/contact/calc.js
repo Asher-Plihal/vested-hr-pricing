@@ -226,6 +226,7 @@ function collectClientPayload() {
     current_admin_rate_3:      getNumVal('current_admin_rate_3') || 0,
     implementation_fee:        getNumVal('implementation_fee'),
     epli_rate:                 getNumVal('epli_rate'),
+    offered_promotion:         getVal('offered_promotion'),
     internal_commission_pct:   internal / 100,
     external_commission_pct:   external / 100,
     broker_wc_commission_pct:  brokerWC / 100,
@@ -765,6 +766,7 @@ function populateForm(client) {
   setField('current_admin_rate_2', client.current_admin_rate_2 || 0);
   setField('current_admin_rate_3', client.current_admin_rate_3 || 0);
   selectAdminMethod(client.admin_method || 1);
+  setField('offered_promotion', client.offered_promotion || '');
 
   setField('implementation_fee',       client.implementation_fee);
   setField('epli_rate',                client.epli_rate);

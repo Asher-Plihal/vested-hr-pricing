@@ -116,3 +116,6 @@ class Contact(Base):
 
     # UI state — JSON dict of card-id → locked boolean
     card_lock_states = Column(Text, nullable=True)
+
+    # Admin Fee
+    offered_promotion = Column(Text, nullable=True)

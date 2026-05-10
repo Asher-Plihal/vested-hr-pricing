@@ -46,9 +46,10 @@ _MIGRATIONS = [
 
 # Also handle clients table migrations
 _CLIENT_MIGRATIONS = [
-    ("current_admin_rate", "ALTER TABLE clients ADD COLUMN current_admin_rate REAL DEFAULT 0.0"),
-    ("futa_turnover_rate", "ALTER TABLE clients ADD COLUMN futa_turnover_rate REAL DEFAULT 0.1"),
-    ("epli_rate",          "ALTER TABLE clients ADD COLUMN epli_rate REAL DEFAULT 0.0"),
+    ("current_admin_rate", "ALTER TABLE contacts ADD COLUMN current_admin_rate REAL DEFAULT 0.0"),
+    ("futa_turnover_rate", "ALTER TABLE contacts ADD COLUMN futa_turnover_rate REAL DEFAULT 0.1"),
+    ("epli_rate",          "ALTER TABLE contacts ADD COLUMN epli_rate REAL DEFAULT 0.0"),
+    ("offered_promotion",  "ALTER TABLE contacts ADD COLUMN offered_promotion TEXT"),
 ]
 
 # WC lines table migrations
@@ -65,7 +66,7 @@ with engine.connect() as conn:
                 conn.commit()
                 print(f"Migrated system_config: added {col}")
 
-    cl_cols = [row[1] for row in conn.execute(text("PRAGMA table_info(clients)"))]
+    cl_cols = [row[1] for row in conn.execute(text("PRAGMA table_info(contacts)"))]
     if cl_cols:
         for col, ddl in _CLIENT_MIGRATIONS:
             if col not in cl_cols:
@@ -106,7 +107,7 @@ independent_bureau_states="CA,DE,PA,MI,NJ,TX",
         futa_approach="B",
         tlm_rate=4.5,
         reverse_wire_rate=0.0,
-        ach_rate=0.0,
+        ach_rate=2.5,
     ))
     db.commit()
     print("Seeded SystemConfig")
