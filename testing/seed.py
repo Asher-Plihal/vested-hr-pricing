@@ -99,11 +99,12 @@ if not existing_config:
         combined_cost_factor=0.89,
         pte_weight=0.75,
         monopolistic_states="WA,WY,ND,OH",
-        mcp_states="RI,NY,NJ,PA,LA,WI,MN,SD,KS,MT,AZ,UT,NV,CA,OR",
-        independent_bureau_states="CA,DE,PA,MI,NJ,TX",
+independent_bureau_states="CA,DE,PA,MI,NJ,TX",
         pay_periods_json='{"weekly":52,"biweekly":26,"semimonthly":24,"monthly":12}',
         wc_policy_adjustment=0.0,
         futa_approach="B",
+        tlm_rate=4.5,
+        wire_ach_rate=0.0,
     ))
     db.commit()
     print("Seeded SystemConfig")

@@ -1,8 +1,8 @@
 """
 Taxes tab — three tax passthroughs bundled together:
   FICA:  Social Security (per-WSE wage-base cap) + Medicare, no VHR margin.
-  FUTA:  Approach B only — WSEs × $7K wage base × 0.6% × turnover rate.
-         turnover_rate is a decimal; can exceed 1.0 when W-2s outnumber avg headcount.
+  FUTA:  Approach B only — WSEs × $7K wage base × 0.6% × (1 + turnover_rate).
+         turnover_rate is stored as a decimal (0.10 = 10%); the +1 accounts for base headcount.
   SUTA:  Per-state billing/cost/profit using VHR rates from the suta_rates table.
          ~22 states are client-reporting (PT) and excluded from VHR billing math.
 """
@@ -54,7 +54,7 @@ def calculate_futa(lines: list[dict], turnover_rate: float, config: dict) -> dic
         for line in lines
     )
 
-    futa_dollars = total_wses * futa_wage_base * futa_rate * turnover_rate
+    futa_dollars = total_wses * futa_wage_base * futa_rate * (1 + turnover_rate)
 
     return {
         "futa_dollars": futa_dollars,

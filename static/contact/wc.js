@@ -150,8 +150,8 @@ function addWCCodeRow(data) {
   reapplyCardLock(tbody);
   updateWCTotals();
 
-  // Backfill description/rate/flag for rows loaded from DB that are missing auto-populated fields
-  if (data?.state && data?.wc_code && (!data?.wc_description || !data?.flag_100k)) {
+  // Always re-run the lookup on DB load — validates the code and shows red border if not found.
+  if (data?.state && data?.wc_code) {
     lookupWCRate();
   }
 }

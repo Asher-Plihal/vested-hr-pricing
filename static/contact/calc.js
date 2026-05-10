@@ -226,7 +226,7 @@ function collectClientPayload() {
     internal_commission_pct:   internal / 100,
     external_commission_pct:   external / 100,
     broker_wc_commission_pct:  brokerWC / 100,
-    futa_turnover_rate:        getNumVal('futa_turnover_rate'),
+    futa_turnover_rate:        getNumVal('futa_turnover_rate') / 100,
     card_lock_states:          collectCardLockStates(),
   };
 
@@ -746,7 +746,7 @@ function populateForm(client) {
   setField('broker_wc_commission_pct',  ((client.broker_wc_commission_pct || 0) * 100).toFixed(4));
   setField('internal_commission_pct',   ((client.internal_commission_pct || 0) * 100).toFixed(4));
   setField('external_commission_pct',   ((client.external_commission_pct || 0) * 100).toFixed(4));
-  setField('futa_turnover_rate', client.futa_turnover_rate);
+  setField('futa_turnover_rate', ((client.futa_turnover_rate || 0) * 100).toFixed(2));
 
   scheduleCalculate();
 }

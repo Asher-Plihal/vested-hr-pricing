@@ -20,7 +20,6 @@ class SystemConfigOut(BaseModel):
     combined_cost_factor: float
     pte_weight: float
     monopolistic_states: str
-    mcp_states: str
     independent_bureau_states: str
     pay_periods_json: str
     wc_policy_adjustment: float
@@ -63,7 +62,6 @@ class SystemConfigUpdate(BaseModel):
     combined_cost_factor: Optional[float] = None
     pte_weight: Optional[float] = None
     monopolistic_states: Optional[str] = None
-    mcp_states: Optional[str] = None
     independent_bureau_states: Optional[str] = None
     pay_periods_json: Optional[str] = None
     wc_policy_adjustment: Optional[float] = None

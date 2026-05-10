@@ -32,7 +32,6 @@ class SystemConfig(Base):
 
     # WC state lists (comma-separated)
     monopolistic_states = Column(String, default="WA,WY,ND,OH")
-    mcp_states = Column(String, default="RI,NY,NJ,PA,LA,WI,MN,SD,KS,MT,AZ,UT,NV,CA,OR")
     independent_bureau_states = Column(String, default="CA,DE,PA,MI,NJ,TX")
 
     # Pay periods JSON: {"weekly":52,"biweekly":26,"semimonthly":24,"monthly":12}
