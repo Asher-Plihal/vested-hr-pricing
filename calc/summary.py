@@ -6,6 +6,7 @@ Analysis & Summary tab — rolls up all calc results into the Deal Summary struc
                   commissions, cash flow after commissions, 50% loss fund cash flow.
 ancillary input: {implementation_fee, epli_rate, tlm_rate, wire_ach_rate,
                   pay_periods_per_year, broker_wc_commission_pct, external_commission_pct}
+EPLI uses 52 weeks fixed (weekly rate × employees × 52), not payroll frequency.
 """
 
 def build_analysis(
@@ -21,7 +22,7 @@ def build_analysis(
     total_wses = futa_result.get("total_wses", 0.0)
 
     tlm_fee = ancillary.get("tlm_rate", 0.0) * total_wses * 12
-    epli_fee = ancillary.get("epli_rate", 0.0) * total_wses * pf
+    epli_fee = ancillary.get("epli_rate", 0.0) * total_wses * 52
     wire_ach_fee = ancillary.get("wire_ach_rate", 0.0) * pf
     implementation_fee = ancillary.get("implementation_fee", 0.0)
     total_other = tlm_fee + epli_fee + wire_ach_fee + implementation_fee
