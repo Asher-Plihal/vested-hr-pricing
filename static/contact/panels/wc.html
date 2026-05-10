@@ -1,20 +1,4 @@
 
-    <!-- WC Carve-Out -->
-    <div class="card" style="padding:10px 16px;">
-      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-        <span style="font-size:0.85rem;font-weight:600;color:#2d3748;">Workers' Comp Carve-Out?</span>
-        <select id="wc_carve_out_sel" name="wc_carve_out" onchange="toggleWcCarveout(this)" style="width:auto;padding:3px 6px;font-size:0.8rem;height:auto;">
-          <option value="">—</option>
-          <option value="false">No</option>
-          <option value="true">Yes</option>
-        </select>
-        <span class="info-note warn" id="wc-carveout-note" style="display:none;margin:0;padding:4px 10px;">
-          Carve-out selected — WC Losses and Questions are hidden.
-        </span>
-      </div>
-    </div>
-
-    <!-- WC Codes — always visible, even on carve-out -->
     <div class="card" data-card-id="wc-codes" data-locked="true" style="padding:20px 14px;">
         <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
           <span>Workers' Compensation Codes</span>
@@ -58,7 +42,7 @@
 
         <div class="wc-extra-grid">
           <div class="form-group">
-            <label class="req-g" for="proposed_mod">WC Mod (0 = full carve-out)</label>
+            <label class="req-g" for="proposed_mod">WC Mod</label>
             <input type="number" id="proposed_mod" name="proposed_mod" step="0.01" min="0" value="1.00" />
             <input type="hidden" id="pricing_proposed_mod" name="pricing_proposed_mod" value="1.00" />
           </div>
@@ -74,8 +58,6 @@
 
     </div><!-- /card wc codes -->
 
-    <!-- Sections hidden on carve-out -->
-    <div id="wc-sections-wrapper">
 
       <!-- WC Losses -->
       <div class="card" data-card-id="wc-losses" data-locked="true">
@@ -261,5 +243,3 @@
 
         </div>
       </div><!-- /card wc questions -->
-
-    </div><!-- /wc-sections-wrapper -->

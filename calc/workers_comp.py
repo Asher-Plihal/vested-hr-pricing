@@ -2,7 +2,7 @@
 Workers Comp tab — calculates WC billing, fixed cost, loss fund, and margin for each
 WC code line. Looks up rates from the wc_rates table (state + code concat key) and falls
 back to WCLine.manual_rate if not found. Also computes a prior-provider comparison using
-the client's current WC rate. proposed_mod = 0 zeros all billing and cost (carve-out).
+the client's current WC rate.
 """
 from models import WCRate
 
@@ -22,7 +22,6 @@ def _lookup_rate(state: str, code: str, db, independent_bureau_states: str) -> f
 def calculate_wc(lines: list[dict], proposed_mod: float, config: dict, db=None) -> dict:
     """
     lines: [{state, wc_code, annual_gw, ftes, ptes, current_client_rate, manual_rate}]
-    proposed_mod == 0 means full carve-out; all billing zeros out.
     If db is provided and manual_rate is 0/blank, the WC Rates table is queried by
     state+wc_code (concat key) to fill in the rate automatically.
     """
@@ -57,16 +56,11 @@ def calculate_wc(lines: list[dict], proposed_mod: float, config: dict, db=None) 
 
         wses = ftes + pte_weight * ptes
 
-        if proposed_mod == 0:
-            billing = 0.0
-            cost = 0.0
-            margin = 0.0
-        else:
-            billing = (manual_rate * proposed_mod) * gw / 100
-            cost = billing * (fixed_cost_factor + loss_fund_factor)
-            margin = billing - cost
+        billing = (manual_rate * proposed_mod) * gw / 100
+        cost = billing * (fixed_cost_factor + loss_fund_factor)
+        margin = billing - cost
 
-        current_eff_rate = current_client_rate * proposed_mod if proposed_mod != 0 else 0.0
+        current_eff_rate = current_client_rate * proposed_mod
         current_billing = gw * current_eff_rate / 100
         current_cost = billing  # same cost structure applied to current billing
         current_margin = current_billing - current_cost

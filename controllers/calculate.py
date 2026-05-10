@@ -46,7 +46,7 @@ def run_calculate(body: CalculateRequest, db: Session = Depends(get_db)):
     wc_line_dicts = [l.model_dump() for l in body.wc_lines]
     suta_line_dicts = [l.model_dump() for l in body.suta_lines]
 
-    proposed_mod = 0.0 if body.wc_carve_out else body.proposed_mod
+    proposed_mod = body.proposed_mod
     wc_result = calculate_wc(wc_line_dicts, proposed_mod, config, db=db)
 
     fica_result = calculate_fica(wc_line_dicts, config)

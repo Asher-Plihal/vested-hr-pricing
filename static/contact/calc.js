@@ -46,9 +46,6 @@ async function runCalculate() {
     wc_lines:   payload.wc_lines,
     suta_lines: payload.suta_lines,
   };
-  // Carve-out: force proposed_mod to 0 so the server zeros all WC billing
-  if (calcPayload.wc_carve_out) calcPayload.proposed_mod = 0;
-
   document.getElementById('summary-calculating').style.display = 'block';
   document.getElementById('summary-content').style.opacity = '0.4';
 
@@ -209,7 +206,6 @@ function collectClientPayload() {
     effective_date:             getVal('effective_date'),
 
     // WC
-    wc_carve_out:        getSelectBool('wc_carve_out'),
     proposed_mod:        getNumVal('pricing_proposed_mod'),
     shared_claim_fee:    getNumVal('shared_claim_fee'),
     min_wc_fee_per_week: getNumVal('min_wc_fee_per_week'),
@@ -344,8 +340,7 @@ function renderProposal(r) {
   const wo = r.wc_overview    || {};
   const to = r.taxes_overview || {};
 
-  const isCarveOut  = getSelectBool('wc_carve_out') === true;
-  const proposedMod = isCarveOut ? 0 : (parseFloat(document.getElementById('pricing_proposed_mod')?.value) || 0);
+  const proposedMod = parseFloat(document.getElementById('pricing_proposed_mod')?.value) || 0;
   const wcLines     = collectWCLines().filter(l => l.wc_code || l.annual_gw > 0);
   const sutaLines   = collectSutaLines().filter(l => l.state);
 
@@ -374,7 +369,7 @@ function renderProposal(r) {
     wcLines.forEach(line => {
       const wses     = Math.round((line.ftes || 0) + 0.75 * (line.ptes || 0));
       const gw       = line.annual_gw || 0;
-      const rate     = isCarveOut ? 0 : (line.manual_rate || 0);
+      const rate     = line.manual_rate || 0;
       const desc     = line.wc_description || '—';
       const sutaRate = sutaRateMap[line.state];
       const isClientReporting = CLIENT_REPORTING_STATES.has(line.state);
@@ -404,7 +399,7 @@ function renderProposal(r) {
         <td title="${desc}">${desc}</td>
         <td style="text-align:right;">${wses || '—'}</td>
         <td style="text-align:right;">${gw ? formatDollars(gw) : '—'}</td>
-        <td style="text-align:right;">${isCarveOut ? '<span style="color:#64748b;font-style:italic;font-size:0.75rem;">Carve-Out</span>' : (rate ? rate.toFixed(2) + '%' : '—')}</td>
+        <td style="text-align:right;">${rate ? rate.toFixed(2) + '%' : '—'}</td>
         <td style="text-align:right;">${ficaRate ? (ficaRate * 100).toFixed(2) + '%' : '—'}</td>
         <td style="text-align:right;">${futaRate ? (futaRate * 100).toFixed(2) + '%' : '—'}</td>
         <td style="text-align:right;">${sutaDisplay}</td>
@@ -429,8 +424,7 @@ function renderProposal(r) {
 function renderBillingAnalysis(r) {
   const ao = r.admin_overview || {};
 
-  const isCarveOut      = getSelectBool('wc_carve_out') === true;
-  const proposedMod     = isCarveOut ? 0 : (parseFloat(document.getElementById('pricing_proposed_mod')?.value) || 0);
+  const proposedMod     = parseFloat(document.getElementById('pricing_proposed_mod')?.value) || 0;
   const wcLines         = collectWCLines().filter(l => l.wc_code || l.annual_gw > 0);
   const adminMethod     = getIntVal('admin_method') || 1;
   const adminSuffix     = adminMethod === 1 ? '' : '_' + adminMethod;
@@ -717,12 +711,6 @@ function populateForm(client) {
   const useTlmEl = document.getElementById('use_tlm');
   if (useTlmEl) useTlmEl.checked = client.use_tlm !== false;
 
-  // WC carve-out
-  if (client.wc_carve_out != null) {
-    const wcSel = document.getElementById('wc_carve_out_sel');
-    wcSel.value = client.wc_carve_out ? 'true' : 'false';
-    toggleWcCarveout(wcSel);
-  }
   setField('proposed_mod',        client.proposed_mod);
   setField('pricing_proposed_mod',client.proposed_mod);
   setField('shared_claim_fee',    client.shared_claim_fee);

@@ -83,7 +83,6 @@ class Contact(Base):
     requested_payroll_delivery = Column(String)
 
     # Workers' Compensation
-    wc_carve_out = Column(Boolean, default=False)
     proposed_mod = Column(Float, default=1.0)
     shared_claim_fee = Column(Float, default=0.0)
     min_wc_fee_per_week = Column(Float, default=0.0)

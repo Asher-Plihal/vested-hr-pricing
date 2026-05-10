@@ -83,7 +83,6 @@ class ContactUpdate(BaseModel):
     effective_date: Optional[str] = None
     method_of_payment: Optional[str] = None
     requested_payroll_delivery: Optional[str] = None
-    wc_carve_out: Optional[bool] = None
     proposed_mod: Optional[float] = None
     shared_claim_fee: Optional[float] = None
     min_wc_fee_per_week: Optional[float] = None
@@ -176,7 +175,6 @@ class ContactOut(BaseModel):
     effective_date: Optional[str]
     method_of_payment: Optional[str]
     requested_payroll_delivery: Optional[str]
-    wc_carve_out: Optional[bool]
     proposed_mod: Optional[float]
     shared_claim_fee: Optional[float]
     min_wc_fee_per_week: Optional[float]

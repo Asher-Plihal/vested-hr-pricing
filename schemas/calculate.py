@@ -18,7 +18,6 @@ class CalculateRequest(BaseModel):
     wc_lines: list[WCLineIn] = []
     suta_lines: list[SutaLineIn] = []
     proposed_mod: float = 1.0
-    wc_carve_out: bool = False
     admin_method: int = 1
     admin_rate: float = 0.0
     admin_rate_2: float = 0.0

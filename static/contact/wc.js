@@ -14,19 +14,6 @@ function toggleInlineNote(sel, noteId) {
   note.style.display = sel.value === 'true' ? 'block' : 'none';
 }
 
-/* ── WC Carve-Out Toggle ─────────────────────────────────────────────────── */
-function toggleWcCarveout(sel) {
-  const wrapper = document.getElementById('wc-sections-wrapper');
-  const note = document.getElementById('wc-carveout-note');
-  if (sel.value === 'true') {
-    wrapper.style.display = 'none';
-    note.style.display = 'block';
-  } else {
-    wrapper.style.display = '';
-    note.style.display = 'none';
-  }
-}
-
 /* ── Generic remove-mode factory ─────────────────────────────────────────── */
 function makeRemoveMode(tbodyId, addBtnId, removeBtnId, addBtnLabel, onRemove) {
   let active = false;
