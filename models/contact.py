@@ -112,7 +112,7 @@ class Contact(Base):
     include_epli = Column(Boolean, default=False)
 
     # FUTA turnover input (decimal; can exceed 1.0 when W-2s > avg headcount)
-    futa_turnover_rate = Column(Float, default=1.0)
+    futa_turnover_rate = Column(Float, default=0.1)
 
     # UI state — JSON dict of card-id → locked boolean
     card_lock_states = Column(Text, nullable=True)

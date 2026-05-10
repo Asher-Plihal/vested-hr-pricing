@@ -755,7 +755,7 @@ function populateForm(client) {
   }
 
   // Pricing — populate all per-method rate fields then select active method
-  setField('admin_rate',          ((client.admin_rate   || 0) * 100).toFixed(4));
+  setField('admin_rate',          ((client.admin_rate   || 0) * 100).toFixed(2));
   setField('admin_rate_2',        client.admin_rate_2   || 0);
   setField('admin_rate_3',        client.admin_rate_3   || 0);
   setField('current_admin_rate',  client.current_admin_rate   || 0);
@@ -765,9 +765,9 @@ function populateForm(client) {
 
   setField('implementation_fee',       client.implementation_fee);
   setField('epli_rate',                client.epli_rate);
-  setField('broker_wc_commission_pct',  ((client.broker_wc_commission_pct || 0) * 100).toFixed(4));
-  setField('internal_commission_pct',   ((client.internal_commission_pct || 0) * 100).toFixed(4));
-  setField('external_commission_pct',   ((client.external_commission_pct || 0) * 100).toFixed(4));
+  setField('broker_wc_commission_pct',  ((client.broker_wc_commission_pct || 0) * 100).toFixed(2));
+  setField('internal_commission_pct',   ((client.internal_commission_pct || 0) * 100).toFixed(2));
+  setField('external_commission_pct',   ((client.external_commission_pct || 0) * 100).toFixed(2));
   setField('futa_turnover_rate', ((client.futa_turnover_rate || 0) * 100).toFixed(2));
 
   scheduleCalculate();

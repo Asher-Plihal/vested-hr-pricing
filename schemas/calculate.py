@@ -14,7 +14,7 @@ class CalculateRequest(BaseModel):
     # Flat fields (used by smoke test and client page)
     ftes: float = 0.0
     ptes: float = 0.0
-    futa_turnover_rate: float = 1.0
+    futa_turnover_rate: float = 0.1
     wc_lines: list[WCLineIn] = []
     suta_lines: list[SutaLineIn] = []
     proposed_mod: float = 1.0

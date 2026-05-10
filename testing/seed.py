@@ -40,13 +40,14 @@ _MIGRATIONS = [
     ("admin_commission_pool_pct",             "ALTER TABLE system_config ADD COLUMN admin_commission_pool_pct REAL DEFAULT 0.40"),
     ("consultant_min_ongoing_pct",            "ALTER TABLE system_config ADD COLUMN consultant_min_ongoing_pct REAL DEFAULT 0.10"),
     ("tlm_rate",                              "ALTER TABLE system_config ADD COLUMN tlm_rate REAL DEFAULT 0.0"),
-    ("wire_ach_rate",                         "ALTER TABLE system_config ADD COLUMN wire_ach_rate REAL DEFAULT 0.0"),
+    ("reverse_wire_rate",                      "ALTER TABLE system_config ADD COLUMN reverse_wire_rate REAL DEFAULT 0.0"),
+    ("ach_rate",                               "ALTER TABLE system_config ADD COLUMN ach_rate REAL DEFAULT 0.0"),
 ]
 
 # Also handle clients table migrations
 _CLIENT_MIGRATIONS = [
     ("current_admin_rate", "ALTER TABLE clients ADD COLUMN current_admin_rate REAL DEFAULT 0.0"),
-    ("futa_turnover_rate", "ALTER TABLE clients ADD COLUMN futa_turnover_rate REAL DEFAULT 1.0"),
+    ("futa_turnover_rate", "ALTER TABLE clients ADD COLUMN futa_turnover_rate REAL DEFAULT 0.1"),
     ("epli_rate",          "ALTER TABLE clients ADD COLUMN epli_rate REAL DEFAULT 0.0"),
 ]
 
@@ -104,7 +105,8 @@ independent_bureau_states="CA,DE,PA,MI,NJ,TX",
         wc_policy_adjustment=0.0,
         futa_approach="B",
         tlm_rate=4.5,
-        wire_ach_rate=0.0,
+        reverse_wire_rate=0.0,
+        ach_rate=0.0,
     ))
     db.commit()
     print("Seeded SystemConfig")
