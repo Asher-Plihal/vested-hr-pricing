@@ -53,7 +53,7 @@ function addSutaRow(data) {
     <td><input type="number" name="suta_rate_${idx}" step="0.01" min="0" max="100" placeholder="0.00" value="${data?.billing_rate != null ? (data.billing_rate * 100).toFixed(2) : ''}" /></td>
     <td><input type="number" name="suta_current_rate_${idx}" step="0.01" min="0" max="100" placeholder="0.00" value="${data?.current_client_rate != null ? (data.current_client_rate * 100).toFixed(2) : ''}" /></td>
     <td><input type="text" name="suta_threshold_${idx}" readonly style="background:#f7fafc;color:#718096;" value="${threshold}" /></td>
-    <td><input type="text" name="suta_wses_turnover_${idx}" readonly style="background:#f7fafc;color:#718096;" value="${wsesWithTurnover ? wsesWithTurnover.toFixed(2) : '—'}" /></td>
+    <td><input type="text" name="suta_wses_turnover_${idx}" readonly style="background:#f7fafc;color:#718096;" value="${wsesWithTurnover ? Math.round(wsesWithTurnover) : '—'}" /></td>
     <td><input type="text" name="suta_taxable_gws_${idx}" readonly style="background:#f7fafc;color:#718096;" value="${taxableGws ? formatCurrency(taxableGws) : '—'}" /></td>
   `;
   tr.querySelectorAll('input, select').forEach(el => {
@@ -80,8 +80,29 @@ function onSutaStateChange(sel) {
   const wsesT   = wses * 1.1;
   const thresh  = sutaThresholds[state] || 0;
   const taxGws  = Math.min(gws, thresh * wsesT);
-  tr.querySelector('input[name^="suta_wses_turnover_"]').value  = wsesT ? wsesT.toFixed(2)        : '—';
+  tr.querySelector('input[name^="suta_wses_turnover_"]').value  = wsesT ? Math.round(wsesT)      : '—';
   tr.querySelector('input[name^="suta_taxable_gws_"]').value   = taxGws ? formatCurrency(taxGws) : '—';
+}
+
+function updateSutaRows() {
+  const tbody = document.getElementById('suta-body');
+  if (!tbody) return;
+  tbody.querySelectorAll('tr').forEach(tr => {
+    const stateEl = tr.querySelector('select[name^="suta_state_"]');
+    if (!stateEl) return;
+    const state = stateEl.value;
+    const wcLns   = collectWCLines();
+    const stateWC = state ? wcLns.filter(l => l.state === state) : [];
+    const gws     = stateWC.reduce((s, l) => s + (l.annual_gw || 0), 0);
+    const wses    = stateWC.reduce((s, l) => s + (l.ftes || 0) + 0.75 * (l.ptes || 0), 0);
+    const wsesT   = wses * 1.1;
+    const thresh  = sutaThresholds[state] || 0;
+    const taxGws  = Math.min(gws, thresh * wsesT);
+    const wsesEl  = tr.querySelector('input[name^="suta_wses_turnover_"]');
+    const taxEl   = tr.querySelector('input[name^="suta_taxable_gws_"]');
+    if (wsesEl) wsesEl.value = wsesT ? Math.round(wsesT) : '—';
+    if (taxEl)  taxEl.value  = taxGws ? formatCurrency(taxGws) : '—';
+  });
 }
 
 /* sutaRM declared here; button listeners attached in init() */

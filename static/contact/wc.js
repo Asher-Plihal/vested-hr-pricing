@@ -97,8 +97,8 @@ function addWCCodeRow(data) {
     <td><input type="text" name="wc_rate_${idx}" placeholder="—" value="${data?.manual_rate ? parseFloat(data.manual_rate).toFixed(2) + '%' : ''}" readonly style="background:#f5f5f5;cursor:not-allowed;text-align:center;" /></td>
   `;
   tr.querySelectorAll('input, select').forEach(inp => {
-    inp.addEventListener('input', () => { updateWCTotals(); scheduleCalculate(); });
-    inp.addEventListener('change', () => { updateWCTotals(); scheduleCalculate(); });
+    inp.addEventListener('input', () => { updateWCTotals(); updateSutaRows(); scheduleCalculate(); });
+    inp.addEventListener('change', () => { updateWCTotals(); updateSutaRows(); scheduleCalculate(); });
   });
 
   // Auto-populate rate and description from WC table when state or code changes
@@ -137,6 +137,7 @@ function addWCCodeRow(data) {
       codeInput.style.borderColor   = '#f87171';
     }
     updateWCTotals();
+    updateSutaRows();
     scheduleCalculate();
   }
 
