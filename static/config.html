@@ -89,27 +89,27 @@
       <hr class="divider" />
       <div class="field-grid" style="grid-template-columns: repeat(4, 1fr);">
         <div class="field-group">
-          <label class="field-label">FICA SS Rate</label>
-          <input type="number" id="ss_rate" step="0.001" />
+          <label class="field-label">FICA SS Rate (%)</label>
+          <input type="number" id="ss_rate" step="0.01" />
         </div>
         <div class="field-group">
           <label class="field-label">FICA SS Wage Cap ($)</label>
           <input type="number" id="ss_wage_base" step="100" />
         </div>
         <div class="field-group">
-          <label class="field-label">FICA Medicare Rate</label>
-          <input type="number" id="medicare_rate" step="0.001" />
+          <label class="field-label">FICA Medicare Rate (%)</label>
+          <input type="number" id="medicare_rate" step="0.01" />
         </div>
         <div class="field-group">
-          <label class="field-label">FICA Rate (Total)</label>
-          <input type="number" id="fica_total_rate" step="0.001" readonly
+          <label class="field-label">FICA Rate Total (%)</label>
+          <input type="number" id="fica_total_rate" step="0.01" readonly
                  style="background:var(--surface-2,#f5f5f5); color:var(--text-2,#666); cursor:default;" />
         </div>
       </div>
       <div class="field-grid" style="margin-top:20px;">
         <div class="field-group">
-          <label class="field-label">FUTA Rate</label>
-          <input type="number" id="futa_rate" step="0.001" />
+          <label class="field-label">FUTA Rate (%)</label>
+          <input type="number" id="futa_rate" step="0.01" />
         </div>
         <div class="field-group">
           <label class="field-label">FUTA Wage Cap ($ / WSE)</label>
@@ -387,10 +387,10 @@ function updateFicaTotal() {
 }
 
 function populateFederal(cfg) {
-  document.getElementById('ss_rate').value        = cfg.ss_rate        ?? '';
-  document.getElementById('medicare_rate').value  = cfg.medicare_rate  ?? '';
+  document.getElementById('ss_rate').value        = cfg.ss_rate        != null ? parseFloat((cfg.ss_rate       * 100).toFixed(4)) : '';
+  document.getElementById('medicare_rate').value  = cfg.medicare_rate  != null ? parseFloat((cfg.medicare_rate * 100).toFixed(4)) : '';
   document.getElementById('ss_wage_base').value   = cfg.ss_wage_base   ?? '';
-  document.getElementById('futa_rate').value      = cfg.futa_rate      ?? '';
+  document.getElementById('futa_rate').value      = cfg.futa_rate      != null ? parseFloat((cfg.futa_rate     * 100).toFixed(4)) : '';
   document.getElementById('futa_wage_base').value = cfg.futa_wage_base ?? '';
   updateFicaTotal();
 }
@@ -432,11 +432,14 @@ function populateFees(cfg) {
 
 /* ── Collect fields for save ────────────────────────────────────────────────── */
 function collectFederal() {
+  const ss   = parseFloat(document.getElementById('ss_rate').value);
+  const med  = parseFloat(document.getElementById('medicare_rate').value);
+  const futa = parseFloat(document.getElementById('futa_rate').value);
   return {
-    ss_rate:        parseFloat(document.getElementById('ss_rate').value)        || null,
-    medicare_rate:  parseFloat(document.getElementById('medicare_rate').value)  || null,
+    ss_rate:        isNaN(ss)   ? null : ss   / 100,
+    medicare_rate:  isNaN(med)  ? null : med  / 100,
     ss_wage_base:   parseFloat(document.getElementById('ss_wage_base').value)   || null,
-    futa_rate:      parseFloat(document.getElementById('futa_rate').value)      || null,
+    futa_rate:      isNaN(futa) ? null : futa / 100,
     futa_wage_base: parseFloat(document.getElementById('futa_wage_base').value) || null,
   };
 }
