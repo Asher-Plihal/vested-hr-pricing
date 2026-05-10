@@ -34,8 +34,14 @@ function refreshSutaRowCells(tr, state) {
   const taxGws = Math.min(gws, (sutaThresholds[state] || 0) * wsesT);
   const wsesEl = tr.querySelector('input[name^="suta_wses_turnover_"]');
   const taxEl  = tr.querySelector('input[name^="suta_taxable_gws_"]');
+  const stateEl = tr.querySelector('select[name^="suta_state_"]');
   if (wsesEl) wsesEl.value = wsesT ? Math.round(wsesT) : '—';
   if (taxEl)  taxEl.value  = taxGws ? formatCurrency(taxGws) : '—';
+  if (stateEl) {
+    const missing = state && wsesT === 0 && taxGws === 0;
+    stateEl.style.borderColor = missing ? '#f87171' : '';
+    stateEl.style.background  = missing ? '#fee2e2' : '';
+  }
 }
 
 function addSutaRow(data) {
