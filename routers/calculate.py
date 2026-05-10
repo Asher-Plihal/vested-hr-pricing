@@ -5,14 +5,12 @@ from database import get_db
 from models import SystemConfig
 from schemas import CalculateRequest
 
-from calc.wse import calculate_wses
 from calc.workers_comp import calculate_wc
-from calc.fica import calculate_fica
-from calc.futa import calculate_futa
-from calc.suta import calculate_suta
-from calc.admin_fee import calculate_admin
+from calc.taxes import calculate_fica, calculate_futa, calculate_suta
+from calc.admin import calculate_admin
 from calc.commission import calculate_commission
-from calc.summary import calculate_summary
+from calc.proposal import build_proposal
+from calc.summary import build_analysis
 
 router = APIRouter(prefix="/calculate", tags=["calculate"])
 
@@ -90,7 +88,8 @@ def run_calculate(body: CalculateRequest, db: Session = Depends(get_db)):
         "consultant_commission_ongoing": cfg_row.consultant_commission_ongoing,
     }
 
-    summary = calculate_summary(
+    proposal_data = build_proposal(wc_result, admin_result, futa_result)
+    analysis_data = build_analysis(
         wc_result=wc_result,
         fica_result=fica_result,
         futa_result=futa_result,
@@ -100,4 +99,4 @@ def run_calculate(body: CalculateRequest, db: Session = Depends(get_db)):
         ancillary=ancillary_full,
     )
 
-    return {**summary, "suta_lines": suta_result["lines"]}
+    return {**proposal_data, **analysis_data, "suta_lines": suta_result["lines"]}

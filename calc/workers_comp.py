@@ -1,3 +1,9 @@
+"""
+Workers Comp tab — calculates WC billing, fixed cost, loss fund, and margin for each
+WC code line. Looks up rates from the wc_rates table (state + code concat key) and falls
+back to WCLine.manual_rate if not found. Also computes a prior-provider comparison using
+the client's current WC rate. proposed_mod = 0 zeros all billing and cost (carve-out).
+"""
 from models import WCRate
 
 

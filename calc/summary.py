@@ -1,4 +1,14 @@
-def calculate_summary(
+"""
+Analysis & Summary tab — rolls up all calc results into the Deal Summary structure.
+  taxes_overview: SUTA billing/cost/profit, FICA total, FUTA total.
+  other_items:    TLM, EPLI, wire/ACH fee, implementation fee, total ancillary, total P&L.
+  commissions:    consultant upfront/ongoing, broker WC and admin splits, admin net after
+                  commissions, cash flow after commissions, 50% loss fund cash flow.
+ancillary input: {implementation_fee, epli_rate, tlm_rate, wire_ach_rate,
+                  pay_periods_per_year, broker_wc_commission_pct, external_commission_pct}
+"""
+
+def build_analysis(
     wc_result: dict,
     fica_result: dict,
     futa_result: dict,
@@ -7,24 +17,13 @@ def calculate_summary(
     commission_result: dict,
     ancillary: dict,
 ) -> dict:
-    """
-    Rolls up all calc module outputs into the Deal Summary structure
-    from pricing_tool_outline.md.
-    ancillary: {implementation_fee, epli_fee, tlm_rate, wire_ach_rate, pay_periods_per_year}
-    """
-    total_gws = sum(
-        line.get("annual_gw", 0.0) for line in wc_result.get("lines", [])
-    )
-    total_wses = futa_result.get("total_wses", 0.0)
-    avg_wage = total_gws / total_wses if total_wses > 0 else 0.0
-
     pf = ancillary.get("pay_periods_per_year", 26)
+    total_wses = futa_result.get("total_wses", 0.0)
 
     tlm_fee = ancillary.get("tlm_rate", 0.0) * total_wses * 12
     epli_fee = ancillary.get("epli_rate", 0.0) * total_wses * pf
     wire_ach_fee = ancillary.get("wire_ach_rate", 0.0) * pf
     implementation_fee = ancillary.get("implementation_fee", 0.0)
-
     total_other = tlm_fee + epli_fee + wire_ach_fee + implementation_fee
 
     wc_profit = wc_result.get("total_margin", 0.0)
@@ -58,19 +57,6 @@ def calculate_summary(
     cash_flow_after_comm = admin_fee + wc_profit + suta_profit + total_other - total_comm
 
     return {
-        "admin_overview": {
-            "total_wses": total_wses,
-            "total_gws": total_gws,
-            "avg_wage": avg_wage,
-            "admin_margin": admin_fee,
-        },
-        "wc_overview": {
-            "wc_billed": wc_result.get("total_billing", 0.0),
-            "wc_fixed_cost": wc_result.get("total_fixed_cost", 0.0),
-            "wc_loss_fund": wc_result.get("total_loss_fund", 0.0),
-            "total_wc_cost": wc_result.get("total_cost", 0.0),
-            "wc_profit_loss": wc_profit,
-        },
         "taxes_overview": {
             "suta_billed": suta_result.get("total_bill", 0.0),
             "suta_cost": suta_result.get("total_cost", 0.0),

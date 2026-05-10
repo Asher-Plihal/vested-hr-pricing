@@ -1,3 +1,11 @@
+"""
+Admin tab — calculates the admin fee using one of three methods:
+  1 (% of GWs):   rate × total gross wages, with optional wc_policy_adj added to the rate.
+  2 (per-check):  rate × WSEs × pay periods per year.
+  3 (PEPM):       rate × WSEs × 12.
+Returns total_admin_fee plus per-check and per-WSE-per-month equivalents for all methods.
+"""
+
 def calculate_admin(
     total_gws: float,
     total_wses: float,

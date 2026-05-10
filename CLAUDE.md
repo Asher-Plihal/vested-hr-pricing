@@ -44,14 +44,13 @@ routers/
   rates.py          GET /download/* and POST /upload/* for WC Rates, WC Guidelines, SUTA
   calculate.py      POST /calculate — full pipeline, returns summary (no DB write)
 calc/
-  wse.py            WSEs = FTEs + 0.75 × PTEs
-  workers_comp.py   WC billing, cost, margin, vendor comparison
-  fica.py           SS (per-WSE cap) + Medicare passthrough
-  futa.py           Approach B: W × $7K × 0.6% × turnover_pct
-  suta.py           Per-state billing/cost/profit + prior provider comparison
-  admin_fee.py      3 methods: % of GWs, per-check, PEPM
+  workers_comp.py   WC billing, cost, margin, vendor comparison (Workers Comp tab)
+  taxes.py          FICA, FUTA, SUTA — merged tax calcs (Taxes tab)
+  admin.py          3 methods: % of GWs, per-check, PEPM (Admin tab)
   commission.py     Internal + external commission
-  summary.py        Full deal summary rollup
+  benefits.py       Placeholder — Benefits tab not yet implemented
+  proposal.py       admin_overview + wc_overview → Proposal tab
+  summary.py        taxes_overview + other_items + commissions → Analysis & Summary tab
 static/
   dashboard.html    Client list, New Client modal, delete
   client.html       5-tab pricing form + live Deal Summary

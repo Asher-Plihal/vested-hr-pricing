@@ -1,3 +1,10 @@
+"""
+Commission — splits admin margin and WC billing into internal (consultant) and external
+(broker) commissions. When no broker is present the consultant receives a higher upfront
+rate. When a broker takes admin, the consultant ongoing rate is the pool minus the broker
+pct (floored at min_ongoing). Broker WC commission is a straight pct of WC billed.
+"""
+
 def calculate_commission(
     admin_margin: float,
     wc_billed: float,
