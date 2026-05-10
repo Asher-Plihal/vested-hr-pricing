@@ -47,8 +47,9 @@ class SystemConfig(Base):
     consultant_min_ongoing_pct = Column(Float, default=0.10)     # consultant floor when broker is on the deal
 
     # Ancillary service rates — constant defaults applied to all clients
-    tlm_rate     = Column(Float, default=0.0)   # $/WSE/month × 12
-    wire_ach_rate = Column(Float, default=0.0)  # $/pay period × pay_periods
+    tlm_rate          = Column(Float, default=0.0)  # $/WSE/month × 12
+    reverse_wire_rate = Column(Float, default=0.0)  # $/pay period
+    ach_rate          = Column(Float, default=0.0)  # $/pay period
 
     futa_approach = Column(String, default="B")
 

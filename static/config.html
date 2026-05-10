@@ -242,8 +242,12 @@
           <input type="number" id="tlm_rate" step="0.01" min="0" />
         </div>
         <div class="field-group">
-          <label class="field-label">Reverse Wire / ACH ($ / pay period)</label>
-          <input type="number" id="wire_ach_rate" step="0.01" min="0" />
+          <label class="field-label">Reverse Wire ($ / pay period)</label>
+          <input type="number" id="reverse_wire_rate" step="0.01" min="0" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">ACH ($ / pay period)</label>
+          <input type="number" id="ach_rate" step="0.01" min="0" />
         </div>
       </div>
 
@@ -408,8 +412,9 @@ function populateAdmin(cfg) {
   document.getElementById('consultant_min_ongoing_pct').value     = cfg.consultant_min_ongoing_pct     != null ? (cfg.consultant_min_ongoing_pct     * 100).toFixed(2) : '';
   document.getElementById('consultant_commission_upfront').value  = cfg.consultant_commission_upfront  != null ? (cfg.consultant_commission_upfront  * 100).toFixed(2) : '';
   document.getElementById('consultant_commission_ongoing').value  = cfg.consultant_commission_ongoing  != null ? (cfg.consultant_commission_ongoing  * 100).toFixed(2) : '';
-  document.getElementById('tlm_rate').value       = cfg.tlm_rate       != null ? cfg.tlm_rate       : '';
-  document.getElementById('wire_ach_rate').value  = cfg.wire_ach_rate  != null ? cfg.wire_ach_rate  : '';
+  document.getElementById('tlm_rate').value           = cfg.tlm_rate           != null ? cfg.tlm_rate           : '';
+  document.getElementById('reverse_wire_rate').value  = cfg.reverse_wire_rate  != null ? cfg.reverse_wire_rate  : '';
+  document.getElementById('ach_rate').value           = cfg.ach_rate           != null ? cfg.ach_rate           : '';
 }
 
 function populateFees(cfg) {
@@ -459,8 +464,9 @@ function collectAdmin() {
     consultant_min_ongoing_pct:     parseFloat(document.getElementById('consultant_min_ongoing_pct').value)     / 100 || null,
     consultant_commission_upfront:  parseFloat(document.getElementById('consultant_commission_upfront').value)  / 100 || null,
     consultant_commission_ongoing:  parseFloat(document.getElementById('consultant_commission_ongoing').value)  / 100 || null,
-    tlm_rate:      (v => isNaN(v) ? null : v)(parseFloat(document.getElementById('tlm_rate').value)),
-    wire_ach_rate: (v => isNaN(v) ? null : v)(parseFloat(document.getElementById('wire_ach_rate').value)),
+    tlm_rate:           (v => isNaN(v) ? null : v)(parseFloat(document.getElementById('tlm_rate').value)),
+    reverse_wire_rate:  (v => isNaN(v) ? null : v)(parseFloat(document.getElementById('reverse_wire_rate').value)),
+    ach_rate:           (v => isNaN(v) ? null : v)(parseFloat(document.getElementById('ach_rate').value)),
   };
 }
 
@@ -517,7 +523,7 @@ const autosaveFields = [
   'monopolistic_states', 'independent_bureau_states',
   'admin_commission_pool_pct', 'consultant_min_ongoing_pct',
   'consultant_commission_upfront', 'consultant_commission_ongoing',
-  'tlm_rate', 'wire_ach_rate',
+  'tlm_rate', 'reverse_wire_rate', 'ach_rate',
   'fee_min_admin_per_cycle', 'fee_delivery_min', 'fee_delivery_max',
   'fee_out_of_cycle_payroll', 'fee_returned_check', 'fee_late_payroll_submission',
   'fee_reactivation', 'fee_timekeeping_implementation', 'fee_timekeeping_monthly_per_ee',

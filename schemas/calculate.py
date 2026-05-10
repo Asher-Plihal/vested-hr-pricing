@@ -30,3 +30,4 @@ class CalculateRequest(BaseModel):
     broker_wc_commission_pct: float = 0.0
     implementation_fee: float = 0.0
     epli_rate: float = 0.0
+    method_of_payment: str = ""

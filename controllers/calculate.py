@@ -77,7 +77,13 @@ def run_calculate(body: CalculateRequest, db: Session = Depends(get_db)):
 
     pay_periods_per_year = pay_periods_map.get(body.payroll_frequency, 26)
     tlm_rate = cfg_row.tlm_rate or 0.0
-    wire_ach_rate = cfg_row.wire_ach_rate or 0.0
+    method = body.method_of_payment
+    if method == "reverse_wire":
+        wire_ach_rate = cfg_row.reverse_wire_rate or 0.0
+    elif method == "ach":
+        wire_ach_rate = cfg_row.ach_rate or 0.0
+    else:
+        wire_ach_rate = 0.0
 
     commission_result = calculate_commission(
         admin_margin=admin_result["total_admin_fee"],

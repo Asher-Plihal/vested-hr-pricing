@@ -46,7 +46,8 @@ class SystemConfigOut(BaseModel):
     fee_reactivation: float
     fee_late_payroll_submission: float
     tlm_rate: float
-    wire_ach_rate: float
+    reverse_wire_rate: float
+    ach_rate: float
 
     model_config = {"from_attributes": True}
 
@@ -88,4 +89,5 @@ class SystemConfigUpdate(BaseModel):
     fee_reactivation: Optional[float] = None
     fee_late_payroll_submission: Optional[float] = None
     tlm_rate: Optional[float] = None
-    wire_ach_rate: Optional[float] = None
+    reverse_wire_rate: Optional[float] = None
+    ach_rate: Optional[float] = None
