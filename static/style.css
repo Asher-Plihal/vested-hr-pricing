@@ -847,7 +847,8 @@ table.clients-table {
   font-weight: 600;
   color: #2d3748;
 }
-.csv-btns { display: flex; gap: 6px; }
+.csv-btns { display: flex; gap: 6px; align-items: center; }
+.csv-loaded-name { font-size: 0.78rem; color: var(--text-muted, #718096); background: #f7f8fa; border: 1px solid #e2e8f0; border-radius: 20px; padding: 3px 10px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .csv-btn {
   font-size: 0.78rem;
   font-weight: 500;

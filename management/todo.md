@@ -13,6 +13,17 @@
 3. 
 
 
-## Note
+## Notes
 - Benfits is caculation isde the pricing tool is not setup at all is just collect some questions right now does not take it any number for final prosoatl
-- Non of the addtional fees in system confijgraion are bing used for anything right now. **Min WC Fee per Week** is not being used at all as well
+- Non of the addtional fees in system confijgraion are bing used for anything right now. **Min WC Fee per Week** is not being used at all as well. 
+
+
+## Key differcnes
+- the FICA wage camp is implinted nd is used for pre and post cut off caclution on the prospoal (might need to be changed due to being unrealstic).
+- The bottom of the summary is displayed a little bit differntly then it is on the spreadsheet. 
+- How SUTA non client reporting states spread sheet cacluation differen a little bit form how the tool does it. The spreadsheet uses the old client rate as the cost rate for the suat onon lint repoting rates with a min rate which makes no snese 
+
+
+## Next Steps
+- Authentication & Multi-User Access
+- Task creation, quote submissions, Propsal generation

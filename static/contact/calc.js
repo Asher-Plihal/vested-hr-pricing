@@ -46,6 +46,8 @@ async function runCalculate() {
     wc_lines:   payload.wc_lines,
     suta_lines: payload.suta_lines,
   };
+  // Carve-out: force proposed_mod to 0 so the server zeros all WC billing
+  if (calcPayload.wc_carve_out) calcPayload.proposed_mod = 0;
 
   document.getElementById('summary-calculating').style.display = 'block';
   document.getElementById('summary-content').style.opacity = '0.4';
@@ -340,7 +342,8 @@ function renderProposal(r) {
   const wo = r.wc_overview    || {};
   const to = r.taxes_overview || {};
 
-  const proposedMod = parseFloat(document.getElementById('pricing_proposed_mod')?.value) || 0;
+  const isCarveOut  = getSelectBool('wc_carve_out') === true;
+  const proposedMod = isCarveOut ? 0 : (parseFloat(document.getElementById('pricing_proposed_mod')?.value) || 0);
   const wcLines     = collectWCLines().filter(l => l.wc_code || l.annual_gw > 0);
   const sutaLines   = collectSutaLines().filter(l => l.state);
 
@@ -369,7 +372,7 @@ function renderProposal(r) {
     wcLines.forEach(line => {
       const wses     = Math.round((line.ftes || 0) + 0.75 * (line.ptes || 0));
       const gw       = line.annual_gw || 0;
-      const rate     = line.manual_rate || 0;
+      const rate     = isCarveOut ? 0 : (line.manual_rate || 0);
       const desc     = line.wc_description || '—';
       const sutaRate = sutaRateMap[line.state];
       const isClientReporting = CLIENT_REPORTING_STATES.has(line.state);
@@ -400,7 +403,7 @@ function renderProposal(r) {
         <td title="${desc}">${desc}</td>
         <td style="text-align:right;">${wses || '—'}</td>
         <td style="text-align:right;">${gw ? formatDollars(gw) : '—'}</td>
-        <td style="text-align:right;">${rate ? rate.toFixed(2) + '%' : '—'}</td>
+        <td style="text-align:right;">${isCarveOut ? '<span style="color:#64748b;font-style:italic;font-size:0.75rem;">Carve-Out</span>' : (rate ? rate.toFixed(2) + '%' : '—')}</td>
         <td style="text-align:right;">${ficaRate ? (ficaRate * 100).toFixed(2) + '%' : '—'}</td>
         <td style="text-align:right;">${futaRate ? (futaRate * 100).toFixed(2) + '%' : '—'}</td>
         <td style="text-align:right;">${sutaDisplay}</td>
@@ -425,7 +428,8 @@ function renderProposal(r) {
 function renderBillingAnalysis(r) {
   const ao = r.admin_overview || {};
 
-  const proposedMod     = parseFloat(document.getElementById('pricing_proposed_mod')?.value) || 0;
+  const isCarveOut      = getSelectBool('wc_carve_out') === true;
+  const proposedMod     = isCarveOut ? 0 : (parseFloat(document.getElementById('pricing_proposed_mod')?.value) || 0);
   const wcLines         = collectWCLines().filter(l => l.wc_code || l.annual_gw > 0);
   const adminMethod     = getIntVal('admin_method') || 1;
   const adminSuffix     = adminMethod === 1 ? '' : '_' + adminMethod;
@@ -541,16 +545,31 @@ function renderBillingAnalysis(r) {
 
 /* ── Loss Analysis ───────────────────────────────────────────────────────── */
 function renderLossAnalysis(totalGws, wcFixedCost, wcLossFund, wcBilled, brokerWcComm) {
-  const allLosses = collectWCLosses().filter(
+  const losses = collectWCLosses().filter(
     l => l.total_losses_incurred > 0 || l.num_claims > 0 || l.months_in_policy > 0
   );
-  const losses = allLosses;
 
-  const blank = ['la-total-losses','la-total-claims','la-total-months','la-open-claims',
-                 'la-total-losses-detail','la-total-retention','la-net-losses','la-avg-annual','la-proposed-mod'];
+  // Sets text and dims the element when the value is a fallback zero, not real data
+  function setLa(id, text, isDim) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = text;
+    el.classList.toggle('la-zero-default', !!isDim);
+  }
+
+  const proposedMod = parseFloat(document.getElementById('pricing_proposed_mod')?.value);
 
   if (losses.length === 0) {
-    blank.forEach(id => { document.getElementById(id).textContent = '—'; });
+    setLa('la-total-losses',        formatCurrency(0), true);
+    setLa('la-total-claims',        '0',               true);
+    setLa('la-total-months',        '0',               true);
+    setLa('la-open-claims',         '0',               true);
+    setLa('la-total-losses-detail', formatCurrency(0), true);
+    setLa('la-total-retention',     formatCurrency(0), true);
+    setLa('la-net-losses',          formatCurrency(0), true);
+    setLa('la-avg-annual',          formatCurrency(0), true);
+    setLa('la-proposed-mod', isNaN(proposedMod) ? '—' : proposedMod.toFixed(2), false);
+    _avgAnnualLoss = 0;
     renderBillingCommissions(0, wcFixedCost || 0, wcLossFund || 0, wcBilled || 0, brokerWcComm || 0);
     return;
   }
@@ -563,25 +582,23 @@ function renderLossAnalysis(totalGws, wcFixedCost, wcLossFund, wcBilled, brokerW
     sumOpen   += l.open_claims;
   });
 
-  // Totals summary row
-  document.getElementById('la-total-losses').textContent = formatCurrency(sumLosses);
-  document.getElementById('la-total-claims').textContent = sumClaims;
-  document.getElementById('la-total-months').textContent = sumMonths;
-  document.getElementById('la-open-claims').textContent  = sumOpen;
+  setLa('la-total-losses', formatCurrency(sumLosses), sumLosses === 0);
+  setLa('la-total-claims', String(sumClaims),          sumClaims === 0);
+  setLa('la-total-months', String(sumMonths),          sumMonths === 0);
+  setLa('la-open-claims',  String(sumOpen),            sumOpen   === 0);
 
-  // Derived metrics
   const sharedClaimFee = parseFloat(document.getElementById('shared_claim_fee')?.value) || 0;
   const totalRetention = sumClaims * (sharedClaimFee / 2);
   const netLosses      = sumLosses - totalRetention;
-  const avgAnnual      = sumMonths > 0 ? (netLosses / sumMonths) * 12 : null;
+  // avgAnnual falls back to 0 (dimmed) when months not provided
+  const avgAnnual      = sumMonths > 0 ? (netLosses / sumMonths) * 12 : 0;
   _avgAnnualLoss = avgAnnual;
-  const proposedMod    = parseFloat(document.getElementById('pricing_proposed_mod')?.value);
 
-  document.getElementById('la-total-losses-detail').textContent = formatCurrency(sumLosses);
-  document.getElementById('la-total-retention').textContent     = formatCurrency(totalRetention);
-  document.getElementById('la-net-losses').textContent          = formatCurrency(netLosses);
-  document.getElementById('la-avg-annual').textContent          = avgAnnual != null ? formatCurrency(avgAnnual) : '—';
-  document.getElementById('la-proposed-mod').textContent        = isNaN(proposedMod) ? '—' : proposedMod.toFixed(2);
+  setLa('la-total-losses-detail', formatCurrency(sumLosses),     sumLosses      === 0);
+  setLa('la-total-retention',     formatCurrency(totalRetention), totalRetention === 0);
+  setLa('la-net-losses',          formatCurrency(netLosses),     netLosses      === 0);
+  setLa('la-avg-annual',          formatCurrency(avgAnnual),     sumMonths      === 0);
+  setLa('la-proposed-mod', isNaN(proposedMod) ? '—' : proposedMod.toFixed(2), false);
 
   renderBillingCommissions(netLosses, wcFixedCost || 0, wcLossFund || 0, wcBilled || 0, brokerWcComm || 0);
 }

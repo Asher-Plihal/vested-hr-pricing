@@ -14,14 +14,13 @@
     .subheader-ar .subheader-inner {
       max-width: 1100px;
       padding: 22px 24px 0;
-      display: flex;
-      flex-direction: column;
     }
-    .subheader-ar .subheader-top {
+    .ar-title-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 14px;
+      border-bottom: 2px solid #1a202c;
+      padding-bottom: 10px;
     }
     .subheader-ar .subheader-title {
       font-size: 1.45rem;
@@ -36,10 +35,10 @@
       font-weight: 500;
       color: var(--text-muted);
     }
-    .subheader-ar .subheader-line {
-      border: none;
-      border-top: 2px solid #1a202c;
-      margin: 0;
+    .ar-action-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     /* ── Page wrapper ── */
@@ -58,7 +57,7 @@
       border: 2px dashed var(--border);
       border-radius: 10px;
       background: var(--bg-card);
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       cursor: pointer;
       transition: border-color 0.15s;
     }
@@ -76,11 +75,13 @@
       margin-top: 2px;
     }
 
-    /* ── Table ── */
+    /* ── Table card ── */
+    .ar-table-card {
+      padding: 0;
+      overflow: hidden;
+    }
     .ar-table-wrap {
       overflow-x: auto;
-      border-radius: 8px;
-      border: 1px solid var(--border);
     }
     .ar-table {
       width: 100%;
@@ -141,10 +142,8 @@
     .ar-table tbody tr:hover td,
     .ar-table tbody tr:hover td.col-client { background: #eef2ff; }
 
-    /* Zero cells — very subtle */
     .ar-table td.zero { color: #d1d5db; }
 
-    /* Total column separator */
     .ar-table td.col-total,
     .ar-table th.col-total {
       border-left: 1px solid var(--border);
@@ -171,7 +170,6 @@
     }
 
     #ar-hidden-input { display: none; }
-    #ar-table-section { display: none; }
   </style>
 </head>
 <body>
@@ -204,20 +202,19 @@
 <!-- ── Subheader ── -->
 <div class="subheader subheader-ar">
   <div class="subheader-inner">
-    <div class="subheader-top">
+    <div class="ar-title-row">
       <div class="subheader-title">
         Admin Revenue
         <span class="ar-count-badge" id="ar-count-badge"></span>
       </div>
-      <div style="display:flex;align-items:center;gap:12px;">
-        <span id="ar-loaded-name" style="display:none;font-size:0.8rem;color:var(--text-muted);background:var(--bg-sidebar);border:1px solid var(--border);border-radius:20px;padding:4px 12px;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+      <div class="ar-action-bar">
+        <span id="ar-loaded-name" class="csv-loaded-name" style="display:none"></span>
         <button class="btn-primary" id="btn-upload" type="button">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
           Upload Spreadsheet
         </button>
       </div>
     </div>
-    <hr class="subheader-line" />
   </div>
 </div>
 
@@ -235,8 +232,8 @@
     </div>
   </div>
 
-  <!-- Table -->
-  <div id="ar-table-section">
+  <!-- Table card -->
+  <div class="card ar-table-card" id="ar-table-section" style="display:none;">
     <div class="ar-table-wrap">
       <table class="ar-table">
         <thead id="ar-thead"></thead>
@@ -299,7 +296,6 @@ dropzone.addEventListener('drop', e => {
 /* ── Topnav search — filter this table instead of global client list ── */
 const topnavSearch = document.getElementById('ar-topnav-search');
 topnavSearch.addEventListener('focus', () => {
-  /* suppress the global dropdown that app.js would show */
   requestAnimationFrame(() => {
     const dd = document.getElementById('vhr-search-dropdown');
     if (dd) dd.style.display = 'none';

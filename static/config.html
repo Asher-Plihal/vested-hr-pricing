@@ -121,6 +121,7 @@
         <div class="csv-row">
           <span class="csv-label">SUTA Rates</span>
           <div class="csv-btns">
+            <span id="suta-rates-name" class="csv-loaded-name" style="display:none"></span>
             <button class="csv-btn csv-btn-dl" type="button" id="suta-rates-dl">Download CSV</button>
             <button class="csv-btn csv-btn-ul" type="button" id="suta-rates-ul">Upload CSV</button>
             <input type="file" id="suta-rates-file" accept=".csv" style="display:none" />
@@ -178,6 +179,7 @@
         <div class="csv-row">
           <span class="csv-label">WC Rates</span>
           <div class="csv-btns">
+            <span id="wc-rates-name" class="csv-loaded-name" style="display:none"></span>
             <button class="csv-btn csv-btn-dl" type="button" id="wc-rates-dl">Download CSV</button>
             <button class="csv-btn csv-btn-ul" type="button" id="wc-rates-ul">Upload CSV</button>
             <input type="file" id="wc-rates-file" accept=".csv" style="display:none" />
@@ -188,6 +190,7 @@
         <div class="csv-row">
           <span class="csv-label">WC Guidelines</span>
           <div class="csv-btns">
+            <span id="wc-guide-name" class="csv-loaded-name" style="display:none"></span>
             <button class="csv-btn csv-btn-dl" type="button" id="wc-guide-dl">Download CSV</button>
             <button class="csv-btn csv-btn-ul" type="button" id="wc-guide-ul">Upload CSV</button>
             <input type="file" id="wc-guide-file" accept=".csv" style="display:none" />
@@ -539,22 +542,43 @@ document.getElementById('suta-rates-dl').addEventListener('click', () => {
 });
 
 /* ── CSV uploads ────────────────────────────────────────────────────────────── */
-function wireUpload(btnId, inputId, endpoint, label) {
+const UPLOAD_NAME_KEY = 'vhr-csv-upload-names';
+
+function setUploadName(spanId, name) {
+  const span = document.getElementById(spanId);
+  if (!span) return;
+  span.textContent = name;
+  span.style.display = name ? '' : 'none';
+}
+
+function restoreUploadNames() {
+  const saved = JSON.parse(localStorage.getItem(UPLOAD_NAME_KEY) || '{}');
+  Object.entries(saved).forEach(([spanId, name]) => setUploadName(spanId, name));
+}
+
+function wireUpload(btnId, inputId, endpoint, label, nameSpanId) {
   const btn   = document.getElementById(btnId);
   const input = document.getElementById(inputId);
   btn.addEventListener('click', () => input.click());
   input.addEventListener('change', async () => {
     if (!input.files[0]) return;
+    const file     = input.files[0];
     const origText = btn.textContent;
     btn.textContent = 'Uploading...';
     btn.disabled = true;
     try {
       const form = new FormData();
-      form.append('file', input.files[0]);
+      form.append('file', file);
       const res  = await fetch(endpoint, { method: 'POST', body: form });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || 'Server error');
       showToast(`Imported ${data.imported.toLocaleString()} ${label}`);
+      if (nameSpanId) {
+        setUploadName(nameSpanId, file.name);
+        const saved = JSON.parse(localStorage.getItem(UPLOAD_NAME_KEY) || '{}');
+        saved[nameSpanId] = file.name;
+        localStorage.setItem(UPLOAD_NAME_KEY, JSON.stringify(saved));
+      }
     } catch (e) {
       showToast('Upload failed: ' + e.message, 'error');
     } finally {
@@ -565,9 +589,11 @@ function wireUpload(btnId, inputId, endpoint, label) {
   });
 }
 
-wireUpload('wc-rates-ul',   'wc-rates-file',   '/upload/wc-rates',       'WC rates');
-wireUpload('wc-guide-ul',   'wc-guide-file',   '/upload/wc-guidelines',  'WC guidelines');
-wireUpload('suta-rates-ul', 'suta-rates-file', '/upload/suta-rates',     'SUTA rates');
+wireUpload('wc-rates-ul',   'wc-rates-file',   '/upload/wc-rates',       'WC rates',       'wc-rates-name');
+wireUpload('wc-guide-ul',   'wc-guide-file',   '/upload/wc-guidelines',  'WC guidelines',  'wc-guide-name');
+wireUpload('suta-rates-ul', 'suta-rates-file', '/upload/suta-rates',     'SUTA rates',     'suta-rates-name');
+
+restoreUploadNames();
 
 /* ── Load on page open ──────────────────────────────────────────────────────── */
 async function loadConfig() {
