@@ -90,11 +90,9 @@ Non-obvious choices. Do not undo without asking.
 - **FUTA Approach B only**: `W × wage_base × rate × turnover_pct`. Client inputs a direct decimal `futa_turnover_rate` (can exceed 1.0 when W-2s outnumber average headcount). Approach A not used.
 - **WC rate auto-lookup**: `calc/workers_comp.py` queries `wc_rates` by `state+code` concat key. Falls back to `WCLine.manual_rate` if not found or db=None. Rate field in `client.html` is readonly and auto-populated.
 - **SUTA client-reporting states**: ~22 states where the client files under their own account (`client_reporting=True`): AK, CT, DE, IA, KS, KY, MA, ME, MI, MN, MS, MT, NE, NV, OH, PA, RI, SC, SD, TN, VT, WA. CA, NY, NJ are VHR-reporting with real rates.
-- **Config autosaves**: All system config fields save 600ms after any change. No Save button.
 - **WC carve-out**: `proposed_mod = 0` zeros all WC billing/cost in `calculate_wc`.
 - **WC state lists**: `SystemConfig.monopolistic_states` and `mcp_states` are comma-separated strings. Drive UI warnings only, not calc changes.
 - **CSV upload replaces entire table**: `/upload/wc-rates`, `/upload/wc-guidelines`, `/upload/suta-rates` delete all rows before inserting. No merge/upsert. Rate updates go through the config page upload buttons — no script needed.
-- **`POST /calculate` is stateless**: full client payload in, summary dict out. Nothing written to DB.
 - **Sub-line replace-on-save**: `PUT /clients/{id}` deletes and re-inserts WCLine, SutaLine, WCLoss rows when those lists are present in the payload.
 
 ## Data state
