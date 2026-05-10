@@ -76,7 +76,7 @@ def run_calculate(body: CalculateRequest, db: Session = Depends(get_db)):
     )
 
     pay_periods_per_year = pay_periods_map.get(body.payroll_frequency, 26)
-    tlm_rate = cfg_row.tlm_rate or 0.0
+    tlm_rate = (cfg_row.tlm_rate or 0.0) if body.use_tlm else 0.0
     method = body.method_of_payment
     if method == "reverse_wire":
         wire_ach_rate = cfg_row.reverse_wire_rate or 0.0

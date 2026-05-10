@@ -31,3 +31,4 @@ class CalculateRequest(BaseModel):
     implementation_fee: float = 0.0
     epli_rate: float = 0.0
     method_of_payment: str = ""
+    use_tlm: bool = True

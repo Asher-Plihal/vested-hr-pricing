@@ -203,6 +203,7 @@ function collectClientPayload() {
     pay_cycle_start:            getVal('pay_cycle_start'),
     pay_cycle_end:              getVal('pay_cycle_end'),
     pay_date:                   getVal('pay_date'),
+    use_tlm:                    document.getElementById('use_tlm')?.checked ?? true,
     method_of_payment:          getVal('method_of_payment'),
     requested_payroll_delivery: getVal('requested_payroll_delivery'),
     effective_date:             getVal('effective_date'),
@@ -712,6 +713,8 @@ function populateForm(client) {
   // Payroll
   ['payroll_frequency','pay_cycle_start','pay_cycle_end','pay_date',
    'method_of_payment','requested_payroll_delivery','effective_date'].forEach(f => setField(f, client[f]));
+  const useTlmEl = document.getElementById('use_tlm');
+  if (useTlmEl) useTlmEl.checked = client.use_tlm !== false;
 
   // WC carve-out
   if (client.wc_carve_out != null) {
@@ -832,7 +835,7 @@ async function init() {
    'current_admin_rate', 'current_admin_rate_2', 'current_admin_rate_3',
    'pricing_proposed_mod', 'implementation_fee',
    'epli_rate', 'broker_wc_commission_pct', 'internal_commission_pct',
-   'external_commission_pct', 'futa_turnover_rate'].forEach(id => {
+   'external_commission_pct', 'futa_turnover_rate', 'use_tlm'].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
       el.addEventListener('change', scheduleCalculate);
