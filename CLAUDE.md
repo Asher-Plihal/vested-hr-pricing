@@ -51,9 +51,9 @@ testing/seed_client.py  Creates Hartman Industrial LLC test client — idempoten
 controllers/
   clients.py        GET/POST /clients, GET/PUT/DELETE /clients/{id}
   config.py         GET/PUT /config
-  suta_rates.py     GET/PUT /suta-rates
-  rates.py          GET /download/* and POST /upload/* for WC Rates, WC Guidelines, SUTA
   calculate.py      POST /calculate — full pipeline, returns summary (no DB write)
+  workers_comp.py   GET /wc-rate, GET+POST /download+upload for WC Rates and WC Guidelines
+  taxes.py          GET/PUT /suta-rates, GET+POST /download+upload for SUTA Rates
 calc/
   workers_comp.py   WC billing, cost, margin, vendor comparison (Workers Comp tab)
   taxes.py          FICA, FUTA, SUTA — merged tax calcs (Taxes tab)
