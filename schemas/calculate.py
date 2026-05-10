@@ -21,6 +21,8 @@ class CalculateRequest(BaseModel):
     wc_carve_out: bool = False
     admin_method: int = 1
     admin_rate: float = 0.0
+    admin_rate_2: float = 0.0
+    admin_rate_3: float = 0.0
     payroll_frequency: str = "biweekly"
     wc_policy_adj: float = 0.0
     internal_commission_pct: float = 0.0

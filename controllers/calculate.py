@@ -58,11 +58,18 @@ def run_calculate(body: CalculateRequest, db: Session = Depends(get_db)):
     total_gws = sum(l.get("annual_gw", 0.0) for l in wc_line_dicts)
     total_wses = futa_result["total_wses"]
 
+    if body.admin_method == 2:
+        active_admin_rate = body.admin_rate_2
+    elif body.admin_method == 3:
+        active_admin_rate = body.admin_rate_3
+    else:
+        active_admin_rate = body.admin_rate
+
     admin_result = calculate_admin(
         total_gws=total_gws,
         total_wses=total_wses,
         method=body.admin_method,
-        rate=body.admin_rate,
+        rate=active_admin_rate,
         pay_frequency=body.payroll_frequency,
         wc_policy_adj=body.wc_policy_adj,
         pay_periods_map=pay_periods_map,

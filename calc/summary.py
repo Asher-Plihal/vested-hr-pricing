@@ -34,6 +34,7 @@ def build_analysis(
     internal_comm = commission_result.get("internal_comm", 0.0)
     external_comm = commission_result.get("external_comm", 0.0)
     admin_after_comm = commission_result.get("admin_after_comm", 0.0)
+    admin_net_ongoing = commission_result.get("admin_net_ongoing", 0.0)
 
     broker_wc_pct = ancillary.get("broker_wc_commission_pct", 0.0)
     broker_wc_commission = commission_result.get("broker_comp", 0.0)
@@ -48,7 +49,7 @@ def build_analysis(
 
     total_profit_loss = wc_profit_after_broker + suta_profit + admin_after_comm + total_other
 
-    # Year 1 differs from ongoing by removing implementation fee from recurring calculation
+    # Year 1 subtracts upfront on top of ongoing; ongoing only subtracts recurring commissions
     admin_net_year1 = admin_after_comm
 
     # Cash flow approx: subtract 50% loss fund from ongoing net
@@ -81,7 +82,7 @@ def build_analysis(
             "broker_wc_pct": broker_wc_pct,
             "broker_admin_amt": broker_admin_amt,
             "broker_admin_pct": broker_admin_pct,
-            "admin_net_ongoing": admin_after_comm,
+            "admin_net_ongoing": admin_net_ongoing,
             "admin_net_year1": admin_net_year1,
             "cashflow_50pct_loss_fund": cashflow_50pct_loss_fund,
             "cash_flow_after_comm": cash_flow_after_comm,

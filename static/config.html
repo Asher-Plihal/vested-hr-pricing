@@ -459,8 +459,8 @@ function collectAdmin() {
     consultant_min_ongoing_pct:     parseFloat(document.getElementById('consultant_min_ongoing_pct').value)     / 100 || null,
     consultant_commission_upfront:  parseFloat(document.getElementById('consultant_commission_upfront').value)  / 100 || null,
     consultant_commission_ongoing:  parseFloat(document.getElementById('consultant_commission_ongoing').value)  / 100 || null,
-    tlm_rate:      parseFloat(document.getElementById('tlm_rate').value)      || null,
-    wire_ach_rate: parseFloat(document.getElementById('wire_ach_rate').value) || null,
+    tlm_rate:      (v => isNaN(v) ? null : v)(parseFloat(document.getElementById('tlm_rate').value)),
+    wire_ach_rate: (v => isNaN(v) ? null : v)(parseFloat(document.getElementById('wire_ach_rate').value)),
   };
 }
 
