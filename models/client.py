@@ -1,3 +1,8 @@
+"""
+Client — main quote entity. Holds general info, compliance/medical questionnaire answers,
+payroll settings, WC and commission inputs. Sub-lines (WCLine, SutaLine, WCLoss) are
+stored in separate tables and replaced in full on each PUT /clients/{id}.
+"""
 from datetime import datetime
 from sqlalchemy import Boolean, Column, DateTime, Float, Integer, String, Text
 from database import Base

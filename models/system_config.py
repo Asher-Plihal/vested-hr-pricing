@@ -1,3 +1,8 @@
+"""
+SystemConfig — single-row app-wide config (id=1 always).
+Holds FICA/FUTA rates, WC factors, pay period map, commission defaults,
+ancillary rates, and additional fee schedules. Seeded by testing/seed.py.
+"""
 from sqlalchemy import Column, Float, Integer, String, Text
 from database import Base
 

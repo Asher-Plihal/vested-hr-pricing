@@ -1,3 +1,7 @@
+"""
+Client CRUD — GET/POST /clients, GET/PUT/DELETE /clients/{id}.
+PUT replaces wc_lines, suta_lines, and wc_losses in full when those lists are present.
+"""
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session

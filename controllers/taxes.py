@@ -1,3 +1,8 @@
+"""
+Taxes routes — GET/PUT /suta-rates (per-state rate editing),
+GET /download/suta-rates, POST /upload/suta-rates.
+DB stores rates as decimals (0.027); CSV uses percentages (2.7) — conversion applied on both sides.
+"""
 import csv
 import io
 

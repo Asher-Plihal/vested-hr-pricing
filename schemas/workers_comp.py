@@ -1,3 +1,6 @@
+"""
+Workers Comp schemas — WCLineIn/Out (per-code billing inputs), WCLossIn/Out (loss history rows).
+"""
 from typing import Optional
 from pydantic import BaseModel
 

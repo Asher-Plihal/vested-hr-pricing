@@ -1,3 +1,7 @@
+"""
+Config schemas — SystemConfigOut (full config response), SystemConfigUpdate (all fields
+optional, used for PATCH-style PUT /config).
+"""
 from typing import Optional
 from pydantic import BaseModel
 

@@ -1,3 +1,8 @@
+"""
+Taxes models — SutaLine (per-state SUTA inputs on a client quote),
+SutaRate (51-row reference table of VHR billing and cost rates by state).
+Rates stored as decimals (0.027 = 2.7%).
+"""
 from sqlalchemy import Boolean, Column, Float, ForeignKey, Integer, String
 from database import Base
 

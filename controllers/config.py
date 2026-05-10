@@ -1,3 +1,7 @@
+"""
+System config CRUD — GET/PUT /config.
+Single-row SystemConfig table; all fields are optional on PUT (patch semantics).
+"""
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 

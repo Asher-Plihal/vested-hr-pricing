@@ -1,3 +1,7 @@
+"""
+Taxes schemas — SutaLineIn/Out (per-state SUTA inputs on a quote),
+SutaRateOut/Update (reference rate table read and edit).
+"""
 from typing import Optional
 from pydantic import BaseModel
 

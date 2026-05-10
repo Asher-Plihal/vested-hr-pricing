@@ -1,3 +1,7 @@
+"""
+Calculate schema — CalculateRequest, the flat payload for POST /calculate.
+All client-level fields plus wc_lines and suta_lines. Stateless — nothing persisted.
+"""
 from pydantic import BaseModel
 from schemas.workers_comp import WCLineIn
 from schemas.taxes import SutaLineIn

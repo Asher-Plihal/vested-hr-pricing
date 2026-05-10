@@ -1,3 +1,8 @@
+"""
+Calculate endpoint — POST /calculate.
+Stateless: full client payload in, deal summary dict out. Nothing written to DB.
+Orchestrates calc/ pipeline: WSE → WC → FICA → FUTA → SUTA → Admin → Commission → Summary.
+"""
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 

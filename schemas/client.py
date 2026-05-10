@@ -1,3 +1,8 @@
+"""
+Client schemas — ClientCreate (name only, for POST /clients), ClientListItem (dashboard
+list row), ClientUpdate (all fields optional, includes sub-line lists for replace-on-save),
+ClientOut (full client response with resolved sub-lines).
+"""
 from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel

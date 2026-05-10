@@ -1,3 +1,8 @@
+"""
+Workers Comp routes — GET /wc-rate (rate lookup by state + class code),
+GET /download/wc-rates, GET /download/wc-guidelines, POST /upload/wc-rates,
+POST /upload/wc-guidelines. CSV uploads replace the entire table on each import.
+"""
 import csv
 import io
 

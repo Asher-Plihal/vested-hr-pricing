@@ -1,3 +1,8 @@
+"""
+Workers Comp models — WCLine (per-code billing inputs), WCLoss (loss history rows),
+WCRate (24,965-row rate table, lookup key = state+class_code concat),
+WCGuideline (19,552-row underwriting reference, not used in billing math).
+"""
 from sqlalchemy import Column, Float, ForeignKey, Integer, String
 from database import Base
 
