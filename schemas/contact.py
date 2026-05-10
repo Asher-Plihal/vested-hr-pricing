@@ -102,6 +102,7 @@ class ContactUpdate(BaseModel):
     epli_rate: Optional[float] = None
     include_epli: Optional[bool] = None
     futa_turnover_rate: Optional[float] = None
+    use_tlm: Optional[bool] = None
     card_lock_states: Optional[str] = None
     offered_promotion: Optional[str] = None
     wc_lines: Optional[list[WCLineIn]] = None
@@ -194,6 +195,7 @@ class ContactOut(BaseModel):
     epli_rate: Optional[float]
     include_epli: Optional[bool]
     futa_turnover_rate: Optional[float]
+    use_tlm: Optional[bool]
     card_lock_states: Optional[str] = None
     offered_promotion: Optional[str] = None
     wc_lines: list[WCLineOut] = []

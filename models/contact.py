@@ -113,6 +113,8 @@ class Contact(Base):
     # FUTA turnover input (decimal; can exceed 1.0 when W-2s > avg headcount)
     futa_turnover_rate = Column(Float, default=0.1)
 
+    use_tlm = Column(Boolean, default=True)
+
     # UI state — JSON dict of card-id → locked boolean
     card_lock_states = Column(Text, nullable=True)
 
