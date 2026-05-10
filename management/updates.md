@@ -4,6 +4,16 @@ Most recent entry at the top. Add an entry when a task completes. This is where 
 
 ---
 
+### 2026-05-09 — Cleanup pass: schema audit, seed cleanup, partial verification
+
+**Schema audit** — All fields in `ClientUpdate` and `ClientOut` verified against `models/client.py`. No orphans found.
+
+**testing/seed.py** — Removed 5 stale `_CLIENT_MIGRATIONS` entries (`wire_ach_fee`, `setup_fee`, `tlm_fee`, `include_wire`, `setup_fee_waived`). These were per-client columns from an earlier design; they are now computed from system config rates in `calc/summary.py` and never stored on the client record. Both seed scripts run clean.
+
+**client.html partials** — Verified via server: all 7 partials return 200, all 5 client JS files return 200, panel IDs match `loadPanels()` names, `loadPanels().then(() => init())` sequence is correct, `/clients/1` returns full shape, `POST /calculate` returns all 6 sections.
+
+---
+
 ### 2026-05-09 — calc/ reorganization to match UI tab structure
 
 Refactored `calc/` so file names mirror the client.html tabs. No logic changes — all function signatures and return values identical.
