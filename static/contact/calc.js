@@ -29,6 +29,15 @@ async function doAutoSave() {
   }
 }
 
+/* ── WC rate display ─────────────────────────────────────────────────────── */
+function updateWCRateDisplays() {
+  const mod = parseFloat(document.getElementById('pricing_proposed_mod')?.value) || 1;
+  document.getElementById('wc-codes-body')?.querySelectorAll('input[name^="wc_rate_"]').forEach(inp => {
+    const base = parseFloat(inp.dataset.baseRate);
+    if (!isNaN(base) && base > 0) inp.value = (base * mod).toFixed(2) + '%';
+  });
+}
+
 /* ── Calculate ───────────────────────────────────────────────────────────── */
 function scheduleCalculate() {
   clearTimeout(calcDebounceTimer);
@@ -74,7 +83,8 @@ function collectWCLines() {
     const ftes                = parseFloat(tr.querySelector('input[name^="wc_fte_"]')?.value) || 0;
     const ptes                = parseFloat(tr.querySelector('input[name^="wc_pte_"]')?.value) || 0;
     const current_client_rate = parseFloat(tr.querySelector('input[name^="wc_cur_rate_"]')?.value) || 0;
-    const manual_rate         = parseFloat(tr.querySelector('input[name^="wc_rate_"]')?.value) || 0;
+    const rateEl              = tr.querySelector('input[name^="wc_rate_"]');
+    const manual_rate         = parseFloat(rateEl?.dataset.baseRate) || 0;
     lines.push({ state, wc_code, wc_description, hazard_group, flag_100k, annual_gw, ftes, ptes, current_client_rate, manual_rate });
   });
   return lines;
@@ -262,11 +272,14 @@ function renderSummary(r) {
   setDS('s-total-wc-cost',  formatCurrency(wo.total_wc_cost));
   setPnlDS('s-wc-profit-loss',  wo.wc_profit_loss);
   const wcMod = parseFloat(document.getElementById('pricing_proposed_mod')?.value);
-  const wcBilledRate = ao.total_gws > 0 ? wo.wc_billed / ao.total_gws : null;
+  const wcBilledPct  = ao.total_gws > 0 ? wo.wc_billed       / ao.total_gws : null;
+  const wcBilledRate = ao.total_gws > 0 ? wo.wc_profit_loss   / ao.total_gws : null;
   const elWcMod = document.getElementById('s-wc-mod');
   const elWcBilledRate = document.getElementById('s-wc-billed-rate');
-  if (elWcMod)       elWcMod.textContent       = !isNaN(wcMod) ? 'Mod: ' + wcMod.toFixed(2)                  : '—';
-  if (elWcBilledRate) elWcBilledRate.textContent = wcBilledRate != null ? formatPct(wcBilledRate) + ' of GWs'  : '—';
+  const elWcBilledPct  = document.getElementById('s-wc-billed-pct');
+  if (elWcMod)        elWcMod.textContent        = !isNaN(wcMod)      ? 'Mod: ' + wcMod.toFixed(2)                 : '—';
+  if (elWcBilledRate) elWcBilledRate.textContent  = wcBilledRate != null ? formatPct(wcBilledRate) + ' of GWs'     : '—';
+  if (elWcBilledPct)  elWcBilledPct.textContent   = wcBilledPct  != null ? formatPct(wcBilledPct)                  : '—';
 
   setDS('s-suta-billed',      formatCurrency(to.suta_billed));
   setDS('s-suta-cost',        formatCurrency(to.suta_cost));
@@ -370,6 +383,7 @@ function renderProposal(r) {
       const wses     = Math.round((line.ftes || 0) + 0.75 * (line.ptes || 0));
       const gw       = line.annual_gw || 0;
       const rate     = line.manual_rate || 0;
+      const effectiveRate = rate * proposedMod;
       const desc     = line.wc_description || '—';
       const sutaRate = sutaRateMap[line.state];
       const isClientReporting = CLIENT_REPORTING_STATES.has(line.state);
@@ -387,7 +401,7 @@ function renderProposal(r) {
           : adminRateRaw * wses * 12;
         adminPct = (adminCost / gw) * 100;
       }
-      const costBeforePct = rate + (ficaRate * 100) + (futaRate * 100) + sutaPct + adminPct;
+      const costBeforePct = effectiveRate + (ficaRate * 100) + (futaRate * 100) + sutaPct + adminPct;
       const costAfterPct  = costBeforePct - (futaRate * 100) - sutaPct;
       const costBeforeDisplay = gw > 0 ? costBeforePct.toFixed(2) + '%' : '—';
       const costAfterDisplay  = gw > 0 ? costAfterPct.toFixed(2)  + '%' : '—';
@@ -399,7 +413,7 @@ function renderProposal(r) {
         <td title="${desc}">${desc}</td>
         <td style="text-align:right;">${wses || '—'}</td>
         <td style="text-align:right;">${gw ? formatDollars(gw) : '—'}</td>
-        <td style="text-align:right;">${rate ? rate.toFixed(2) + '%' : '—'}</td>
+        <td style="text-align:right;">${effectiveRate ? effectiveRate.toFixed(2) + '%' : '—'}</td>
         <td style="text-align:right;">${ficaRate ? (ficaRate * 100).toFixed(2) + '%' : '—'}</td>
         <td style="text-align:right;">${futaRate ? (futaRate * 100).toFixed(2) + '%' : '—'}</td>
         <td style="text-align:right;">${sutaDisplay}</td>
@@ -459,11 +473,12 @@ function renderBillingAnalysis(r) {
     wcBody.innerHTML = `<tr><td colspan="13" style="text-align:center;color:#a0aec0;">—</td></tr>`;
   } else {
     wcLines.forEach(line => {
-      const wses    = Math.round((line.ftes || 0) + 0.75 * (line.ptes || 0));
-      const gw      = line.annual_gw || 0;
-      const vhrRate = line.manual_rate || 0;
-      const curRate = line.current_client_rate || 0;
-      const savings = (curRate - vhrRate) * proposedMod * gw / 100;
+      const wses            = Math.round((line.ftes || 0) + 0.75 * (line.ptes || 0));
+      const gw              = line.annual_gw || 0;
+      const vhrRate         = line.manual_rate || 0;
+      const vhrEffectiveRate = vhrRate * proposedMod;
+      const curRate         = line.current_client_rate || 0;
+      const savings         = (curRate - vhrRate) * proposedMod * gw / 100;
       sumGws       += gw;
       sumWcSavings += savings;
 
@@ -507,7 +522,7 @@ function renderBillingAnalysis(r) {
         <td style="text-align:right;">${wses || '—'}</td>
         <td style="text-align:right;">${gw ? formatDollars(gw) : '—'}</td>
         <td style="text-align:right;">${curRate ? curRate.toFixed(2) + '%' : '—'}</td>
-        <td style="text-align:right;">${vhrRate ? vhrRate.toFixed(2) + '%' : '—'}</td>
+        <td style="text-align:right;">${vhrEffectiveRate ? vhrEffectiveRate.toFixed(2) + '%' : '—'}</td>
         <td style="text-align:right;" class="${savCls(savings)}">${gw ? formatDollars(savings) : '—'}</td>
         <td style="text-align:right;">${curAdminDisplay}</td>
         <td style="text-align:right;">${vhrAdminDisplay}</td>
@@ -814,10 +829,12 @@ async function init() {
   const wcMod = document.getElementById('proposed_mod');
   pricingMod.addEventListener('input', () => {
     wcMod.value = pricingMod.value;
+    updateWCRateDisplays();
     scheduleCalculate();
   });
   wcMod.addEventListener('input', () => {
     pricingMod.value = wcMod.value;
+    updateWCRateDisplays();
   });
 
   // Pricing inputs → trigger recalculate

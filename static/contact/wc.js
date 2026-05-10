@@ -69,6 +69,9 @@ function addWCCodeRow(data) {
   const stateOpts = STATE_ABBRS.map(s =>
     `<option value="${s}"${s === (data?.state || '') ? ' selected' : ''}>${s}</option>`
   ).join('');
+  const baseRate = data?.manual_rate ? parseFloat(data.manual_rate) : null;
+  const mod = parseFloat(document.getElementById('pricing_proposed_mod')?.value) || 1;
+  const effRate = baseRate != null ? baseRate * mod : null;
   tr.innerHTML = `
     <td><select name="wc_state_${idx}" style="font-size:0.8rem;">
         <option value="">—</option>${stateOpts}
@@ -81,7 +84,7 @@ function addWCCodeRow(data) {
     <td><input type="number" name="wc_fte_${idx}" step="1" min="0" placeholder="0" value="${data?.ftes || ''}" /></td>
     <td><input type="number" name="wc_pte_${idx}" step="1" min="0" placeholder="0" value="${data?.ptes || ''}" /></td>
     <td><input type="number" name="wc_cur_rate_${idx}" step="0.01" min="0" placeholder="0.00" value="${data?.current_client_rate || ''}" /></td>
-    <td><input type="text" name="wc_rate_${idx}" placeholder="—" value="${data?.manual_rate ? parseFloat(data.manual_rate).toFixed(2) + '%' : ''}" readonly style="background:#f5f5f5;cursor:not-allowed;text-align:center;" /></td>
+    <td><input type="text" name="wc_rate_${idx}" placeholder="—" data-base-rate="${baseRate ?? ''}" value="${effRate != null ? effRate.toFixed(2) + '%' : ''}" readonly style="background:#f5f5f5;cursor:not-allowed;text-align:center;" /></td>
   `;
   tr.querySelectorAll('input, select').forEach(inp => {
     inp.addEventListener('input', () => { updateWCTotals(); updateSutaRows(); scheduleCalculate(); });
@@ -105,7 +108,10 @@ function addWCCodeRow(data) {
     if (!s || !c) return;
     try {
       const data = await apiGet(`/wc-rate?state=${encodeURIComponent(s)}&code=${encodeURIComponent(c)}`);
-      rateInput.value   = data.rate != null ? parseFloat(data.rate).toFixed(2) + '%' : '';
+      const rawRate = data.rate != null ? parseFloat(data.rate) : null;
+      const curMod = parseFloat(document.getElementById('pricing_proposed_mod')?.value) || 1;
+      rateInput.dataset.baseRate = rawRate ?? '';
+      rateInput.value = rawRate != null ? (rawRate * curMod).toFixed(2) + '%' : '';
       descInput.value   = data.description || '';
       hazardInput.value = data.hazard_group || '';
       flagInput.value   = data.flag_100k || '';
