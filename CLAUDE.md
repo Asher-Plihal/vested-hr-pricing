@@ -80,7 +80,7 @@ data/
 `POST /calculate` — pure functions in `calc/`, orchestrated in `controllers/calculate.py`:
 
 ```
-WSE → Workers' Comp → FICA → FUTA → SUTA → Admin Fee → Commission → Summary
+Workers' Comp → FICA → FUTA → SUTA → Admin → Commission → Proposal + Analysis
 ```
 
 ## Key design decisions
