@@ -22,7 +22,7 @@ class SutaLineIn(BaseModel):
 
 class SutaLineOut(SutaLineIn):
     id: int
-    client_id: int
+    contact_id: int
     model_config = {"from_attributes": True}
 
 

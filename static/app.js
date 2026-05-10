@@ -209,7 +209,7 @@ async function apiDelete(path) {
 
   function ensureClients() {
     if (searchClients !== null) return Promise.resolve();
-    return apiGet('/clients').then(data => { searchClients = data; }).catch(() => { searchClients = []; });
+    return apiGet('/contacts').then(data => { searchClients = data; }).catch(() => { searchClients = []; });
   }
 
   function positionDropdown() {
@@ -252,7 +252,7 @@ async function apiDelete(path) {
           (c.consultant_name ? `<span class="sr-sub">${c.consultant_name}</span>` : '') +
         `</span>`;
       li.addEventListener('mousedown', () => {
-        window.location.href = `/static/client.html?id=${c.id}`;
+        window.location.href = `/static/contact.html?id=${c.id}`;
       });
       dropdown.appendChild(li);
     });
@@ -281,7 +281,7 @@ async function apiDelete(path) {
       if (prev) setActive(prev);
     } else if (e.key === 'Enter') {
       const cur = activeItem();
-      if (cur) window.location.href = `/static/client.html?id=${cur.dataset.id}`;
+      if (cur) window.location.href = `/static/contact.html?id=${cur.dataset.id}`;
     } else if (e.key === 'Escape') {
       input.value = '';
       hideDropdown();

@@ -23,7 +23,7 @@ class WCLineIn(BaseModel):
 
 class WCLineOut(WCLineIn):
     id: int
-    client_id: int
+    contact_id: int
     model_config = {"from_attributes": True}
 
 
@@ -38,5 +38,5 @@ class WCLossIn(BaseModel):
 
 class WCLossOut(WCLossIn):
     id: int
-    client_id: int
+    contact_id: int
     model_config = {"from_attributes": True}

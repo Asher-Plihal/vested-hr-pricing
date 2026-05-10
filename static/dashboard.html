@@ -182,8 +182,8 @@ document.getElementById('modal-create').addEventListener('click', async () => {
   if (!legalName) { modalError.textContent = 'Client Legal Name is required.'; return; }
 
   try {
-    const result = await apiPost('/clients', { legal_name: legalName, consultant_name: contactType });
-    window.location.href = `/static/client.html?id=${result.id}`;
+    const result = await apiPost('/contacts', { legal_name: legalName, consultant_name: contactType });
+    window.location.href = `/static/contact.html?id=${result.id}`;
   } catch (err) {
     modalError.textContent = 'Failed to create contact: ' + err.message;
   }
@@ -194,7 +194,7 @@ document.getElementById('modal-create').addEventListener('click', async () => {
 async function loadDashboard() {
   let clients = [];
   try {
-    clients = await apiGet('/clients');
+    clients = await apiGet('/contacts');
   } catch (err) {
     showToast('Failed to load clients: ' + err.message, 'error');
     document.getElementById('clients-table-wrap').innerHTML =
@@ -248,7 +248,7 @@ async function loadDashboard() {
   wrap.querySelectorAll('tr[data-id]').forEach(row => {
     row.addEventListener('click', e => {
       if (e.target.closest('.btn-delete-row')) return;
-      window.location.href = `/static/client.html?id=${row.dataset.id}`;
+      window.location.href = `/static/contact.html?id=${row.dataset.id}`;
     });
   });
 
@@ -259,7 +259,7 @@ async function loadDashboard() {
       const name = btn.dataset.name;
       if (!window.confirm(`Delete ${name}? This cannot be undone.`)) return;
       try {
-        await apiDelete(`/clients/${id}`);
+        await apiDelete(`/contacts/${id}`);
         btn.closest('tr').remove();
         const remaining = wrap.querySelectorAll('tr[data-id]').length;
         const newTotal  = remaining;

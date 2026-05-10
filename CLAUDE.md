@@ -25,7 +25,7 @@ Use `python`, never `python3` — Windows, Python 3.14 at `C:/Users/asher/AppDat
 
 FastAPI / SQLite (SQLAlchemy sync) / Vanilla HTML+CSS+JS (no framework)
 
-Shared styles: `static/style.css`. `client.html` and `config.html` have additional inline `<style>` blocks for page-specific overrides.
+Shared styles: `static/style.css`. `contact.html` and `config.html` have additional inline `<style>` blocks for page-specific overrides.
 Shared JS: `static/app.js` — `apiGet`, `apiPost`, `apiPut`, `apiDelete`, `showToast`, `formatCurrency`, `formatDollars`, `formatPct`.
 
 ## Key files
@@ -36,20 +36,20 @@ database.py         Engine, session factory, Base
 models/
   __init__.py       Re-exports all ORM models
   system_config.py  SystemConfig
-  client.py         Client
+  contact.py        Contact
   workers_comp.py   WCLine, WCLoss, WCRate, WCGuideline
   taxes.py          SutaLine, SutaRate
 schemas/
   __init__.py       Re-exports all Pydantic schemas
   config.py         SystemConfigOut, SystemConfigUpdate
-  client.py         ClientCreate, ClientListItem, ClientUpdate, ClientOut
+  contact.py        ContactCreate, ContactListItem, ContactUpdate, ContactOut
   workers_comp.py   WCLineIn, WCLineOut, WCLossIn, WCLossOut
   taxes.py          SutaLineIn, SutaLineOut, SutaRateOut, SutaRateUpdate
   calculate.py      CalculateRequest
 testing/seed.py     Seeds SystemConfig defaults — run once on fresh DB
 testing/seed_client.py  Creates Hartman Industrial LLC test client — idempotent
 controllers/
-  clients.py        GET/POST /clients, GET/PUT/DELETE /clients/{id}
+  contacts.py       GET/POST /contacts, GET/PUT/DELETE /contacts/{id}
   config.py         GET/PUT /config
   calculate.py      POST /calculate — full pipeline, returns summary (no DB write)
   workers_comp.py   GET /wc-rate, GET+POST /download+upload for WC Rates and WC Guidelines
@@ -64,13 +64,13 @@ calc/
   summary.py        taxes_overview + other_items + commissions → Analysis & Summary tab
 static/
   app.js / style.css   Shared across all pages
-  dashboard.html       Client list, New Client modal, delete
-  client.html          7-tab pricing form + live Deal Summary
+  dashboard.html       Contact list, New Contact modal, delete
+  contact.html         7-tab pricing form + live Deal Summary
   config.html          System config (autosaves on change)
-  client/              Client-page JS and HTML panels
+  contact/             Contact-page JS and HTML panels
     core.js            Tab nav, helpers, auto-save, card lock, loadPanels()
     wc.js / taxes.js / admin.js / calc.js
-    panels/            HTML fragments injected into client.html tab divs
+    panels/            HTML fragments injected into contact.html tab divs
 data/
   vested_hr.db      SQLite DB
 ```

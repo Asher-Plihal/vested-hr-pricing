@@ -14,7 +14,7 @@ class WCLine(Base):
     __tablename__ = "wc_lines"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
+    contact_id = Column(Integer, ForeignKey("contacts.id"), nullable=False)
     state = Column(String)
     wc_code = Column(String)
     wc_description = Column(String)
@@ -32,7 +32,7 @@ class WCLoss(Base):
     __tablename__ = "wc_losses"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
+    contact_id = Column(Integer, ForeignKey("contacts.id"), nullable=False)
     coverage_period_start = Column(String)
     coverage_period_end = Column(String)
     total_losses_incurred = Column(Float, default=0.0)

@@ -23,7 +23,7 @@ async function doAutoSave() {
     wc_losses:  collectWCLosses(),
   };
   try {
-    await apiPut('/clients/' + clientId, saveBody);
+    await apiPut('/contacts/' + clientId, saveBody);
   } catch (e) {
     showToast('Autosave failed: ' + e.message, 'error');
   }
@@ -387,8 +387,9 @@ function renderProposal(r) {
           : adminRateRaw * wses * 12;
         adminPct = (adminCost / gw) * 100;
       }
+      const ssRate        = systemConfig.ss_rate || 0;
       const costBeforePct = rate + (ficaRate * 100) + (futaRate * 100) + sutaPct + adminPct;
-      const costAfterPct  = costBeforePct - (futaRate * 100) - sutaPct;
+      const costAfterPct  = costBeforePct - (futaRate * 100) - sutaPct - (ssRate * 100);
       const costBeforeDisplay = gw > 0 ? costBeforePct.toFixed(2) + '%' : '—';
       const costAfterDisplay  = gw > 0 ? costAfterPct.toFixed(2)  + '%' : '—';
 
@@ -840,7 +841,7 @@ async function init() {
     }
 
     try {
-      await apiPut('/clients/' + clientId, saveBody);
+      await apiPut('/contacts/' + clientId, saveBody);
       showToast('Quote saved successfully', 'success');
     } catch (e) {
       showToast('Save failed: ' + e.message, 'error');
@@ -850,7 +851,7 @@ async function init() {
   // ── Load client data ─────────────────────────────────────────────────── //
   if (clientId) {
     try {
-      const client = await apiGet('/clients/' + clientId);
+      const client = await apiGet('/contacts/' + clientId);
       isPopulating = true;
       populateForm(client);
       isPopulating = false;
@@ -897,7 +898,7 @@ loadPanels().then(() => {
     if (!name) { editError.textContent = 'Name is required.'; return; }
     if (!clientId) { closeEditModal(); return; }
     try {
-      await apiPut('/clients/' + clientId, { legal_name: name, consultant_name: type });
+      await apiPut('/contacts/' + clientId, { legal_name: name, consultant_name: type });
       document.getElementById('page-title').textContent = name;
       document.getElementById('page-sub').textContent = 'Contact Type: ' + type;
       document.getElementById('consultant_name').value = type;

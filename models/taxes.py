@@ -13,7 +13,7 @@ class SutaLine(Base):
     __tablename__ = "suta_lines"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    client_id = Column(Integer, ForeignKey("clients.id"), nullable=False)
+    contact_id = Column(Integer, ForeignKey("contacts.id"), nullable=False)
     state = Column(String)
     gws = Column(Float, default=0.0)
     total_wses = Column(Float, default=0.0)

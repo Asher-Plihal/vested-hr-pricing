@@ -14,7 +14,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from database import SessionLocal
-from models import Client, WCLine, SutaLine
+from models import Contact, WCLine, SutaLine
 
 LEGAL_NAME = "Hartman Industrial LLC"
 
@@ -22,13 +22,13 @@ LEGAL_NAME = "Hartman Industrial LLC"
 def seed():
     db = SessionLocal()
     try:
-        existing = db.query(Client).filter(Client.legal_name == LEGAL_NAME).first()
+        existing = db.query(Contact).filter(Contact.legal_name == LEGAL_NAME).first()
         if existing:
-            print(f"Client '{LEGAL_NAME}' already exists (id={existing.id}) — skipping.")
+            print(f"Contact '{LEGAL_NAME}' already exists (id={existing.id}) — skipping.")
             return
 
-        # --- Client ---
-        client = Client(
+        # --- Contact ---
+        client = Contact(
             legal_name=LEGAL_NAME,
             dba="Hartman",
             consultant_name="Sarah Vance",
@@ -57,7 +57,7 @@ def seed():
         # --- WC Lines ---
         wc_lines = [
             WCLine(
-                client_id=client.id,
+                contact_id=client.id,
                 state="TX",
                 wc_code="5190",
                 annual_gw=1_800_000.0,
@@ -67,7 +67,7 @@ def seed():
                 manual_rate=0.0,
             ),
             WCLine(
-                client_id=client.id,
+                contact_id=client.id,
                 state="TX",
                 wc_code="8810",
                 annual_gw=420_000.0,
@@ -83,7 +83,7 @@ def seed():
 
         # --- SUTA Line ---
         suta_line = SutaLine(
-            client_id=client.id,
+            contact_id=client.id,
             state="TX",
             gws=2_220_000.0,
             total_wses=43.0,

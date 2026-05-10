@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from controllers import clients, config, calculate, workers_comp, taxes, admin_revenue
+from controllers import contacts, config, calculate, workers_comp, taxes, admin_revenue
 
 app = FastAPI(title="VestedHR Pricing Tool")
 
@@ -10,7 +10,7 @@ def root():
     return RedirectResponse(url="/static/dashboard.html")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
-app.include_router(clients.router)
+app.include_router(contacts.router)
 app.include_router(config.router)
 app.include_router(calculate.router)
 app.include_router(workers_comp.router)

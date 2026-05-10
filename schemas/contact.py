@@ -1,11 +1,3 @@
-"""
-Defines the shape of client data at each stage of its lifecycle. ClientCreate is the
-minimal payload to open a new client (just a name). ClientListItem is the condensed
-version shown in the dashboard table. ClientUpdate is the full form payload sent on
-every save — all fields are optional and it includes the WC lines, SUTA lines, and loss
-history as nested lists. ClientOut is the full record returned when loading a client,
-with all sub-lines resolved and included.
-"""
 from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel
@@ -13,12 +5,12 @@ from schemas.workers_comp import WCLineIn, WCLineOut, WCLossIn, WCLossOut
 from schemas.taxes import SutaLineIn, SutaLineOut
 
 
-class ClientCreate(BaseModel):
+class ContactCreate(BaseModel):
     legal_name: Optional[str] = None
     consultant_name: Optional[str] = None
 
 
-class ClientListItem(BaseModel):
+class ContactListItem(BaseModel):
     id: int
     legal_name: Optional[str]
     consultant_name: Optional[str]
@@ -28,7 +20,7 @@ class ClientListItem(BaseModel):
     model_config = {"from_attributes": True}
 
 
-class ClientUpdate(BaseModel):
+class ContactUpdate(BaseModel):
     status: Optional[str] = None
     consultant_name: Optional[str] = None
     date: Optional[str] = None
@@ -117,7 +109,7 @@ class ClientUpdate(BaseModel):
     wc_losses: Optional[list[WCLossIn]] = None
 
 
-class ClientOut(BaseModel):
+class ContactOut(BaseModel):
     id: int
     created_at: Optional[datetime]
     updated_at: Optional[datetime]

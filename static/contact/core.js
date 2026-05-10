@@ -141,7 +141,7 @@ function collectCardLockStates() {
 async function loadPanels() {
   const panels = ['general','wc','admin','taxes','benefits','proposal','analysis'];
   await Promise.all(panels.map(async name => {
-    const res = await fetch(`/static/client/panels/${name}.html`);
+    const res = await fetch(`/static/contact/panels/${name}.html`);
     const html = await res.text();
     document.getElementById(`panel-${name}`).innerHTML = html;
   }));
