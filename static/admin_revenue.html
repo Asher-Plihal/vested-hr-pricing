@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VestedHR — Admin Revenue</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <style>
+    /* ── Subheader ── */
+    .subheader-ar {
+      background: transparent;
+      border-bottom: none;
+    }
+    .subheader-ar .subheader-inner {
+      max-width: 1100px;
+      padding: 22px 24px 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .subheader-ar .subheader-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .subheader-ar .subheader-title {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: #1a202c;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .ar-count-badge {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+    .subheader-ar .subheader-line {
+      border: none;
+      border-top: 2px solid #1a202c;
+      margin: 0;
+    }
+
+    /* ── Page wrapper ── */
+    .page-content-ar {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 24px 80px;
+    }
+
+    /* ── Dropzone ── */
+    .ar-dropzone {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px 24px;
+      border: 2px dashed var(--border);
+      border-radius: 10px;
+      background: var(--bg-card);
+      margin-bottom: 24px;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .ar-dropzone:hover,
+    .ar-dropzone.drag-over { border-color: var(--accent); }
+    .ar-dropzone svg { color: var(--text-muted); flex-shrink: 0; }
+    .ar-dropzone-label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .ar-dropzone-sub {
+      font-size: 0.77rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ── Table ── */
+    .ar-table-wrap {
+      overflow-x: auto;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .ar-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+      white-space: nowrap;
+    }
+
+    /* Header */
+    .ar-table thead th {
+      padding: 11px 18px;
+      text-align: right;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #c9a84c;
+      background: #1e3154;
+      border-bottom: none;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    .ar-table thead th.col-client {
+      text-align: left;
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      background: #1e3154;
+    }
+    .ar-table thead th.col-total {
+      border-left: 1px solid #2d4a7a;
+    }
+
+    /* Body rows */
+    .ar-table tbody td {
+      padding: 10px 18px;
+      text-align: right;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+    .ar-table tbody tr:last-child td { border-bottom: none; }
+    .ar-table tbody td.col-client {
+      text-align: left;
+      font-weight: 500;
+      position: sticky;
+      left: 0;
+      z-index: 1;
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .ar-table tbody tr:nth-child(odd)  td { background: #fff; }
+    .ar-table tbody tr:nth-child(even) td { background: #f8fafc; }
+    .ar-table tbody tr:nth-child(odd)  td.col-client { background: #fff; }
+    .ar-table tbody tr:nth-child(even) td.col-client { background: #f8fafc; }
+    .ar-table tbody tr:hover td,
+    .ar-table tbody tr:hover td.col-client { background: #eef2ff; }
+
+    /* Zero cells — very subtle */
+    .ar-table td.zero { color: #d1d5db; }
+
+    /* Total column separator */
+    .ar-table td.col-total,
+    .ar-table th.col-total {
+      border-left: 1px solid var(--border);
+      font-weight: 600;
+    }
+
+    /* Footer */
+    .ar-table tfoot td {
+      padding: 11px 18px;
+      text-align: right;
+      font-weight: 700;
+      font-size: 0.84rem;
+      border-top: 2px solid var(--border);
+      background: #f8fafc;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+    .ar-table tfoot td.col-client {
+      text-align: left;
+      position: sticky;
+      left: 0;
+      z-index: 1;
+      background: #f8fafc;
+    }
+
+    #ar-hidden-input { display: none; }
+    #ar-table-section { display: none; }
+  </style>
+</head>
+<body>
+
+<!-- ── Top Nav ── -->
+<nav class="topnav">
+  <a href="/static/dashboard.html" class="topnav-logo">
+    <img src="/static/favicon.png" alt="VestedHR" />
+  </a>
+  <div class="topnav-actions">
+    <div class="search-wrap">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="topnav-search" id="ar-topnav-search" type="search" placeholder="Filter clients…" autocomplete="off" />
+    </div>
+    <a href="/static/config.html" class="topnav-current">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l-.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Config
+    </a>
+    <div class="user-menu">
+      <div class="user-avatar">AP</div>
+      <div class="user-info">
+        <span class="user-name">Asher Plihal</span>
+        <span class="user-role">Admin</span>
+      </div>
+      <span class="user-caret">▾</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Subheader ── -->
+<div class="subheader subheader-ar">
+  <div class="subheader-inner">
+    <div class="subheader-top">
+      <div class="subheader-title">
+        Admin Revenue
+        <span class="ar-count-badge" id="ar-count-badge"></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span id="ar-loaded-name" style="display:none;font-size:0.8rem;color:var(--text-muted);background:var(--bg-sidebar);border:1px solid var(--border);border-radius:20px;padding:4px 12px;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+        <button class="btn-primary" id="btn-upload" type="button">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+          Upload Spreadsheet
+        </button>
+      </div>
+    </div>
+    <hr class="subheader-line" />
+  </div>
+</div>
+
+<input type="file" id="ar-hidden-input" accept=".xlsx,.xls" />
+
+<!-- ── Page Content ── -->
+<div class="page-content-ar">
+
+  <!-- Dropzone -->
+  <div class="ar-dropzone" id="ar-dropzone">
+    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+    <div>
+      <div class="ar-dropzone-label">Drop the GL spreadsheet here, or click Upload Spreadsheet above</div>
+      <div class="ar-dropzone-sub">Accepts .xlsx — 4700 Admin Fee Revenue general ledger export</div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div id="ar-table-section">
+    <div class="ar-table-wrap">
+      <table class="ar-table">
+        <thead id="ar-thead"></thead>
+        <tbody id="ar-tbody"></tbody>
+        <tfoot id="ar-tfoot"></tfoot>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script src="/static/app.js"></script>
+<script>
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+let tableRows    = [];
+let activeMonths = [];
+
+const fileInput    = document.getElementById('ar-hidden-input');
+const btnUpload    = document.getElementById('btn-upload');
+const dropzone     = document.getElementById('ar-dropzone');
+const tableSection = document.getElementById('ar-table-section');
+const loadedName   = document.getElementById('ar-loaded-name');
+const countBadge   = document.getElementById('ar-count-badge');
+
+/* ── Load saved data on page open ── */
+(async () => {
+  try {
+    const data = await apiGet('/admin-revenue');
+    if (data.rows && data.rows.length) {
+      tableRows = data.rows;
+      const colSums = new Array(12).fill(0);
+      for (const r of data.rows) r.months.forEach((v, i) => colSums[i] += v);
+      activeMonths = colSums.map((_, i) => i).filter(i => colSums[i] > 0);
+      if (data.filename) {
+        dropzone.style.display = 'none';
+        loadedName.textContent = data.filename;
+        loadedName.style.display = '';
+      }
+      renderTable(data.rows);
+    }
+  } catch (e) {
+    console.warn('Could not load saved admin revenue data:', e);
+  }
+})();
+
+/* ── Upload triggers ── */
+btnUpload.addEventListener('click', e => { e.stopPropagation(); fileInput.value = ''; fileInput.click(); });
+dropzone.addEventListener('click',  () => { fileInput.value = ''; fileInput.click(); });
+fileInput.addEventListener('change', () => { if (fileInput.files?.[0]) handleFile(fileInput.files[0]); });
+
+dropzone.addEventListener('dragover',  e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
+dropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropzone.classList.remove('drag-over');
+  if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+});
+
+/* ── Topnav search — filter this table instead of global client list ── */
+const topnavSearch = document.getElementById('ar-topnav-search');
+topnavSearch.addEventListener('focus', () => {
+  /* suppress the global dropdown that app.js would show */
+  requestAnimationFrame(() => {
+    const dd = document.getElementById('vhr-search-dropdown');
+    if (dd) dd.style.display = 'none';
+  });
+});
+topnavSearch.addEventListener('input', function () {
+  requestAnimationFrame(() => {
+    const dd = document.getElementById('vhr-search-dropdown');
+    if (dd) dd.style.display = 'none';
+  });
+  if (!tableRows.length) return;
+  const q = this.value.trim().toLowerCase();
+  const filtered = q ? tableRows.filter(r => r.client.toLowerCase().includes(q)) : tableRows;
+  renderBody(filtered);
+  renderFoot(filtered);
+  countBadge.textContent = q
+    ? `${filtered.length} of ${tableRows.length} clients`
+    : `${tableRows.length} clients`;
+});
+
+/* ── Upload handler ── */
+async function handleFile(file) {
+  tableSection.style.display = 'none';
+  countBadge.textContent = 'Parsing…';
+
+  const fd = new FormData();
+  fd.append('file', file);
+
+  try {
+    const res = await fetch('/admin-revenue/upload', { method: 'POST', body: fd });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || `Server error ${res.status}`);
+    }
+    const data = await res.json();
+    tableRows = data.rows;
+
+    const colSums = new Array(12).fill(0);
+    for (const r of data.rows) r.months.forEach((v, i) => colSums[i] += v);
+    activeMonths = colSums.map((_, i) => i).filter(i => colSums[i] > 0);
+
+    dropzone.style.display = 'none';
+    loadedName.textContent = file.name;
+    loadedName.style.display = '';
+
+    renderTable(data.rows);
+    showToast(`Loaded ${data.rows.length} clients`, 'success');
+  } catch (e) {
+    console.error('Admin Revenue upload error:', e);
+    countBadge.textContent = '';
+    showToast('Upload failed: ' + e.message, 'error');
+  }
+}
+
+/* ── Rendering ── */
+function fmt(v) {
+  if (!v) return '';
+  return '$' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function renderTable(rows) {
+  document.getElementById('ar-thead').innerHTML = `<tr>
+    <th class="col-client">Client</th>
+    ${activeMonths.map(i => `<th>${MONTHS[i]}</th>`).join('')}
+    <th class="col-total">Total</th>
+  </tr>`;
+
+  renderBody(rows);
+  renderFoot(rows);
+
+  countBadge.textContent = `${rows.length} clients`;
+  tableSection.style.display = 'block';
+}
+
+function renderBody(rows) {
+  document.getElementById('ar-tbody').innerHTML = rows.map(r => `
+    <tr>
+      <td class="col-client" title="${r.client}">${r.client}</td>
+      ${activeMonths.map(i => { const v = r.months[i]; return `<td class="${v ? '' : 'zero'}">${fmt(v)}</td>`; }).join('')}
+      <td class="col-total">${fmt(r.total)}</td>
+    </tr>`).join('');
+}
+
+function renderFoot(rows) {
+  const sums = new Array(12).fill(0);
+  let grand = 0;
+  for (const r of rows) { r.months.forEach((v, i) => sums[i] += v); grand += r.total; }
+  document.getElementById('ar-tfoot').innerHTML = `<tr>
+    <td class="col-client">Total</td>
+    ${activeMonths.map(i => { const v = sums[i]; return `<td class="${v ? '' : 'zero'}">${fmt(v)}</td>`; }).join('')}
+    <td class="col-total">${fmt(grand)}</td>
+  </tr>`;
+}
+</script>
+</body>
+</html>
