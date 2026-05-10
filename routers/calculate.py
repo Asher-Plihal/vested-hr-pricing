@@ -5,12 +5,12 @@ from database import get_db
 from models import SystemConfig
 from schemas import CalculateRequest
 
-from calc.workers_comp import calculate_wc
-from calc.taxes import calculate_fica, calculate_futa, calculate_suta
-from calc.admin import calculate_admin
-from calc.commission import calculate_commission
-from calc.proposal import build_proposal
-from calc.summary import build_analysis
+from controllers.workers_comp import calculate_wc
+from controllers.taxes import calculate_fica, calculate_futa, calculate_suta
+from controllers.admin import calculate_admin
+from controllers.commission import calculate_commission
+from controllers.proposal import build_proposal
+from controllers.summary import build_analysis
 
 router = APIRouter(prefix="/calculate", tags=["calculate"])
 

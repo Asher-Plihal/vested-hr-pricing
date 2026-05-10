@@ -4,6 +4,33 @@ Most recent entry at the top. Add an entry when a task completes. This is where 
 
 ---
 
+### 2026-05-09 — calc/ reorganization to match UI tab structure
+
+Refactored `calc/` so file names mirror the client.html tabs. No logic changes — all function signatures and return values identical.
+
+- `fica.py` + `futa.py` + `suta.py` → merged into `taxes.py`, sectioned by `# ── FICA / FUTA / SUTA` headers
+- `wse.py` deleted — `calculate_wses` was imported but never called; WSE computation already happened inline in the pipeline
+- `admin_fee.py` → renamed `admin.py`
+- `summary.py` → split into `proposal.py` (`build_proposal()` — WC + admin overview for Proposal tab) and `summary.py` (`build_analysis()` — taxes + commissions for Analysis & Summary tab)
+- `benefits.py` added as empty placeholder
+- `routers/calculate.py` updated to call `build_proposal` + `build_analysis` and merge results; frontend output shape unchanged
+- CLAUDE.md calc/ table updated to reflect new structure
+
+---
+
+### 2026-05-09 — CSS cleanup: unified style system across all pages
+
+Resolved 6 consistency issues across `style.css`, `client.html`, `config.html`, `dashboard.html`:
+
+1. `.info-note` unified in `style.css` with `.warn` modifier; duplicate removed from `client.html`
+2. `.tab-action-btn` kept separate from `.btn-ghost` (weight 600, gold hover border, `.primary` variant are meaningful distinctions)
+3. Both table systems (`.clients-table`, `.data-table`) now share identical header typography (0.72rem / 700 / uppercase / 0.06em); hover unified to `#f7fafc`; distinguishing comments added
+4. `.btn-new` deleted; `dashboard.html` updated to use `.btn-primary`
+5. `client.html` subheader overrides replaced with `.subheader-client` / `.page-content-client` classes in `style.css` (client content width: 1100px)
+6. All `dashboard.html` inline styles (modal, empty-state, btn-delete-row) moved to `style.css`; inline `<style>` block fully removed
+
+---
+
 ### 2026-05-09 — Pricing math verification complete (`update-pricing-math` closed)
 
 Four open formula questions confirmed with VHR and documented in `pricing_math.md`: proposal total scope, loss analysis denominator, admin fee comparison method, and WC additional fee placement. No calc code changes required.

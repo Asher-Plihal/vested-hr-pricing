@@ -43,7 +43,7 @@ routers/
   suta_rates.py     GET/PUT /suta-rates
   rates.py          GET /download/* and POST /upload/* for WC Rates, WC Guidelines, SUTA
   calculate.py      POST /calculate — full pipeline, returns summary (no DB write)
-calc/
+controllers/
   workers_comp.py   WC billing, cost, margin, vendor comparison (Workers Comp tab)
   taxes.py          FICA, FUTA, SUTA — merged tax calcs (Taxes tab)
   admin.py          3 methods: % of GWs, per-check, PEPM (Admin tab)
@@ -61,7 +61,7 @@ data/
 
 ## Calculation pipeline
 
-`POST /calculate` — pure functions in `calc/`, orchestrated in `routers/calculate.py`:
+`POST /calculate` — pure functions in `controllers/`, orchestrated in `routers/calculate.py`:
 
 ```
 WSE → Workers' Comp → FICA → FUTA → SUTA → Admin Fee → Commission → Summary
@@ -72,7 +72,7 @@ WSE → Workers' Comp → FICA → FUTA → SUTA → Admin Fee → Commission �
 Non-obvious choices. Do not undo without asking.
 
 - **FUTA Approach B only**: `W × wage_base × rate × turnover_pct`. Client inputs a direct decimal `futa_turnover_rate` (can exceed 1.0 when W-2s outnumber average headcount). Approach A not used.
-- **WC rate auto-lookup**: `calc/workers_comp.py` queries `wc_rates` by `state+code` concat key. Falls back to `WCLine.manual_rate` if not found or db=None. Rate field in `client.html` is readonly and auto-populated.
+- **WC rate auto-lookup**: `controllers/workers_comp.py` queries `wc_rates` by `state+code` concat key. Falls back to `WCLine.manual_rate` if not found or db=None. Rate field in `client.html` is readonly and auto-populated.
 - **SUTA client-reporting states**: ~22 states where the client files under their own account (`client_reporting=True`): AK, CT, DE, IA, KS, KY, MA, ME, MI, MN, MS, MT, NE, NV, OH, PA, RI, SC, SD, TN, VT, WA. CA, NY, NJ are VHR-reporting with real rates.
 - **Config autosaves**: All system config fields save 600ms after any change. No Save button.
 - **WC carve-out**: `proposed_mod = 0` zeros all WC billing/cost in `calculate_wc`.
