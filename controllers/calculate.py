@@ -14,7 +14,7 @@ from schemas import CalculateRequest
 
 from calc.workers_comp import calculate_wc
 from calc.taxes import calculate_fica, calculate_futa, calculate_suta
-from calc.admin import calculate_admin
+from calc.admin import calculate_admin, PAY_PERIODS
 from calc.commission import calculate_commission
 from calc.proposal import build_proposal
 from calc.summary import build_analysis
@@ -41,9 +41,11 @@ def run_calculate(body: CalculateRequest, db: Session = Depends(get_db)):
         "independent_bureau_states": cfg_row.independent_bureau_states or "",
     }
 
-    pay_periods_map = {"weekly": 52, "biweekly": 26, "semimonthly": 24, "monthly": 12}
-
-    wc_line_dicts = [l.model_dump() for l in body.wc_lines]
+    pte_weight = config["pte_weight"]
+    wc_line_dicts = [
+        {**l.model_dump(), "wses": l.ftes + pte_weight * l.ptes}
+        for l in body.wc_lines
+    ]
     suta_line_dicts = [l.model_dump() for l in body.suta_lines]
 
     proposed_mod = body.proposed_mod
@@ -72,10 +74,9 @@ def run_calculate(body: CalculateRequest, db: Session = Depends(get_db)):
         rate=active_admin_rate,
         pay_frequency=body.payroll_frequency,
         wc_policy_adj=body.wc_policy_adj,
-        pay_periods_map=pay_periods_map,
     )
 
-    pay_periods_per_year = pay_periods_map.get(body.payroll_frequency, 26)
+    pay_periods_per_year = PAY_PERIODS.get(body.payroll_frequency, 26)
     tlm_rate = (cfg_row.tlm_rate or 0.0) if body.use_tlm else 0.0
     method = body.method_of_payment
     if method == "reverse_wire":
@@ -108,7 +109,7 @@ def run_calculate(body: CalculateRequest, db: Session = Depends(get_db)):
         "consultant_commission_ongoing": cfg_row.consultant_commission_ongoing,
     }
 
-    proposal_data = build_proposal(wc_result, admin_result, futa_result)
+    proposal_data = build_proposal(wc_result, admin_result, total_gws=total_gws, total_wses=total_wses)
     analysis_data = build_analysis(
         wc_result=wc_result,
         fica_result=fica_result,
@@ -119,4 +120,4 @@ def run_calculate(body: CalculateRequest, db: Session = Depends(get_db)):
         ancillary=ancillary_full,
     )
 
-    return {**proposal_data, **analysis_data, "suta_lines": suta_result["lines"]}
+    return {**proposal_data, **analysis_data, "wc_lines": wc_result["lines"], "suta_lines": suta_result["lines"]}

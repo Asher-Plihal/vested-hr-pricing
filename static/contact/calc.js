@@ -354,8 +354,7 @@ function renderProposal(r) {
   const to = r.taxes_overview || {};
 
   const proposedMod = parseFloat(document.getElementById('pricing_proposed_mod')?.value) || 0;
-  const wcLines     = collectWCLines().filter(l => l.wc_code || l.annual_gw > 0);
-  const sutaLines   = collectSutaLines().filter(l => l.state);
+  const wcLines     = (r.wc_lines || []).filter(l => l.wc_code || l.annual_gw > 0);
 
   const ficaRate     = (systemConfig.ss_rate || 0) + (systemConfig.medicare_rate || 0);
   const futaRate     = systemConfig.futa_rate || 0;
@@ -370,7 +369,7 @@ function renderProposal(r) {
     : (adminRateRaw ? '$' + adminRateRaw.toFixed(2) : '—');
   document.getElementById('proposal-admin-th').innerHTML = adminHeaders[adminMethod] || 'Admin';
   const sutaRateMap = {};
-  sutaLines.forEach(l => { sutaRateMap[l.state] = l.billing_rate; });
+  (r.suta_lines || []).forEach(l => { if (l.state) sutaRateMap[l.state] = l.billing_rate; });
 
   // WC table
   const wcBody = document.getElementById('proposal-wc-body');
@@ -380,7 +379,7 @@ function renderProposal(r) {
     wcBody.innerHTML = `<tr><td colspan="12" style="text-align:center;color:#a0aec0;">—</td></tr>`;
   } else {
     wcLines.forEach(line => {
-      const wses     = Math.round((line.ftes || 0) + 0.75 * (line.ptes || 0));
+      const wses     = Math.round(line.wses || 0);
       const gw       = line.annual_gw || 0;
       const rate     = line.manual_rate || 0;
       const effectiveRate = rate * proposedMod;
@@ -439,7 +438,7 @@ function renderBillingAnalysis(r) {
   const ao = r.admin_overview || {};
 
   const proposedMod     = parseFloat(document.getElementById('pricing_proposed_mod')?.value) || 0;
-  const wcLines         = collectWCLines().filter(l => l.wc_code || l.annual_gw > 0);
+  const wcLines         = (r.wc_lines || []).filter(l => l.wc_code || l.annual_gw > 0);
   const adminMethod     = getIntVal('admin_method') || 1;
   const adminSuffix     = adminMethod === 1 ? '' : '_' + adminMethod;
   const curAdminRateRaw = getNumVal('current_admin_rate' + adminSuffix) || 0;
@@ -456,29 +455,32 @@ function renderBillingAnalysis(r) {
     ? (adminRateRaw ? adminRateRaw.toFixed(2) + '%' : '—')
     : (adminRateRaw ? '$' + adminRateRaw.toFixed(2) : '—');
 
-  // SUTA rate map from form inputs (for rate display per row)
+  // SUTA rate map from backend results (billing_rate, current_client_rate, threshold, turnover_pct)
   const sutaRateMap = {};
-  collectSutaLines().filter(l => l.state).forEach(l => { sutaRateMap[l.state] = l; });
+  (r.suta_lines || []).forEach(l => { if (l.state) sutaRateMap[l.state] = l; });
 
   // Backend SUTA total savings — use directly for the totals row
   const totalSutaSavingsFromBackend = (r.suta_lines || []).reduce((s, l) => s + (l.client_savings || 0), 0);
 
   function savCls(v) { return v > 0 ? 'positive' : v < 0 ? 'negative' : ''; }
 
+  // Pre-build state GW totals so per-row SUTA can apportion backend state totals proportionally
+  const stateGwMap = {};
+  wcLines.forEach(l => { stateGwMap[l.state] = (stateGwMap[l.state] || 0) + (l.annual_gw || 0); });
+
   // ── WC rows ──
   const wcBody = document.getElementById('analysis-wc-body');
   wcBody.innerHTML = '';
-  let sumGws = 0, sumWcSavings = 0, sumCurAdmin = 0, sumVhrAdmin = 0;
+  let sumGws = 0, sumWcSavings = 0, sumCurAdmin = 0;
   if (wcLines.length === 0) {
     wcBody.innerHTML = `<tr><td colspan="13" style="text-align:center;color:#a0aec0;">—</td></tr>`;
   } else {
     wcLines.forEach(line => {
-      const wses            = Math.round((line.ftes || 0) + 0.75 * (line.ptes || 0));
+      const wses            = Math.round(line.wses || 0);
       const gw              = line.annual_gw || 0;
-      const vhrRate         = line.manual_rate || 0;
-      const vhrEffectiveRate = vhrRate * proposedMod;
+      const vhrEffectiveRate = (line.manual_rate || 0) * proposedMod;
       const curRate         = line.current_client_rate || 0;
-      const savings         = (curRate - vhrRate) * proposedMod * gw / 100;
+      const savings         = line.followup_billing || 0;
       sumGws       += gw;
       sumWcSavings += savings;
 
@@ -496,21 +498,15 @@ function renderBillingAnalysis(r) {
       }
       const adminSavRow = curAdminRow - vhrAdminRow;
       sumCurAdmin += curAdminRow;
-      sumVhrAdmin += vhrAdminRow;
 
-      // SUTA: per-row taxable base = min(rowGW, threshold × rowWSEs × (1+turnover))
-      // This matches how SUTA actually works — per-employee wage cap applied at row level
+      // SUTA: apportion backend state totals to this row by its share of the state's GW
       const sr = sutaRateMap[line.state];
       let curSutaDisplay = '—', vhrSutaDisplay = '—', sutaSavTxt = '—', sutaSavCls = '';
       if (sr) {
-        const curSutaRate  = sr.current_client_rate || 0;
-        const vhrSutaRate  = sr.billing_rate        || 0;
-        const rowWSEs      = (line.ftes || 0) + 0.75 * (line.ptes || 0);
-        const turnover     = sr.turnover_pct || 0.1;
-        const taxableGw    = Math.min(gw, (sr.threshold || 0) * rowWSEs * (1 + turnover));
-        const sutaSavAmt   = (curSutaRate - vhrSutaRate) * taxableGw;
-        curSutaDisplay = curSutaRate ? (curSutaRate * 100).toFixed(2) + '%' : '—';
-        vhrSutaDisplay = vhrSutaRate ? (vhrSutaRate * 100).toFixed(2) + '%' : '—';
+        const gwFraction = (stateGwMap[line.state] || 0) > 0 ? gw / stateGwMap[line.state] : 0;
+        const sutaSavAmt = (sr.client_savings || 0) * gwFraction;
+        curSutaDisplay = sr.current_client_rate ? (sr.current_client_rate * 100).toFixed(2) + '%' : '—';
+        vhrSutaDisplay = sr.billing_rate        ? (sr.billing_rate        * 100).toFixed(2) + '%' : '—';
         sutaSavTxt     = formatDollars(sutaSavAmt);
         sutaSavCls     = savCls(sutaSavAmt);
       }
@@ -534,8 +530,7 @@ function renderBillingAnalysis(r) {
     });
   }
 
-  // ── Admin totals (accumulated from per-row) ──
-  const adminSavings = sumCurAdmin - sumVhrAdmin;
+  const adminSavings = sumCurAdmin - (ao.admin_margin || 0);
 
   // ── Totals row ──
   const hasData = sumGws > 0;

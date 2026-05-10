@@ -6,9 +6,7 @@ savings comparison) in client.html.
   wc_overview:    wc_billed, wc_fixed_cost, wc_loss_fund, total_wc_cost, wc_profit_loss
 """
 
-def build_proposal(wc_result: dict, admin_result: dict, futa_result: dict) -> dict:
-    total_gws = sum(line.get("annual_gw", 0.0) for line in wc_result.get("lines", []))
-    total_wses = futa_result.get("total_wses", 0.0)
+def build_proposal(wc_result: dict, admin_result: dict, total_gws: float, total_wses: float) -> dict:
     avg_wage = total_gws / total_wses if total_wses > 0 else 0.0
 
     return {

@@ -6,6 +6,9 @@ Admin tab — calculates the admin fee using one of three methods:
 Returns total_admin_fee plus per-check and per-WSE-per-month equivalents for all methods.
 """
 
+PAY_PERIODS = {"weekly": 52, "biweekly": 26, "semimonthly": 24, "monthly": 12}
+
+
 def calculate_admin(
     total_gws: float,
     total_wses: float,
@@ -13,12 +16,8 @@ def calculate_admin(
     rate: float,
     pay_frequency: str,
     wc_policy_adj: float = 0.0,
-    pay_periods_map: dict = None,
 ) -> dict:
-    if pay_periods_map is None:
-        pay_periods_map = {"weekly": 52, "biweekly": 26, "semimonthly": 24, "monthly": 12}
-
-    pay_periods = pay_periods_map.get(pay_frequency, 26)
+    pay_periods = PAY_PERIODS.get(pay_frequency, 26)
 
     if method == 1:
         total_admin_pct = wc_policy_adj + rate

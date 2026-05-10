@@ -25,9 +25,7 @@ def calculate_fica(lines: list[dict], config: dict) -> dict:
 
     for line in lines:
         gw = line.get("annual_gw", 0.0)
-        ftes = line.get("ftes", 0.0)
-        ptes = line.get("ptes", 0.0)
-        wses = ftes + pte_weight * ptes
+        wses = line.get("wses") if line.get("wses") is not None else (line.get("ftes", 0.0) + pte_weight * line.get("ptes", 0.0))
 
         taxable_ss_wages = min(gw, wses * ss_wage_base)
         total_ss += taxable_ss_wages * ss_rate
@@ -50,7 +48,7 @@ def calculate_futa(lines: list[dict], turnover_rate: float, config: dict) -> dic
     pte_weight = config.get("pte_weight", 0.75)
 
     total_wses = sum(
-        line.get("ftes", 0.0) + pte_weight * line.get("ptes", 0.0)
+        line.get("wses") if line.get("wses") is not None else (line.get("ftes", 0.0) + pte_weight * line.get("ptes", 0.0))
         for line in lines
     )
 
@@ -101,6 +99,10 @@ def calculate_suta(suta_lines: list[dict]) -> dict:
             "suta_profit": suta_profit,
             "prior_cost": prior_cost,
             "client_savings": client_savings,
+            "billing_rate": billing_rate,
+            "current_client_rate": current_client_rate,
+            "threshold": threshold,
+            "turnover_pct": turnover_pct,
         })
 
         total_bill += suta_bill

@@ -40,8 +40,6 @@ def calculate_wc(lines: list[dict], proposed_mod: float, config: dict, db=None) 
 
     for line in lines:
         gw = line.get("annual_gw", 0.0)
-        ftes = line.get("ftes", 0.0)
-        ptes = line.get("ptes", 0.0)
         manual_rate = line.get("manual_rate", 0.0) or 0.0
         if db is not None and (not manual_rate):
             found = _lookup_rate(
@@ -54,7 +52,7 @@ def calculate_wc(lines: list[dict], proposed_mod: float, config: dict, db=None) 
                 manual_rate = found
         current_client_rate = line.get("current_client_rate", 0.0)
 
-        wses = ftes + pte_weight * ptes
+        wses = line.get("wses") if line.get("wses") is not None else (line.get("ftes", 0.0) + pte_weight * line.get("ptes", 0.0))
 
         billing = (manual_rate * proposed_mod) * gw / 100
         cost = billing * (fixed_cost_factor + loss_fund_factor)
@@ -70,9 +68,11 @@ def calculate_wc(lines: list[dict], proposed_mod: float, config: dict, db=None) 
         result_lines.append({
             "state": line.get("state"),
             "wc_code": line.get("wc_code"),
+            "wc_description": line.get("wc_description"),
             "wses": wses,
             "annual_gw": gw,
             "manual_rate": manual_rate,
+            "current_client_rate": current_client_rate,
             "billing": billing,
             "cost": cost,
             "margin": margin,
