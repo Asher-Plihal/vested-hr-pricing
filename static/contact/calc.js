@@ -426,9 +426,10 @@ function renderProposal(r) {
   }
 
   // WC totals footer
-  document.getElementById('p-total-wses').textContent = sumWses || '—';
-  document.getElementById('p-total-gws').textContent  = sumGws  ? formatDollars(sumGws)         : '—';
-  document.getElementById('p-wc-billed').textContent  = wo.wc_billed   != null ? formatCurrency(wo.wc_billed)   : '—';
+  document.getElementById('p-total-wses').textContent  = sumWses || '—';
+  document.getElementById('p-total-gws').textContent   = sumGws  ? formatDollars(sumGws)         : '—';
+  document.getElementById('p-wc-billed').textContent   = wo.wc_billed    != null ? formatCurrency(wo.wc_billed)    : '—';
+  document.getElementById('p-suta-billed').textContent = to.suta_billed  != null ? formatCurrency(to.suta_billed)  : '—';
   document.getElementById('p-admin-total').textContent = ao.admin_margin != null ? formatCurrency(ao.admin_margin) : '—';
 
 }
