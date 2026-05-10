@@ -107,6 +107,19 @@
 
 </div>
 
+<!-- ── Delete Confirm Modal ── -->
+<div class="modal-backdrop" id="modal-delete-confirm">
+  <div class="modal-card" style="max-width:400px;">
+    <div class="modal-title" style="color:#dc2626;">Delete Contact</div>
+    <p id="modal-delete-msg" style="margin:0 0 8px;color:#374151;font-size:0.95rem;line-height:1.5;"></p>
+    <p style="margin:0;font-size:0.85rem;color:#6b7280;">This cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="modal-delete-cancel" type="button">Cancel</button>
+      <button class="btn-primary" id="modal-delete-confirm-btn" type="button" style="background:#dc2626;border-color:#dc2626;">Delete</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── New Contact Modal ── -->
 <div class="modal-backdrop" id="modal-new-client">
   <div class="modal-card">
@@ -152,6 +165,25 @@ function statusBadge(status) {
   const label = status ? status.replace('_', ' ') : 'draft';
   return `<span class="badge ${cls}">${label}</span>`;
 }
+
+/* ── Delete Confirm Modal ───────────────────────────────────────────────────── */
+
+const deleteModal      = document.getElementById('modal-delete-confirm');
+const deleteMsg        = document.getElementById('modal-delete-msg');
+const deleteCancelBtn  = document.getElementById('modal-delete-cancel');
+const deleteConfirmBtn = document.getElementById('modal-delete-confirm-btn');
+
+let _deleteResolve = null;
+
+function confirmDelete(name) {
+  deleteMsg.textContent = `Are you sure you want to delete "${name}"?`;
+  deleteModal.classList.add('open');
+  return new Promise(resolve => { _deleteResolve = resolve; });
+}
+
+deleteCancelBtn.addEventListener('click', () => { deleteModal.classList.remove('open'); _deleteResolve && _deleteResolve(false); });
+deleteConfirmBtn.addEventListener('click', () => { deleteModal.classList.remove('open'); _deleteResolve && _deleteResolve(true); });
+deleteModal.addEventListener('click', e => { if (e.target === deleteModal) { deleteModal.classList.remove('open'); _deleteResolve && _deleteResolve(false); } });
 
 /* ── New Client Modal ───────────────────────────────────────────────────────── */
 
@@ -257,16 +289,15 @@ async function loadDashboard() {
       e.stopPropagation();
       const id   = btn.dataset.id;
       const name = btn.dataset.name;
-      if (!window.confirm(`Delete ${name}? This cannot be undone.`)) return;
+      if (!await confirmDelete(name)) return;
       try {
         await apiDelete(`/contacts/${id}`);
         btn.closest('tr').remove();
         const remaining = wrap.querySelectorAll('tr[data-id]').length;
-        const newTotal  = remaining;
-        const newActive = Array.from(wrap.querySelectorAll('tr[data-id]'))
-          .filter(r => r.querySelector('.badge-draft, .badge-in-review')).length;
-        document.getElementById('stat-total-clients').textContent = newTotal;
-        document.getElementById('stat-active-quotes').textContent = newActive;
+        document.getElementById('stat-total-contacts').textContent = remaining;
+        document.getElementById('stat-total-clients').textContent =
+          Array.from(wrap.querySelectorAll('tr[data-id]'))
+            .filter(r => r.querySelector('td:nth-child(2)')?.textContent.trim() === 'Client').length;
         if (remaining === 0) {
           wrap.innerHTML = `
             <div class="empty-state">
