@@ -25,8 +25,8 @@ Use `python`, never `python3` — Windows, Python 3.14 at `C:/Users/asher/AppDat
 
 FastAPI / SQLite (SQLAlchemy sync) / Vanilla HTML+CSS+JS (no framework)
 
-Shared styles: `static/style.css`. Page-specific styles: inline `<style>` blocks.
-Shared JS: `static/app.js` — `apiGet`, `apiPost`, `apiPut`, `apiDelete`, `showToast`, `formatCurrency`, `formatPct`.
+Shared styles: `static/style.css`. `client.html` and `config.html` have additional inline `<style>` blocks for page-specific overrides.
+Shared JS: `static/app.js` — `apiGet`, `apiPost`, `apiPut`, `apiDelete`, `showToast`, `formatCurrency`, `formatDollars`, `formatPct`.
 
 ## Key files
 
