@@ -1,7 +1,10 @@
 """
-SystemConfig — single-row app-wide config (id=1 always).
-Holds FICA/FUTA rates, WC factors, pay period map, commission defaults,
-ancillary rates, and additional fee schedules. Seeded by testing/seed.py.
+Stores all the system-wide settings that apply to every client quote — federal tax
+rates (FICA, FUTA), workers comp cost factors, how many pay periods each frequency has,
+default commission percentages, ancillary service rates, and the full schedule of
+additional fees (timekeeping, HR tech, WC endorsements, etc.). There is always exactly
+one row in this table. Default values are seeded by testing/seed.py and can be updated
+from the config page in the UI.
 """
 from sqlalchemy import Column, Float, Integer, String, Text
 from database import Base

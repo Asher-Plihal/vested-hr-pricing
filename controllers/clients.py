@@ -1,6 +1,10 @@
 """
-Client CRUD — GET/POST /clients, GET/PUT/DELETE /clients/{id}.
-PUT replaces wc_lines, suta_lines, and wc_losses in full when those lists are present.
+Handles everything related to creating and managing client records. When the user
+fills out the pricing form and hits save, this is what receives that data and writes
+it to the database. Also handles listing all clients on the dashboard, loading a
+single client to populate the form, and deleting a client. When WC lines, SUTA lines,
+or loss history rows are included in a save, the old rows are deleted and replaced
+entirely — there is no partial update for sub-lines.
 """
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException

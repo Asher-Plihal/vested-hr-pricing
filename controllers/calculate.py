@@ -1,7 +1,9 @@
 """
-Calculate endpoint — POST /calculate.
-Stateless: full client payload in, deal summary dict out. Nothing written to DB.
-Orchestrates calc/ pipeline: WSE → WC → FICA → FUTA → SUTA → Admin → Commission → Summary.
+The main pricing engine endpoint. The client form sends its current state here every
+time a field changes, and this returns the full deal summary — WC billing, taxes, admin
+fee, commissions, and profit/loss — without saving anything to the database. It pulls
+system config from the DB, then runs the client data through the full calc/ pipeline
+in order: workers comp → FICA → FUTA → SUTA → admin fee → commission → summary.
 """
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session

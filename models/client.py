@@ -1,7 +1,10 @@
 """
-Client — main quote entity. Holds general info, compliance/medical questionnaire answers,
-payroll settings, WC and commission inputs. Sub-lines (WCLine, SutaLine, WCLoss) are
-stored in separate tables and replaced in full on each PUT /clients/{id}.
+The core record for a prospective client going through the pricing process. Stores
+everything entered on the client form: company information, the compliance and medical
+questionnaire answers, payroll setup, workers comp inputs, admin fee method, and
+commission percentages. Each client also has related rows in separate tables for their
+WC class codes, SUTA states, and workers comp loss history — those are defined in
+models/workers_comp.py and models/taxes.py.
 """
 from datetime import datetime
 from sqlalchemy import Boolean, Column, DateTime, Float, Integer, String, Text

@@ -1,6 +1,9 @@
 """
-Calculate schema — CalculateRequest, the flat payload for POST /calculate.
-All client-level fields plus wc_lines and suta_lines. Stateless — nothing persisted.
+Defines the shape of the data sent to the pricing engine. CalculateRequest is a flat
+snapshot of everything the calculator needs to produce a deal summary — headcount,
+payroll, WC lines, SUTA lines, admin fee method, commission percentages, and any
+additional fees. This is assembled by the client form on every field change and sent
+to POST /calculate. Nothing is saved to the database; it is purely for live calculation.
 """
 from pydantic import BaseModel
 from schemas.workers_comp import WCLineIn

@@ -1,7 +1,9 @@
 """
-Workers Comp routes — GET /wc-rate (rate lookup by state + class code),
-GET /download/wc-rates, GET /download/wc-guidelines, POST /upload/wc-rates,
-POST /upload/wc-guidelines. CSV uploads replace the entire table on each import.
+Handles workers comp rate data. When a rep enters a state and class code on the WC tab,
+the form calls this to look up the cost rate automatically. Also provides the CSV download
+and upload buttons on the config page — downloading the current WC rates or guidelines,
+and uploading a new file to replace them entirely. The WC rates table has ~25K rows and
+the guidelines table has ~19.5K rows; both come from the UWIC pricing spreadsheet.
 """
 import csv
 import io

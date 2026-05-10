@@ -1,7 +1,10 @@
 """
-Client schemas — ClientCreate (name only, for POST /clients), ClientListItem (dashboard
-list row), ClientUpdate (all fields optional, includes sub-line lists for replace-on-save),
-ClientOut (full client response with resolved sub-lines).
+Defines the shape of client data at each stage of its lifecycle. ClientCreate is the
+minimal payload to open a new client (just a name). ClientListItem is the condensed
+version shown in the dashboard table. ClientUpdate is the full form payload sent on
+every save — all fields are optional and it includes the WC lines, SUTA lines, and loss
+history as nested lists. ClientOut is the full record returned when loading a client,
+with all sub-lines resolved and included.
 """
 from datetime import datetime
 from typing import Optional

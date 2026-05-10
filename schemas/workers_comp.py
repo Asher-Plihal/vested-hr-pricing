@@ -1,5 +1,8 @@
 """
-Workers Comp schemas — WCLineIn/Out (per-code billing inputs), WCLossIn/Out (loss history rows).
+Defines the shape of workers comp sub-line data. WCLineIn is one class code row as it
+comes in from the form — state, code, payroll, headcount, and rates. WCLineOut adds the
+database id fields for responses. WCLossIn and WCLossOut do the same for loss history
+rows — coverage period, total losses, claim count, and open claims.
 """
 from typing import Optional
 from pydantic import BaseModel

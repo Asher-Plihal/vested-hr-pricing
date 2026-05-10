@@ -1,6 +1,9 @@
 """
-Taxes schemas — SutaLineIn/Out (per-state SUTA inputs on a quote),
-SutaRateOut/Update (reference rate table read and edit).
+Defines the shape of tax-related data. SutaLineIn is one state row on a client quote —
+gross wages, headcount, and the billing and cost rates for that state. SutaLineOut adds
+the database id fields. SutaRateOut is what the config page receives when loading the
+full SUTA rate table, and SutaRateUpdate is the payload for editing a single state's
+rates directly in the table.
 """
 from typing import Optional
 from pydantic import BaseModel

@@ -1,6 +1,8 @@
 """
-Config schemas — SystemConfigOut (full config response), SystemConfigUpdate (all fields
-optional, used for PATCH-style PUT /config).
+Defines the shape of data going in and out of the config endpoints. SystemConfigOut is
+what the API returns when the config page loads — all current settings. SystemConfigUpdate
+is what the config page sends when a field changes — every field is optional so only the
+changed value needs to be included.
 """
 from typing import Optional
 from pydantic import BaseModel

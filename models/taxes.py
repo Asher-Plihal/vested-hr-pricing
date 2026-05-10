@@ -1,7 +1,9 @@
 """
-Taxes models — SutaLine (per-state SUTA inputs on a client quote),
-SutaRate (51-row reference table of VHR billing and cost rates by state).
-Rates stored as decimals (0.027 = 2.7%).
+Two database tables for state unemployment tax (SUTA). SutaLine is one row per state a
+client has employees in — it stores that state's gross wages, headcount, and the billing
+and cost rates that will be used to calculate the SUTA charge. SutaRate is VHR's master
+rate table with one row per state (51 total), holding the threshold, VHR's billing rate,
+and VHR's cost rate. Rates are stored as decimals throughout — 0.027 means 2.7%.
 """
 from sqlalchemy import Boolean, Column, Float, ForeignKey, Integer, String
 from database import Base

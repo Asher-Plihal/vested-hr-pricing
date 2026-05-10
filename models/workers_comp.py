@@ -1,7 +1,10 @@
 """
-Workers Comp models — WCLine (per-code billing inputs), WCLoss (loss history rows),
-WCRate (24,965-row rate table, lookup key = state+class_code concat),
-WCGuideline (19,552-row underwriting reference, not used in billing math).
+Four database tables related to workers compensation. WCLine is one row per class code
+a client has — state, code, payroll, and headcount. WCLoss is one row per policy period
+in the client's loss history. WCRate is the full rate table (~25K rows) used to look up
+the cost rate for any state and class code combination. WCGuideline is the underwriting
+reference table (~19.5K rows) that provides hazard group and eligibility flags — it is
+not used in billing math, just for reference.
 """
 from sqlalchemy import Column, Float, ForeignKey, Integer, String
 from database import Base

@@ -1,6 +1,8 @@
 """
-System config CRUD — GET/PUT /config.
-Single-row SystemConfig table; all fields are optional on PUT (patch semantics).
+Handles reading and updating the system-wide configuration that applies to all clients —
+things like FICA rates, FUTA rates, WC cost factors, commission defaults, and additional
+fee schedules. There is only ever one config record in the database. The config page in
+the UI autosaves every field 600ms after a change, so every edit hits this endpoint.
 """
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session

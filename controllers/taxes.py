@@ -1,7 +1,8 @@
 """
-Taxes routes — GET/PUT /suta-rates (per-state rate editing),
-GET /download/suta-rates, POST /upload/suta-rates.
-DB stores rates as decimals (0.027); CSV uses percentages (2.7) — conversion applied on both sides.
+Handles SUTA (state unemployment) rate data. Provides the endpoints used by the config
+page to view, edit, download, and upload SUTA rates for all 51 states. Rates in the
+database are stored as decimals (e.g. 0.027 for 2.7%) but the CSV and the Google Sheet
+use percentages (2.7), so this file converts in both directions to keep them in sync.
 """
 import csv
 import io
