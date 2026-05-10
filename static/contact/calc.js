@@ -451,12 +451,15 @@ function renderBillingAnalysis(r) {
   const sutaRateMap = {};
   collectSutaLines().filter(l => l.state).forEach(l => { sutaRateMap[l.state] = l; });
 
+  // Backend SUTA total savings — use directly for the totals row
+  const totalSutaSavingsFromBackend = (r.suta_lines || []).reduce((s, l) => s + (l.client_savings || 0), 0);
+
   function savCls(v) { return v > 0 ? 'positive' : v < 0 ? 'negative' : ''; }
 
   // ── WC rows ──
   const wcBody = document.getElementById('analysis-wc-body');
   wcBody.innerHTML = '';
-  let sumGws = 0, sumWcSavings = 0, sumCurAdmin = 0, sumVhrAdmin = 0, sumSutaSavings = 0;
+  let sumGws = 0, sumWcSavings = 0, sumCurAdmin = 0, sumVhrAdmin = 0;
   if (wcLines.length === 0) {
     wcBody.innerHTML = `<tr><td colspan="13" style="text-align:center;color:#a0aec0;">—</td></tr>`;
   } else {
@@ -485,18 +488,21 @@ function renderBillingAnalysis(r) {
       sumCurAdmin += curAdminRow;
       sumVhrAdmin += vhrAdminRow;
 
-      // SUTA: show rate for every matching row; savings = rate diff × gw
+      // SUTA: per-row taxable base = min(rowGW, threshold × rowWSEs × (1+turnover))
+      // This matches how SUTA actually works — per-employee wage cap applied at row level
       const sr = sutaRateMap[line.state];
       let curSutaDisplay = '—', vhrSutaDisplay = '—', sutaSavTxt = '—', sutaSavCls = '';
       if (sr) {
-        const curSutaRate = sr.current_client_rate || 0;
-        const vhrSutaRate = sr.billing_rate        || 0;
-        const sutaSavAmt  = (curSutaRate - vhrSutaRate) * gw;
+        const curSutaRate  = sr.current_client_rate || 0;
+        const vhrSutaRate  = sr.billing_rate        || 0;
+        const rowWSEs      = (line.ftes || 0) + 0.75 * (line.ptes || 0);
+        const turnover     = sr.turnover_pct || 0.1;
+        const taxableGw    = Math.min(gw, (sr.threshold || 0) * rowWSEs * (1 + turnover));
+        const sutaSavAmt   = (curSutaRate - vhrSutaRate) * taxableGw;
         curSutaDisplay = curSutaRate ? (curSutaRate * 100).toFixed(2) + '%' : '—';
         vhrSutaDisplay = vhrSutaRate ? (vhrSutaRate * 100).toFixed(2) + '%' : '—';
         sutaSavTxt     = formatDollars(sutaSavAmt);
         sutaSavCls     = savCls(sutaSavAmt);
-        sumSutaSavings += sutaSavAmt;
       }
 
       const tr = document.createElement('tr');
@@ -518,7 +524,7 @@ function renderBillingAnalysis(r) {
     });
   }
 
-  // ── Admin and SUTA totals (accumulated from per-row) ──
+  // ── Admin totals (accumulated from per-row) ──
   const adminSavings = sumCurAdmin - sumVhrAdmin;
 
   // ── Totals row ──
@@ -533,11 +539,11 @@ function renderBillingAnalysis(r) {
   adminSavEl.className   = sumGws ? savCls(adminSavings) : '';
 
   const sutaSavEl = document.getElementById('a-suta-savings');
-  sutaSavEl.textContent = sumGws ? formatDollars(sumSutaSavings) : '—';
-  sutaSavEl.className   = sumGws ? savCls(sumSutaSavings) : '';
+  sutaSavEl.textContent = sumGws ? formatDollars(totalSutaSavingsFromBackend) : '—';
+  sutaSavEl.className   = sumGws ? savCls(totalSutaSavingsFromBackend) : '';
 
   // ── Grand total ──
-  const grandSavings = sumWcSavings + adminSavings + sumSutaSavings;
+  const grandSavings = sumWcSavings + adminSavings + totalSutaSavingsFromBackend;
   const grandEl = document.getElementById('a-grand-total-savings');
   grandEl.textContent = hasData ? formatDollars(grandSavings) : '—';
   grandEl.className   = hasData ? savCls(grandSavings) : '';
