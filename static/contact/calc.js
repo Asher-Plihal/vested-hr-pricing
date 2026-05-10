@@ -264,7 +264,7 @@ function renderSummary(r) {
   const elAdminPct    = document.getElementById('s-admin-margin-pct');
   const elAdminPerWse = document.getElementById('s-admin-margin-per-wse');
   if (elAdminPct)    elAdminPct.textContent    = adminPct    != null ? formatPct(adminPct)                   : '—';
-  if (elAdminPerWse) elAdminPerWse.textContent = adminPerWse != null ? formatCurrency(adminPerWse) + '/WSE'  : '—';
+  if (elAdminPerWse) elAdminPerWse.textContent = adminPerWse != null ? formatCurrency(adminPerWse) + '/EE'  : '—';
 
   setDS('s-wc-billed',      formatCurrency(wo.wc_billed));
   setDS('s-wc-fixed-cost',  formatCurrency(wo.wc_fixed_cost));
@@ -313,20 +313,20 @@ function renderSummary(r) {
   const elNetOngoingPct    = document.getElementById('s-admin-net-ongoing-pct');
   const elNetOngoingPerWse = document.getElementById('s-admin-net-ongoing-per-wse');
   if (elNetOngoingPct)    elNetOngoingPct.textContent    = netOngoingPct    != null ? formatPct(netOngoingPct)                  : '—';
-  if (elNetOngoingPerWse) elNetOngoingPerWse.textContent = netOngoingPerWse != null ? formatCurrency(netOngoingPerWse) + '/WSE' : '—';
+  if (elNetOngoingPerWse) elNetOngoingPerWse.textContent = netOngoingPerWse != null ? formatCurrency(netOngoingPerWse) + '/EE' : '—';
   const netYear1Pct    = ao.total_gws  > 0 ? co.admin_net_year1 / ao.total_gws  : null;
   const netYear1PerWse = ao.total_wses > 0 ? co.admin_net_year1 / ao.total_wses : null;
   const elNetYear1Pct    = document.getElementById('s-admin-net-year1-pct');
   const elNetYear1PerWse = document.getElementById('s-admin-net-year1-per-wse');
   if (elNetYear1Pct)    elNetYear1Pct.textContent    = netYear1Pct    != null ? formatPct(netYear1Pct)                  : '—';
-  if (elNetYear1PerWse) elNetYear1PerWse.textContent = netYear1PerWse != null ? formatCurrency(netYear1PerWse) + '/WSE' : '—';
+  if (elNetYear1PerWse) elNetYear1PerWse.textContent = netYear1PerWse != null ? formatCurrency(netYear1PerWse) + '/EE' : '—';
   setDS('s-cash-flow-after-comm', formatCurrency(co.cash_flow_after_comm));
   const cfPct    = ao.total_gws  > 0 ? co.cash_flow_after_comm / ao.total_gws  : null;
   const cfPerWse = ao.total_wses > 0 ? co.cash_flow_after_comm / ao.total_wses : null;
   const elCfPct    = document.getElementById('s-cash-flow-after-comm-pct');
   const elCfPerWse = document.getElementById('s-cash-flow-after-comm-per-wse');
   if (elCfPct)    elCfPct.textContent    = cfPct    != null ? formatPct(cfPct)                  : '—';
-  if (elCfPerWse) elCfPerWse.textContent = cfPerWse != null ? formatCurrency(cfPerWse) + '/WSE' : '—';
+  if (elCfPerWse) elCfPerWse.textContent = cfPerWse != null ? formatCurrency(cfPerWse) + '/EE' : '—';
   setDS('s-total-comm-pct',         formatPct(co.total_comm_rate));
   setDS('s-total-comm',             formatCurrency(co.total_comm));
 
@@ -344,7 +344,7 @@ function renderSummary(r) {
   const elCfElPct    = document.getElementById('s-cash-flow-est-losses-pct');
   const elCfElPerWse = document.getElementById('s-cash-flow-est-losses-per-wse');
   if (elCfElPct)    elCfElPct.textContent    = cfElPct    != null ? formatPct(cfElPct)                  : '—';
-  if (elCfElPerWse) elCfElPerWse.textContent = cfElPerWse != null ? formatCurrency(cfElPerWse) + '/WSE' : '—';
+  if (elCfElPerWse) elCfElPerWse.textContent = cfElPerWse != null ? formatCurrency(cfElPerWse) + '/EE' : '—';
 }
 
 /* ── Proposal ────────────────────────────────────────────────────────────── */

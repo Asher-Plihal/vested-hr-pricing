@@ -100,7 +100,7 @@
       <div class="admin-method-grid">
         <div class="admin-method-box" data-method="1" onclick="selectAdminMethod(1)">Percentage of GWs</div>
         <div class="admin-method-box" data-method="2" onclick="selectAdminMethod(2)">Per Check Fee</div>
-        <div class="admin-method-box" data-method="3" onclick="selectAdminMethod(3)">Per WSE per Month</div>
+        <div class="admin-method-box" data-method="3" onclick="selectAdminMethod(3)">Per Employee per Month</div>
       </div>
       <input type="hidden" id="admin_method" name="admin_method" value="1" />
 
@@ -126,11 +126,11 @@
       </div>
       <div id="admin-rate-fields-3" class="form-grid admin-rate-fields" style="display:none;">
         <div class="form-group">
-          <label class="req-y" for="admin_rate_3">Vested Rate ($ per WSE/mo)</label>
+          <label class="req-y" for="admin_rate_3">Vested Rate ($ per employee/mo)</label>
           <input type="number" id="admin_rate_3" name="admin_rate_3" step="0.01" min="0" value="0" />
         </div>
         <div class="form-group">
-          <label for="current_admin_rate_3">Current Rate ($ per WSE/mo)</label>
+          <label for="current_admin_rate_3">Current Rate ($ per employee/mo)</label>
           <input type="number" id="current_admin_rate_3" name="current_admin_rate_3" step="0.01" min="0" value="0" />
         </div>
       </div>
@@ -152,7 +152,7 @@
       <hr class="card-divider" />
       <div class="form-grid">
         <div class="form-group">
-          <label class="req-o" for="epli_rate">EPLI Rate ($ / WSE / pay period) <span style="font-weight:400;color:#718096;font-size:0.78rem;">min $0.50</span></label>
+          <label class="req-o" for="epli_rate">EPLI Rate ($ / employee / pay period) <span style="font-weight:400;color:#718096;font-size:0.78rem;">min $0.50</span></label>
           <input type="number" id="epli_rate" name="epli_rate" step="0.01" min="0" value="0" />
         </div>
         <div class="form-group">
