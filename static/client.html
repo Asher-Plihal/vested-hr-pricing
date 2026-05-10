@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VestedHR — Client</title>
+  <title>VestedHR — Contact</title>
   <link rel="stylesheet" href="/static/style.css" />
   <style>
     /* Shared table styles */
@@ -432,7 +432,7 @@
   <div class="topnav-actions">
     <div class="search-wrap">
       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input class="topnav-search" type="search" placeholder="Search clients..." autocomplete="off" />
+      <input class="topnav-search" type="search" placeholder="Search contacts..." autocomplete="off" />
     </div>
     <span class="topnav-current" onclick="location.href='/static/config.html'" style="cursor:pointer;">
       <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -454,8 +454,8 @@
   <div class="subheader-inner">
     <div class="subheader-top">
       <div>
-        <div class="subheader-title" id="page-title">New Client</div>
-        <div class="subheader-sub" id="page-sub">Consultant: —</div>
+        <div class="subheader-title" id="page-title" style="cursor:pointer;" title="Click to edit">New Contact</div>
+        <div class="subheader-sub" id="page-sub" style="cursor:pointer;" title="Click to edit">Contact Type: —</div>
       </div>
       <div class="req-legend">
         <div class="req-legend-item"><div class="req-dot req-dot-y"></div> Required for estimate / proposal</div>
@@ -531,6 +531,31 @@
 </div><!-- /page-content -->
 
 <script src="/static/app.js"></script>
+<input type="hidden" id="consultant_name" name="consultant_name" />
+
+<!-- ── Edit Contact Modal ── -->
+<div class="modal-backdrop" id="modal-edit-contact">
+  <div class="modal-card">
+    <div class="modal-title">Edit Contact</div>
+    <div class="modal-field">
+      <label for="edit-legal-name">Legal Name</label>
+      <input type="text" id="edit-legal-name" autocomplete="off" />
+    </div>
+    <div class="modal-field">
+      <label for="edit-contact-type">Contact Type</label>
+      <select id="edit-contact-type">
+        <option value="Prospect">Prospect</option>
+        <option value="Client">Client</option>
+      </select>
+    </div>
+    <div class="modal-error" id="edit-modal-error"></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="edit-modal-cancel" type="button">Cancel</button>
+      <button class="btn-primary" id="edit-modal-save" type="button">Save</button>
+    </div>
+  </div>
+</div>
+
 <script src="/static/client/core.js"></script>
 <script src="/static/client/wc.js"></script>
 <script src="/static/client/taxes.js"></script>

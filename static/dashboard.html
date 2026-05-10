@@ -18,7 +18,7 @@
   <div class="topnav-actions">
     <div class="search-wrap">
       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input class="topnav-search" type="search" placeholder="Search clients..." autocomplete="off" />
+      <input class="topnav-search" type="search" placeholder="Search contacts..." autocomplete="off" />
     </div>
     <a class="topnav-current" href="/static/config.html">
       <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -51,6 +51,10 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M20 12h2M2 12H4M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41"/></svg>
         Configuration
       </a>
+      <a href="/static/admin_revenue.html" class="sidebar-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Admin Revenue
+      </a>
     </div>
   </aside>
 
@@ -65,16 +69,15 @@
       </div>
       <button class="btn-primary" id="btn-new-client" type="button">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        New Client
+        Contact
       </button>
     </div>
 
     <!-- Stat cards -->
     <div class="stat-grid">
       <div class="stat-card">
-        <div class="stat-label">Active Quotes</div>
-        <div class="stat-value" id="stat-active-quotes">—</div>
-        <div class="stat-sub">draft &amp; in review</div>
+        <div class="stat-label">Total Contacts</div>
+        <div class="stat-value" id="stat-total-contacts">—</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Total Clients</div>
@@ -104,22 +107,25 @@
 
 </div>
 
-<!-- ── New Client Modal ── -->
+<!-- ── New Contact Modal ── -->
 <div class="modal-backdrop" id="modal-new-client">
   <div class="modal-card">
-    <div class="modal-title">New Client</div>
+    <div class="modal-title">New Contact</div>
     <div class="modal-field">
       <label for="modal-legal-name">Client Legal Name</label>
       <input type="text" id="modal-legal-name" placeholder="e.g. Acme Corp LLC" autocomplete="off" />
     </div>
     <div class="modal-field">
-      <label for="modal-consultant-name">Consultant Name</label>
-      <input type="text" id="modal-consultant-name" placeholder="e.g. Jane Smith" autocomplete="off" />
+      <label for="modal-contact-type">Contact Type</label>
+      <select id="modal-contact-type">
+        <option value="Prospect">Prospect</option>
+        <option value="Client">Client</option>
+      </select>
     </div>
     <div class="modal-error" id="modal-error"></div>
     <div class="modal-actions">
       <button class="btn-ghost" id="modal-cancel" type="button">Cancel</button>
-      <button class="btn-primary" id="modal-create" type="button">Create Client</button>
+      <button class="btn-primary" id="modal-create" type="button">Create Contact</button>
     </div>
   </div>
 </div>
@@ -154,7 +160,7 @@ const modalError = document.getElementById('modal-error');
 
 function openModal() {
   document.getElementById('modal-legal-name').value = '';
-  document.getElementById('modal-consultant-name').value = '';
+  document.getElementById('modal-contact-type').value = 'Prospect';
   modalError.textContent = '';
   modal.classList.add('open');
   document.getElementById('modal-legal-name').focus();
@@ -169,18 +175,17 @@ document.getElementById('modal-cancel').addEventListener('click', closeModal);
 modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 
 document.getElementById('modal-create').addEventListener('click', async () => {
-  const legalName     = document.getElementById('modal-legal-name').value.trim();
-  const consultantName = document.getElementById('modal-consultant-name').value.trim();
+  const legalName   = document.getElementById('modal-legal-name').value.trim();
+  const contactType = document.getElementById('modal-contact-type').value;
   modalError.textContent = '';
 
-  if (!legalName)      { modalError.textContent = 'Client Legal Name is required.'; return; }
-  if (!consultantName) { modalError.textContent = 'Consultant Name is required.'; return; }
+  if (!legalName) { modalError.textContent = 'Client Legal Name is required.'; return; }
 
   try {
-    const result = await apiPost('/clients', { legal_name: legalName, consultant_name: consultantName });
+    const result = await apiPost('/clients', { legal_name: legalName, consultant_name: contactType });
     window.location.href = `/static/client.html?id=${result.id}`;
   } catch (err) {
-    modalError.textContent = 'Failed to create client: ' + err.message;
+    modalError.textContent = 'Failed to create contact: ' + err.message;
   }
 });
 
@@ -197,10 +202,10 @@ async function loadDashboard() {
     return;
   }
 
-  const total  = clients.length;
-  const active = clients.filter(c => c.status === 'draft' || c.status === 'in_review').length;
-  document.getElementById('stat-total-clients').textContent = total;
-  document.getElementById('stat-active-quotes').textContent = active;
+  const total   = clients.length;
+  const clients_ = clients.filter(c => c.consultant_name === 'Client').length;
+  document.getElementById('stat-total-contacts').textContent = total;
+  document.getElementById('stat-total-clients').textContent = clients_;
 
   const wrap = document.getElementById('clients-table-wrap');
 
@@ -231,7 +236,7 @@ async function loadDashboard() {
       <thead>
         <tr>
           <th>Client Name</th>
-          <th>Consultant</th>
+          <th>Contact Type</th>
           <th>Status</th>
           <th>Created</th>
           <th></th>

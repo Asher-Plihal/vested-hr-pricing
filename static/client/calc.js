@@ -613,12 +613,14 @@ function setSelectBoolByName(name, value) {
 }
 
 function populateForm(client) {
-  document.getElementById('page-title').textContent = client.legal_name || 'New Client';
-  document.getElementById('page-sub').textContent = 'Consultant: ' + (client.consultant_name || '—');
-  document.title = 'VestedHR — ' + (client.legal_name || 'New Client');
+  document.getElementById('page-title').textContent = client.legal_name || 'New Contact';
+  document.getElementById('page-sub').textContent = 'Contact Type: ' + (client.consultant_name || '—');
+  document.title = 'VestedHR — ' + (client.legal_name || 'New Contact');
+  const _hiddenCT = document.getElementById('consultant_name');
+  if (_hiddenCT) _hiddenCT.value = client.consultant_name || '';
 
   // General
-  ['consultant_name','consultant_name_split','date','legal_name','dba',
+  ['consultant_name_split','date','legal_name','dba',
    'referral_partner_business','referral_partner_name',
    'main_address','city','state','zip','county',
    'fein','website','org_structure','naics','sic','years_in_business','num_locations',
@@ -834,8 +836,7 @@ async function init() {
     if (name) {
       document.getElementById('page-title').textContent = name;
       document.title = 'VestedHR — ' + name;
-      document.getElementById('page-sub').textContent =
-        'Consultant: ' + (saveBody.consultant_name || '—');
+      document.getElementById('page-sub').textContent = 'Contact Type: ' + (saveBody.consultant_name || '—');
     }
 
     try {
@@ -866,4 +867,46 @@ async function init() {
   }
 }
 
-loadPanels().then(() => init());
+loadPanels().then(() => {
+  init();
+
+  const editModal      = document.getElementById('modal-edit-contact');
+  const editError      = document.getElementById('edit-modal-error');
+  const editNameInput  = document.getElementById('edit-legal-name');
+  const editTypeSelect = document.getElementById('edit-contact-type');
+
+  function openEditModal() {
+    editNameInput.value  = document.getElementById('page-title').textContent || '';
+    editTypeSelect.value = document.getElementById('consultant_name').value || 'Prospect';
+    editError.textContent = '';
+    editModal.classList.add('open');
+    editNameInput.focus();
+  }
+
+  function closeEditModal() { editModal.classList.remove('open'); }
+
+  document.getElementById('page-title').addEventListener('click', openEditModal);
+  document.getElementById('page-sub').addEventListener('click', openEditModal);
+  document.getElementById('edit-modal-cancel').addEventListener('click', closeEditModal);
+  editModal.addEventListener('click', e => { if (e.target === editModal) closeEditModal(); });
+
+  document.getElementById('edit-modal-save').addEventListener('click', async () => {
+    const name = editNameInput.value.trim();
+    const type = editTypeSelect.value;
+    editError.textContent = '';
+    if (!name) { editError.textContent = 'Name is required.'; return; }
+    if (!clientId) { closeEditModal(); return; }
+    try {
+      await apiPut('/clients/' + clientId, { legal_name: name, consultant_name: type });
+      document.getElementById('page-title').textContent = name;
+      document.getElementById('page-sub').textContent = 'Contact Type: ' + type;
+      document.getElementById('consultant_name').value = type;
+      document.getElementById('legal_name').value = name;
+      document.title = 'VestedHR — ' + name;
+      showToast('Contact updated', 'success');
+      closeEditModal();
+    } catch (e) {
+      editError.textContent = 'Failed to save: ' + e.message;
+    }
+  });
+});
