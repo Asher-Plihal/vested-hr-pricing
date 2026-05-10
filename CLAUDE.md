@@ -63,9 +63,14 @@ calc/
   proposal.py       admin_overview + wc_overview → Proposal tab
   summary.py        taxes_overview + other_items + commissions → Analysis & Summary tab
 static/
-  dashboard.html    Client list, New Client modal, delete
-  client.html       5-tab pricing form + live Deal Summary
-  config.html       System config (autosaves on change)
+  app.js / style.css   Shared across all pages
+  dashboard.html       Client list, New Client modal, delete
+  client.html          7-tab pricing form + live Deal Summary
+  config.html          System config (autosaves on change)
+  client/              Client-page JS and HTML panels
+    core.js            Tab nav, helpers, auto-save, card lock, loadPanels()
+    wc.js / taxes.js / admin.js / calc.js
+    panels/            HTML fragments injected into client.html tab divs
 data/
   vested_hr.db      SQLite DB
 ```
@@ -97,7 +102,6 @@ Non-obvious choices. Do not undo without asking.
 - `wc_rates`: 24,965 rows (2026 UWIC rates). Future updates via config page CSV upload.
 - `wc_guidelines`: 19,552 rows. Reference only — not used in billing math.
 - `suta_rates`: 51 states, real VHR rates. Rates stored as decimals (0.027 = 2.7%).
-- `wc_policy_adjustment`: seeded at 0.0 — purpose not confirmed with VHR.
 
 ## Management docs
 
