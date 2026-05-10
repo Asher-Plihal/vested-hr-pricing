@@ -33,8 +33,19 @@ Shared JS: `static/app.js` — `apiGet`, `apiPost`, `apiPut`, `apiDelete`, `show
 ```
 server.py           Mounts /static, registers all routers
 database.py         Engine, session factory, Base
-models.py           ORM models
-schemas.py          Pydantic request/response shapes
+models/
+  __init__.py       Re-exports all ORM models
+  system_config.py  SystemConfig
+  client.py         Client
+  workers_comp.py   WCLine, WCLoss, WCRate, WCGuideline
+  taxes.py          SutaLine, SutaRate
+schemas/
+  __init__.py       Re-exports all Pydantic schemas
+  config.py         SystemConfigOut, SystemConfigUpdate
+  client.py         ClientCreate, ClientListItem, ClientUpdate, ClientOut
+  workers_comp.py   WCLineIn, WCLineOut, WCLossIn, WCLossOut
+  taxes.py          SutaLineIn, SutaLineOut, SutaRateOut, SutaRateUpdate
+  calculate.py      CalculateRequest
 testing/seed.py     Seeds SystemConfig defaults — run once on fresh DB
 testing/seed_client.py  Creates Hartman Industrial LLC test client — idempotent
 routers/
