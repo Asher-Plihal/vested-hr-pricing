@@ -108,15 +108,14 @@ Non-obvious choices. Do not undo without asking.
 | Doc | Purpose |
 |---|---|
 | `management/status.json` | Active tasks only — `pending`, `in-progress`, `blocked`, `deferred`. Full brief lives in the `brief` field of each entry. Completed tasks are deleted. |
-| `management/updates.md` | Permanent changelog. Completed task context lives here. |
 | `management/questions.md` | Open questions for VHR staff. Each has a direct code consequence when answered. |
 | `management/notes.md` | Context and decisions that are true now but may change with further VHR input. |
 
-Completed tasks are never left in `status.json` — they are deleted and a summary entry is added to `updates.md` instead. Read `updates.md` to know what's been done. Read `status.json` to know what's left.
+Completed tasks are deleted from `status.json` — git history is the changelog.
 
 ### Agent workflow
-1. Read `management/updates.md` — know what's already done
+1. Run `git log --oneline -20` — know what's already been done
 2. Read `management/status.json` — pick a `pending` task, set it to `in-progress`
 3. Read the `brief` field of that task for full instructions
-4. Do the work, commit
-5. Delete the task from `status.json`. Add a summary entry to `management/updates.md`. Commit.
+4. Do the work, commit with a clear message
+5. Delete the task from `status.json` and commit.
