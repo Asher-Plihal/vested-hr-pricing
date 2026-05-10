@@ -390,9 +390,8 @@ function renderProposal(r) {
           : adminRateRaw * wses * 12;
         adminPct = (adminCost / gw) * 100;
       }
-      const ssRate        = systemConfig.ss_rate || 0;
       const costBeforePct = rate + (ficaRate * 100) + (futaRate * 100) + sutaPct + adminPct;
-      const costAfterPct  = costBeforePct - (futaRate * 100) - sutaPct - (ssRate * 100);
+      const costAfterPct  = costBeforePct - (futaRate * 100) - sutaPct;
       const costBeforeDisplay = gw > 0 ? costBeforePct.toFixed(2) + '%' : '—';
       const costAfterDisplay  = gw > 0 ? costAfterPct.toFixed(2)  + '%' : '—';
 
